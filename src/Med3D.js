@@ -3,6 +3,9 @@
  *
  * @namespace
  */
+	  
+ 
+  //@@cameras/PerspectiveCamera.js
 
 const singleton = Symbol();
 const singletonEnforcer = Symbol();

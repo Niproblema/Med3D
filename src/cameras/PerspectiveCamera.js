@@ -2,6 +2,8 @@
  * Created by Ziga & Primoz on 1.4.2016.
  */
 
+ //@@Camera.js
+
 M3D.PerspectiveCamera = class extends M3D.Camera {
 
 	/**
@@ -142,4 +144,55 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
 			this.updateProjectionMatrix();
 		}
 	}
+
+
+	vpt_nullify() {
+		this._viewMatrix           = null;
+		this._projectionMatrix     = null;
+		this._transformationMatrix = null;
+		this._isDirty              = null;
+	};
+	
+	vpt_init() {
+		_._nullify.call(this);
+	
+		this._viewMatrix = new Matrix();
+		this._projectionMatrix = new Matrix();
+		this._transformationMatrix = new Matrix();
+		this._isDirty = false;
+	};
+	
+	vpt_destroy() {
+		_._nullify.call(this);
+	};
+	
+	vpt_updateViewMatrix() {
+    	this._rotation.toRotationMatrix(this.viewMatrix.m);
+    	this._viewMatrix.m[ 3] = this.position.x;
+    	this._viewMatrix.m[ 7] = this.position.y;
+    	this._viewMatrix.m[11] = this.position.z;
+    	this._viewMatrix.inverse();
+    };
+    
+    vpt_updateMatrices() {
+        this._updateViewMatrix();
+        this._updateProjectionMatrix();
+        this._transformationMatrix.multiply(this.projectionMatrix, this.viewMatrix);
+    };
+    
+    vpt_resize(width, height) {
+        this._fovX = width * this.zoomFactor;
+        this._fovY = height * this.zoomFactor;
+        this._isDirty = true;
+    };
+    
+    vpt_zoom(amount) {
+        var scale = Math.exp(amount);
+        this._zoomFactor *= scale;
+        this._fovX *= scale;
+        this._fovY *= scale;
+        this._isDirty = true;
+    };
+
+
 };

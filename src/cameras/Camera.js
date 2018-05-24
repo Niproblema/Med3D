@@ -2,6 +2,8 @@
  * Created by Ziga on 25.3.2016.
  */
 
+ //@@../core/Object3D.js
+
 M3D.Camera = class extends M3D.Object3D {
 
 	constructor() {

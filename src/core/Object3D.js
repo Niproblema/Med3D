@@ -2,6 +2,7 @@
  * Created by Ziga on 25.3.2016.
  */
 
+
 M3D.Object3D = class {
 
 	constructor() {
