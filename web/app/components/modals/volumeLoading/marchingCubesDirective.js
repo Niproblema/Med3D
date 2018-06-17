@@ -221,6 +221,6 @@ app.directive("marchingCubesModal", function () {
             });
 
         },
-        templateUrl: "app/components/modals/volumeLoading/marchingCubesModal.html"
+        templateUrl: "/web/app/components/modals/volumeLoading/marchingCubesModal.html"
     }
 });

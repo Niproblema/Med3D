@@ -57,7 +57,7 @@ app.directive("annotationsSidebar", function () {
 
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/annotations/annotationsSidebar.html';
+            return '/web/app/components/annotations/annotationsSidebar.html';
         }
     }
 });

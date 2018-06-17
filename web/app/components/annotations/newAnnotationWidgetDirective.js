@@ -78,7 +78,7 @@ app.directive("newAnnotationWidget", function () {
             }
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/annotations/newAnnotationWidget.html';
+            return '/web/app/components/annotations/newAnnotationWidget.html';
         }
     }
 });

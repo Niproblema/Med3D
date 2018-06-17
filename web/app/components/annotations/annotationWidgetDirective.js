@@ -63,7 +63,7 @@ app.directive("annotationWidget", function () {
             };
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/annotations/annotationWidget.html';
+            return '/web/app/components/annotations/annotationWidget.html';
         }
     }
 });

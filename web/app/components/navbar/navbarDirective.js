@@ -40,7 +40,7 @@ app.directive('navbar', function() {
             });
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/navbar/navbar.html';
+            return '/web/app/components/navbar/navbar.html';
         }
     };
 });

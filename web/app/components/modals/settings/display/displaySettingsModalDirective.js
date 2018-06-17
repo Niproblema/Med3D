@@ -14,7 +14,7 @@ app.directive("displaySettingModal", function () {
             });
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/modals/settings/display/displaySettingsModal.html';
+            return '/web/app/components/modals/settings/display/displaySettingsModal.html';
         }
     }
 });

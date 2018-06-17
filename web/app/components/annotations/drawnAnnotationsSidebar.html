@@ -20,7 +20,7 @@
 
 
                     <a class="med3d-annotation-list-remove-item" ng-click="rmAnnotation($index)">
-                          <img src="assets/img/bin.png">
+                          <img src="/web/assets/img/bin.png">
                     </a>
                 </div>
 
@@ -42,17 +42,17 @@
                             <input maxlength="15" focus-me="layer.__editingTitle" class="med3d-layer-sidebar-edit-title" ng-show="layer.__editingTitle" ng-model="layer.title" ng-keyup="$event.keyCode == 13 && stopEditingTitle(layer)" ng-click="$event.stopPropagation()" ng-blur="stopEditingTitle(layer)"/>
 
                             <a ng-show="layer.owner == null" class="med3d-layer-list-remove-item" ng-click="removeDrawingLayer($event, ann, layer)">
-                                  <img src="assets/img/bin.png">
+                                  <img src="/web/assets/img/bin.png">
                             </a>
 
                             <a class="med3d-layer-list-draw-on" ng-click="toggleDrawingLayer($event, ann, layer)" ng-show="layer.isDisplayed && layer.owner == null">
-                                  <img ng-src="{{ann.drawLayer === layer && 'assets/img/pen_selected.png' || 'assets/img/pen_unselected.png'}}">
+                                  <img ng-src="{{ann.drawLayer === layer && '/web/assets/img/pen_selected.png' || '/web/assets/img/pen_unselected.png'}}">
                             </a>
 
 
 
                             <span href="" ng-show="layer.owner != null" class="med3d-layer-list-other-user tooltip-wrapper" data-toggle="tooltip" ng-init="initTooltip(layer.owner)" ng-click="userDisplayClicked()" ng-blur="test()">
-                                <img ng-src="assets/img/user.png"/>
+                                <img ng-src="/web/assets/img/user.png"/>
                             </span>
 
                         </div>
@@ -125,15 +125,15 @@
                                     <input maxlength="15" focus-me="layer.__editingTitle" class="med3d-layer-sidebar-edit-title" ng-show="layer.__editingTitle" ng-model="layer.title" ng-keyup="$event.keyCode == 13 && stopEditingTitle(layer)" ng-click="$event.stopPropagation()" ng-blur="stopEditingTitle(layer)"/>
 
                                     <a ng-show="layer.owner == null" class="med3d-layer-list-remove-item" ng-click="removeDrawingLayer($event, ann, layer)">
-                                          <img src="assets/img/bin.png">
+                                          <img src="/web/assets/img/bin.png">
                                     </a>
 
                                     <a class="med3d-layer-list-draw-on" ng-click="toggleDrawingLayer($event, ann, layer)" ng-show="layer.isDisplayed && layer.owner == null">
-                                          <img ng-src="{{ann.drawLayer === layer && 'assets/img/pen_selected.png' || 'assets/img/pen_unselected.png'}}">
+                                          <img ng-src="{{ann.drawLayer === layer && '/web/assets/img/pen_selected.png' || '/web/assets/img/pen_unselected.png'}}">
                                     </a>
 
                                     <span href="" ng-show="layer.owner != null" class="med3d-layer-list-other-user tooltip-wrapper" data-toggle="tooltip" ng-init="initTooltip(layer.owner)" ng-click="userDisplayClicked()" ng-blur="test()">
-                                        <img ng-src="assets/img/user.png"/>
+                                        <img ng-src="/web/assets/img/user.png"/>
                                     </span>
 
                                 </div>
@@ -181,7 +181,7 @@
                 Brush settings
 
             <a href="" id="drawing-undo-button" ng-click="undoLine()" ng-show="annotations.selectedDrawnAnnotation.drawLayer.lines.length > 0">
-                <img class="sidebar-icon" src="assets/img/undo.png" style="height: 22px; width: 22px"/>
+                <img class="sidebar-icon" src="/web/assets/img/undo.png" style="height: 22px; width: 22px"/>
             </a>
         </div>
         

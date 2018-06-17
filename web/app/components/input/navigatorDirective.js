@@ -116,7 +116,7 @@ app.directive('navigator', function() {
 
         },
        templateUrl: function(element, attributes) {
-           return 'app/components/input/' + attributes.type + 'Navigator.html';
+           return '/web/app/components/input/' + attributes.type + 'Navigator.html';
        }
    };
 });

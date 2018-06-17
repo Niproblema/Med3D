@@ -15,7 +15,7 @@ app.directive("camerasSidebar", function () {
             element.attr("id", attributes.toggleId);
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/cameras/camerasSidebar.html';
+            return '/web/app/components/cameras/camerasSidebar.html';
         }
     }
 });

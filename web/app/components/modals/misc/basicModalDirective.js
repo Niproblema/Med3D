@@ -14,7 +14,7 @@ app.directive("basicModal", function() {
             });
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/modals/misc/' + attributes.type + 'Modal.html';
+            return '/web/app/components/modals/misc/' + attributes.type + 'Modal.html';
         }
     }
 });

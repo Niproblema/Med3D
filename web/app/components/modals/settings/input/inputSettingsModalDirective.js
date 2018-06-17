@@ -16,7 +16,7 @@ app.directive("inputSettingsModal", function () {
             });
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/modals/settings/input/inputSettingsModal.html';
+            return '/web/app/components/modals/settings/input/inputSettingsModal.html';
         }
     }
 });

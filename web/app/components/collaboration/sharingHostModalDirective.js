@@ -43,7 +43,7 @@ app.directive('sharingHostModal', function() {
             });
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/collaboration/hostModal.html';
+            return '/web/app/components/collaboration/hostModal.html';
         }
     };
 });

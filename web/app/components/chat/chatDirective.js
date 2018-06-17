@@ -73,7 +73,7 @@ app.directive("chat", function () {
 
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/chat/chat.html';
+            return '/web/app/components/chat/chat.html';
         }
     }
 });

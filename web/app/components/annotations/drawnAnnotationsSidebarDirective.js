@@ -161,7 +161,7 @@ app.directive("drawnAnnotationsSidebar", function () {
 
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/annotations/drawnAnnotationsSidebar.html';
+            return '/web/app/components/annotations/drawnAnnotationsSidebar.html';
         }
     }
 });

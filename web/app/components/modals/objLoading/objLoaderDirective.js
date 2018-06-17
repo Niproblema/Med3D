@@ -205,6 +205,6 @@ app.directive("objLoaderModal", function () {
                 }
             });
         },
-        templateUrl: "app/components/modals/objLoading/objLoaderModal.html"
+        templateUrl: "/web/app/components/modals/objLoading/objLoaderModal.html"
     }
 });

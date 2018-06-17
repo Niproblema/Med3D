@@ -28,7 +28,7 @@ app.directive("taskProgressDirective", function() {
 
         },
         templateUrl: function(element, attributes) {
-            return 'app/components/task_manager/taskProgressModal.html';
+            return '/web/app/components/task_manager/taskProgressModal.html';
         }
     }
 });
