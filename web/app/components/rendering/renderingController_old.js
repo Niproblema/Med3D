@@ -11,8 +11,6 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
 
     $scope.annotations = Annotations;
 
-    self.VPT = null;
-
     // Private renderer components
     this.renderer = null;
     this.renderQueue = null;
@@ -53,41 +51,6 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
     };
 
     /**
-     * Transforms volumetric input data with VPT and create objects for render.
-     * @param {*} objects 
-     */
-    PublicRenderData.replaceRenderContentVPT = function (...objects) {
-        $scope.stopRenderLoop();
-        PublicRenderData.contentRenderGroup.clear();
-        self.renderer.clearCachedAttributes();
-        $scope.$apply(Annotations.clear);
-
-        if(!self.VPT){
-            self.VPT = new Application();
-        }
-
-        // Add new render content
-        for (let i = 0; i < objects.length; i++) {
-            //TODO Transform volumetric data to VPT out objects
-            var o = objects[i];
-            var size = {x:o.meta.dimensions[0],
-                        y:o.meta.dimensions[1],
-                        z:o.meta.dimensions[2]};
-            self.VPT.setVolInputData(o.data, size, o.meta.bitSize);
-        }
-
-        // Calculate content bounding sphere
-        let contentSphere = PublicRenderData.contentRenderGroup.computeBoundingSphere();
-
-        // Focus all of the cameras on the newly added object
-        self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
-
-        $scope.startRenderLoop();
-    };
-
-
-
-    /**
      * Initializes and stores the renderer instance created by the canvas directive.
      * @param renderer {M3D.Renderer} Mesh renderer created by the canvasDirective
      * @param width {number} canvas width
@@ -96,10 +59,6 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
     $scope.init = function (renderer, canvas) {
         PublicRenderData.canvasDimensions = {width: canvas.clientWidth, height: canvas.clientHeight};
         InputService.setMouseSourceObject(canvas);
-
-        if(typeof self.VPT != 'undefined' && self.VPT != null){
-            self.VPT.destroy(); //TODO: this never happens..
-        }
 
         // Store reference to renderer
         self.renderer = renderer;
@@ -712,7 +671,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
      * Starts rendering loop if it's not running already.
      */
     $scope.startRenderLoop = function () {
-        if (!self.animationRequestId) {
+        if (!animationRequestId) {
             self.renderLoop();
         }
 
@@ -764,7 +723,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
     // endregion
 
     TaskManagerService.addResultCallback("ObjLoader", PublicRenderData.replaceRenderContent);
-    TaskManagerService.addResultCallback("MHDLoader", PublicRenderData.replaceRenderContentVPT);
+    TaskManagerService.addResultCallback("MHDLoader", PublicRenderData.replaceRenderContent);
     // endregion
 };
 

@@ -90,30 +90,40 @@ _._handleMouseMove = function(e) {
         var angle = Math.sqrt(angleX * angleX + angleY * angleY);
         var movement = new Vector(angleX, -angleY, 0);
         var axis = new Vector().cross(new Vector(0, 0, 1), movement).normalize();
-        var camRot = this._camera._rotation.clone();
+        var camRot = this._camera.rotation.clone();
         var rotation = new Quaternion(axis.x, axis.y, axis.z, 0);
         rotation.multiply(rotation, camRot);
         camRot.inverse();
         rotation.multiply(camRot, rotation);
         rotation.w = angle;
         rotation.fromAxisAngle();
-        this._camera._rotation.multiply(this._camera._rotation, rotation);
-        this._camera._rotation.normalize();
-        var position = this._camera._position;
+        this._camera.rotation.multiply(this._camera.rotation, rotation);
+        this._camera.rotation.normalize();
+        var position = this._camera.position;
         var positionQuat = new Quaternion(position.x, position.y, position.z, 0);
         rotation.inverse();
         positionQuat.multiply(rotation, positionQuat);
         rotation.inverse();
         positionQuat.multiply(positionQuat, rotation);
-        this._camera._position.set(positionQuat.x, positionQuat.y, positionQuat.z);
-        this._camera._isDirty = true;
+        this._camera.position.set(positionQuat.x, positionQuat.y, positionQuat.z);
+        this._camera.isDirty = true;
 
         this._startX = x;
         this._startY = y;
     }
 };
 
+
 _._handleMouseWheel = function(e) {
+    e.preventDefault();
+    var amount = e.deltaY * this.zoomSpeed;
+    this._camera.zoom(amount);
+    if (e.shiftKey) {
+        var scale = Math.exp(-amount);
+        this._camera.position.mul(new Vector(scale, scale, scale, 1));
+    }
+};
+/* _._handleMouseWheel = function(e) {
     e.preventDefault();
     var amount = e.deltaY * this.zoomSpeed;
     this._camera.vpt_zoom(amount);
@@ -121,7 +131,7 @@ _._handleMouseWheel = function(e) {
         var scale = Math.exp(-amount);
         this._camera._position.mul(new Vector(scale, scale, scale, 1));
     }
-};
+}; */
 
 // ============================ STATIC METHODS ============================= //
 

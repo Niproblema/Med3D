@@ -39,14 +39,16 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             let voxelDim = mhdMeta.elementSpacing;
 
             // Start execution
-            MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, values, nThreads, privateOnLoad, onProgress, privateOnError);
+            //MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, values, nThreads, privateOnLoad, onProgress, privateOnError);
+            //TODO: disabled marchingCubes, some errors? -Jan
+            onLoad(rez);
         };
 
         let task = {
             uuid: THREE.Math.generateUUID(),
             meta: {
                 name: "Marching cubes",
-                description: "Executing Marching cubes algorithm on the selected volume.",
+                description: "Loading volumetric data, MarchingCubes disabled, instead VPT",
                 icon: "no/icon/atm"
             },
             synchronous: true,
@@ -103,7 +105,9 @@ let volumeLoadingController = function($scope, TaskManagerService) {
                 var voxelDim = rez.meta.elementSpacing;
 
                 // Start execution
-                MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, rez.data, nThreads, privateOnLoad, onProgress, privateOnError);
+                //MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, rez.data, nThreads, privateOnLoad, onProgress, privateOnError);
+                //TODO: disabled marchingCubes, some errors? -Jan
+                onLoad(rez);
             });
 
             reader.fileLoad(mhdFile, rawFile);
@@ -112,8 +116,8 @@ let volumeLoadingController = function($scope, TaskManagerService) {
         var task = {
             uuid: THREE.Math.generateUUID(),
             meta: {
-                name: "Marching cubes",
-                description: "Executing Marching cubes algorithm on the selected volume.",
+                name: "Volumetric data loading",
+                description: "Loading volumetric data, MarchingCubes disabled, instead VPT",
                 icon: "no/icon/atm"
             },
             synchronous: true,

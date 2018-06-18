@@ -11,26 +11,22 @@
 //@@dialogs/ReinhardToneMapperDialog.js
 //@@dialogs/RangeToneMapperDialog.js
 
-(function(global) {
-'use strict';
-
-var Class = global.Application = Application;
-var _ = Class.prototype;
+//var Class = global.Application = Application;
+//var _ = Class.prototype;
 
 // ========================== CLASS DECLARATION ============================ //
 
 function Application(options) {
-    $.extend(this, Class.defaults, options);
-
-    _._init.call(this);
+    $.extend(this, Application.defaults, options);
+    this._init.call(this);
 };
 
-Class.defaults = {
+Application.defaults = {
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //
 
-_._nullify = function() {
+Application.prototype._nullify = function() {
     this._renderingContext         = null;
     this._$canvas                  = null;
     this._navbar                   = null;
@@ -45,8 +41,8 @@ _._nullify = function() {
     this._rangeToneMapperDialog    = null;
 };
 
-_._init = function() {
-    _._nullify.call(this);
+Application.prototype._init = function() {
+    this._nullify.call(this);
 
     this._renderingContext = new RenderingContext();
     this._$canvas = $(this._renderingContext.getCanvas());
@@ -60,6 +56,10 @@ _._init = function() {
     }.bind(this));
     $(window).resize();
 
+    
+
+
+/* 
     this._openFileDialog = new OpenFileDialog(
         document.body, {
         onLoad: function(data, size, bits) {
@@ -146,13 +146,13 @@ _._init = function() {
             this._rangeToneMapperDialog.show();
         }.bind(this)
     });
-
+ */
     this._renderingContext.startRendering();
 };
 
-_.destroy = function() {
+Application.prototype.destroy = function() {
     this._renderingContext.destroy();
-    this._navbar.destroy();
+    /* this._navbar.destroy();
     this._openFileDialog.destroy();
     this._openEnvironmentMapDialog.destroy();
     this._mipRendererDialog.destroy();
@@ -160,14 +160,27 @@ _.destroy = function() {
     this._eamRendererDialog.destroy();
     this._mcsRendererDialog.destroy();
     this._reinhardToneMapperDialog.destroy();
-    this._rangeToneMapperDialog.destroy();
+    this._rangeToneMapperDialog.destroy(); */
     this._$canvas.remove();
 
-    _._nullify.call(this);
+    this._nullify.call(this);
 };
 
 // =========================== INSTANCE METHODS ============================ //
 
+Application.prototype.setVolInputData = function(data, size, bits){
+    var volume = new Volume(data, size.x, size.y, size.z, bits);
+    this._renderingContext.setVolume(volume);
+    this._renderingContext.getRenderer().reset(); 
+}
+
+Application.prototype.setEnvInputData = function(image){
+    this._renderingContext.setEnvironmentMap(image);
+    this._renderingContext.getRenderer().reset();
+}
+
+
+
+
 // ============================ STATIC METHODS ============================= //
 
-})(this);

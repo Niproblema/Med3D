@@ -48,14 +48,12 @@ _._nullify = function() {
     this._nullifyGL();
 };
 
+/* TODO: reenable in a bit
 _._init = function() {
     _._nullify.call(this);
 
     this._canvas = document.createElement('canvas');
     this._initGL();
-
-
-
 
     //fov, aspect, near, far
     this._camera = new M3D.PerspectiveCamera(60, _canvas.width / _canvas.height, 0.1, 5);
@@ -78,6 +76,35 @@ _._init = function() {
     this._camera._fovY = 0.3;
 
     this._camera.vpt_updateMatrices();
+    this._updateMvpInverseMatrix();
+};*/
+
+
+_._init = function() {
+    _._nullify.call(this);
+
+    this._canvas = document.createElement('canvas');
+    this._initGL();
+
+    this._camera = new Camera();
+    this._cameraController = new OrbitCameraController(this._camera, this._canvas);
+    this._renderer =   new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);    //new ISORenderer(this._gl, this._volumeTexture, this._environmentTexture);
+    this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
+
+    this._contextRestorable = true;
+
+    this._canvas.addEventListener('webglcontextlost', this._webglcontextlostHandler);
+    this._canvas.addEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
+
+    this._scale = new Vector(1, 1, 1);
+    this._translation = new Vector(0, 0, 0);
+    this._isTransformationDirty = true;
+
+    this._camera.position.z = 1.5;
+    this._camera.fovX = 0.3;
+    this._camera.fovY = 0.3;
+
+    this._camera.updateMatrices();
     this._updateMvpInverseMatrix();
 };
 
@@ -197,6 +224,18 @@ _._webglcontextrestoredHandler = function() {
 
 // =========================== INSTANCE METHODS ============================ //
 
+
+_.resize = function(width, height) {
+    var gl = this._gl;
+    if (!gl) {
+        return;
+    }
+
+    this._canvas.width = width;
+    this._canvas.height = height;
+    this._camera.resize(width, height);
+};
+/* TODO: reenable
 _.resize = function(width, height) {
     var gl = this._gl;
     if (!gl) {
@@ -207,6 +246,7 @@ _.resize = function(width, height) {
     this._canvas.height = height;
     this._camera.vpt_resize(width, height);
 };
+*/
 
 _.setVolume = function(volume) {
     var gl = this._gl;
@@ -249,6 +289,27 @@ _.getToneMapper = function() {
 };
 
 _._updateMvpInverseMatrix = function() {
+    if (this._camera.isDirty || this._isTransformationDirty) {
+        this._camera.isDirty = false;
+        this._isTransformationDirty = false;
+        this._camera.updateMatrices();
+
+        var centerTranslation = new Matrix().fromTranslation(-0.5, -0.5, -0.5);
+        var volumeTranslation = new Matrix().fromTranslation(this._translation.x, this._translation.y, this._translation.z);
+        var volumeScale = new Matrix().fromScale(this._scale.x, this._scale.y, this._scale.z);
+
+        var tr = new Matrix();
+        tr.multiply(volumeScale, centerTranslation);
+        tr.multiply(volumeTranslation, tr);
+        tr.multiply(this._camera.transformationMatrix, tr);
+
+        tr.inverse().transpose();
+        this._renderer.setMvpInverseMatrix(tr);
+        this._renderer.reset();
+    }
+};
+/* TODO: reenable in a bit
+_._updateMvpInverseMatrix = function() {
     if (this._camera._isDirty || this._isTransformationDirty) {
         this._camera._isDirty = false;
         this._isTransformationDirty = false;
@@ -268,6 +329,7 @@ _._updateMvpInverseMatrix = function() {
         this._renderer.reset();
     }
 };
+*/
 
 _._render = function() {
     var gl = this._gl;
