@@ -72,6 +72,7 @@
     <script src="/web/app/components/navbar/navbarController.js"></script>
     <script src="/web/app/components/chat/chatController.js"></script>
     <script src="/web/app/components/cameras/camerasSidebarController.js"></script>
+    <script src="/web/app/components/VPT/vptSidebarController.js"></script>
 
     <!-- Directives -->
     <script src="/web/app/components/task_manager/taskProgressDirective.js"></script>
@@ -91,6 +92,8 @@
     <script src="/web/app/components/navbar/navbarDirective.js"></script>
     <script src="/web/app/components/chat/chatDirective.js"></script>
     <script src="/web/app/components/cameras/camerasSidebarDirective.js"></script>
+    <script src="/web/app/components/VPT/vptSidebarDirective.js"></script>
+
     <!-- DEBUG INCLUDE -->
     <script src="/libraries/three-math.min.js"></script>
     <script src="/src/Med3D.js"></script>
@@ -186,6 +189,7 @@
 
     <!-- VPT - Volumetric path tracing -->
     <script src="/vpt/build/js/shaders.js"></script>
+    <script src="/vpt/build/js/templates.js"></script><!-- TODO: remove build requirement -->
     <script src="/vpt/app/js/Util.js"></script>
     <script src="/vpt/app/js/Volume.js"></script>
     <script src="/vpt/app/js/WebGLUtils.js"></script>
@@ -208,6 +212,7 @@
     <script src="/vpt/app/js/Camera.js"></script>
     <script src="/vpt/app/js/DoubleBuffer.js"></script>
     <script src="/vpt/app/js/OrbitCameraController.js"></script>
+    <script src="/src/VPT/VPTController.js"></script>
     <script src="/vpt/app/js/RenderingContext.js"></script>
     <script src="/vpt/app/js/SingleBuffer.js"></script>
     <script src="/vpt/app/js/Ticker.js"></script>
@@ -245,6 +250,12 @@
                             <img class="sidebar-icon" src="/web/assets/img/eye.png"/>
                         </a>
                     </li>
+
+                    <li>
+                        <a href="" data-target="#vptSidebarContent">
+                            <img class="sidebar-icon" src="/web/assets/img/VPT/logo.png"/>
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -255,6 +266,7 @@
 
             <cameras-sidebar ng-controller="CamerasSidebarController" toggle-id="camerasSidebarContent"></cameras-sidebar>
 
+            <vpt-sidebar ng-controller="VPTSidebarController" toggle-id="vptSidebarContent" ></vpt-sidebar>
 
         </div>
     </div>

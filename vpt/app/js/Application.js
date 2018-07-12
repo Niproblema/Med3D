@@ -56,10 +56,7 @@ Application.prototype._init = function() {
     }.bind(this));
     $(window).resize();
 
-    
-
-
-/* 
+     
     this._openFileDialog = new OpenFileDialog(
         document.body, {
         onLoad: function(data, size, bits) {
@@ -146,13 +143,13 @@ Application.prototype._init = function() {
             this._rangeToneMapperDialog.show();
         }.bind(this)
     });
- */
+
     this._renderingContext.startRendering();
 };
 
 Application.prototype.destroy = function() {
     this._renderingContext.destroy();
-    /* this._navbar.destroy();
+    this._navbar.destroy();
     this._openFileDialog.destroy();
     this._openEnvironmentMapDialog.destroy();
     this._mipRendererDialog.destroy();
@@ -160,7 +157,7 @@ Application.prototype.destroy = function() {
     this._eamRendererDialog.destroy();
     this._mcsRendererDialog.destroy();
     this._reinhardToneMapperDialog.destroy();
-    this._rangeToneMapperDialog.destroy(); */
+    this._rangeToneMapperDialog.destroy(); 
     this._$canvas.remove();
 
     this._nullify.call(this);

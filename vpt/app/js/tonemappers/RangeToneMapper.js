@@ -19,8 +19,7 @@ function RangeToneMapper(gl, texture, options) {
 };
 
 Class.defaults = {
-    _min : 0,
-    _max : 1
+
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

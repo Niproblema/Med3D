@@ -43,7 +43,6 @@ _._nullify = function() {
 
 _._init = function() {
     _._nullify.call(this);
-
     this._$html = $(TEMPLATES['TransferFunctionWidget.html']);
     this._$colorPicker = this._$html.find('[name="color"]');
     this._$alphaPicker = this._$html.find('[name="alpha"]');
@@ -52,6 +51,7 @@ _._init = function() {
     this._canvas = this._$html.find('canvas').get(0);
     this._canvas.width = this._transferFunctionWidth;
     this._canvas.height = this._transferFunctionHeight;
+
     this.resize(this._width, this._height);
 
     this._gl = WebGLUtils.getContext(this._canvas, ['webgl2'], {
@@ -206,12 +206,14 @@ _._onColorChange = function() {
     var i = parseInt($selectedBump.data('index'), 10);
     var color = Util.parseColorHex(this._$colorPicker.val());
     var alpha = parseFloat(this._$alphaPicker.val());
-    this._bumps[i].color.r = color.r;
-    this._bumps[i].color.g = color.g;
-    this._bumps[i].color.b = color.b;
-    this._bumps[i].color.a = alpha;
-    this.render();
-    this.onChange && this.onChange();
+    if(i){
+        this._bumps[i].color.r = color.r;
+        this._bumps[i].color.g = color.g;
+        this._bumps[i].color.b = color.b;
+        this._bumps[i].color.a = alpha;
+        this.render();
+        this.onChange && this.onChange();
+    }
 };
 
 // ============================ STATIC METHODS ============================= //

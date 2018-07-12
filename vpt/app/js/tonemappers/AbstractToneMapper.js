@@ -19,7 +19,9 @@ function AbstractToneMapper(gl, texture, options) {
 };
 
 Class.defaults = {
-    _bufferSize : 512
+    _bufferSize : 512,
+    _min : 0,
+    _max : 1
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

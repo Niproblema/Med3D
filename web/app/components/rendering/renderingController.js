@@ -11,9 +11,10 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
 
     $scope.annotations = Annotations;
 
-    self.VPT = null;
+    
 
     // Private renderer components
+    this.VPT = null;
     this.renderer = null;
     this.renderQueue = null;
     this.redrawQueue = null;
@@ -62,10 +63,6 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
         self.renderer.clearCachedAttributes();
         $scope.$apply(Annotations.clear);
 
-        if(!self.VPT){
-            self.VPT = new Application();
-        }
-
         // Add new render content
         for (let i = 0; i < objects.length; i++) {
             //TODO Transform volumetric data to VPT out objects
@@ -76,15 +73,20 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
             self.VPT.setVolInputData(o.data, size, o.meta.bitSize);
         }
 
+        self.VPT.startRendering();
+
         // Calculate content bounding sphere
-        let contentSphere = PublicRenderData.contentRenderGroup.computeBoundingSphere();
+        //let contentSphere = PublicRenderData.contentRenderGroup.computeBoundingSphere();
 
         // Focus all of the cameras on the newly added object
-        self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
+        //self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
 
-        $scope.startRenderLoop();
+        //$scope.startRenderLoop();
     };
 
+    PublicRenderData.getVPTController = function(){
+        return self.VPT;
+    };
 
 
     /**
@@ -97,9 +99,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
         PublicRenderData.canvasDimensions = {width: canvas.clientWidth, height: canvas.clientHeight};
         InputService.setMouseSourceObject(canvas);
 
-        if(typeof self.VPT != 'undefined' && self.VPT != null){
-            self.VPT.destroy(); //TODO: this never happens..
-        }
+        self.VPT = new M3D.VPTController(canvas);
 
         // Store reference to renderer
         self.renderer = renderer;
@@ -725,6 +725,11 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
      * Stops rendering loop.
      */
     $scope.stopRenderLoop = function () {
+        //TODO do VPT stuff differently
+        if(self.VPT.getIsRunning()){
+            self.VPT.stopRendering();
+        }
+
         if (self.animationRequestId) {
             cancelAnimationFrame(self.animationRequestId);
             self.animationRequestId = null;
