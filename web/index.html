@@ -188,36 +188,41 @@
     <script src="/src/online_interaction/SceneSubscriber.js"></script>
 
     <!-- VPT - Volumetric path tracing -->
-    <script src="/vpt/build/js/shaders.js"></script>
-    <script src="/vpt/build/js/templates.js"></script><!-- TODO: remove build requirement -->
-    <script src="/vpt/app/js/Util.js"></script>
-    <script src="/vpt/app/js/Volume.js"></script>
-    <script src="/vpt/app/js/WebGLUtils.js"></script>
+    <script src="/src/VPT/VPTrepo/build/js/shaders.js"></script>
+    <script src="/src/VPT/VPTrepo/build/js/templates.js"></script><!-- TODO: remove build requirement -->
+    <script src="/src/VPT/VPTrepo/app/js/Volume.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/WebGLUtils.js"></script>
     
+        <!-- VPT utils -->
+        <script src="/src/VPT/VPTrepo/app/js/utils/CommonUtils.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/utils/DOMUtils.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/utils/Utils.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/utils/XHRUtils.js"></script>
+
         <!-- VPT math utils -->
-        <script src="/vpt/app/js/math/Matrix.js"></script>
-        <script src="/vpt/app/js/math/Quaternion.js"></script>
-        <script src="/vpt/app/js/math/Vector.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/math/Matrix.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/math/Quaternion.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/math/Vector.js"></script>
         <!-- VPT renderers -->
-        <script src="/vpt/app/js/renderers/AbstractRenderer.js"></script>
-        <script src="/vpt/app/js/renderers/EAMRenderer.js"></script>
-        <script src="/vpt/app/js/renderers/ISORenderer.js"></script>
-        <script src="/vpt/app/js/renderers/MCSRenderer.js"></script>
-        <script src="/vpt/app/js/renderers/MIPRenderer.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/renderers/AbstractRenderer.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/renderers/EAMRenderer.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/renderers/ISORenderer.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/renderers/MCSRenderer.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/renderers/MIPRenderer.js"></script>
         <!-- VPT tonemappers -->
-        <script src="/vpt/app/js/tonemappers/AbstractToneMapper.js"></script>
-        <script src="/vpt/app/js/tonemappers/RangeToneMapper.js"></script>
-        <script src="/vpt/app/js/tonemappers/ReinhardToneMapper.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/tonemappers/AbstractToneMapper.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/tonemappers/RangeToneMapper.js"></script>
+        <script src="/src/VPT/VPTrepo/app/js/tonemappers/ReinhardToneMapper.js"></script>
     
-    <script src="/vpt/app/js/Camera.js"></script>
-    <script src="/vpt/app/js/DoubleBuffer.js"></script>
-    <script src="/vpt/app/js/OrbitCameraController.js"></script>
-    <script src="/src/VPT/VPTController.js"></script>
-    <script src="/vpt/app/js/RenderingContext.js"></script>
-    <script src="/vpt/app/js/SingleBuffer.js"></script>
-    <script src="/vpt/app/js/Ticker.js"></script>
-    <script src="/vpt/app/js/TransferFunctionWidget.js"></script>
-    <script src="/vpt/app/js/Application.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/Camera.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/DoubleBuffer.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/OrbitCameraController.js"></script>    <!-- here-->
+    <script src="/src/VPT/VPTController.js"></script>   <!-- Med3D's vpt controller -->
+    <script src="/src/VPT/VPTrepo/app/js/RenderingContext.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/SingleBuffer.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/Ticker.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/TransferFunctionWidget.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/Application.js"></script>
 
     <!-- DEBUG INCLUDE -->
 </head>

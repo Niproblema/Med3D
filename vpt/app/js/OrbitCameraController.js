@@ -123,15 +123,6 @@ _._handleMouseWheel = function(e) {
         this._camera.position.mul(new Vector(scale, scale, scale, 1));
     }
 };
-/* _._handleMouseWheel = function(e) {
-    e.preventDefault();
-    var amount = e.deltaY * this.zoomSpeed;
-    this._camera.vpt_zoom(amount);
-    if (e.shiftKey) {
-        var scale = Math.exp(-amount);
-        this._camera._position.mul(new Vector(scale, scale, scale, 1));
-    }
-}; */
 
 // ============================ STATIC METHODS ============================= //
 
