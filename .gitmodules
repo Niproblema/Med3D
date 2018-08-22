@@ -1,0 +1,3 @@
+[submodule "src/VPT/VPTrepo"]
+	path = src/VPT/VPTrepo
+	url = https://github.com/Niproblema/vpt.git

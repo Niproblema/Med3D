@@ -9,12 +9,18 @@ Med3D requires [Node.js](https://nodejs.org/) and [MongoDB](https://www.mongodb.
 
 Install the dependencies, setup the database and run NodeJS application.
 ```sh
+$ # Load submodules 
+$ git pull && git submodule init && git submodule update && git submodule status
+$ # Build VPT 
+$ cd src/VPT/VPTrepo/	
+$ make clean
+$ make 
+$ cd ../../..
 $ # Setup database (do not forget to add path to MongoDB binaries to your PATH variable).
 $ mkdir database
 $ mongod --dbpath ./database
 $ # Start server application.
-$ cd src_server
-$ node index.js
+$ node src_server/index.js
 $ # Web application should be hosted on: <YOUR IP>:8080/web
 ```
 
