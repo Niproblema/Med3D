@@ -3,13 +3,14 @@
  */
 
 
-/**
+/**  
  * Controller for Volumetric path tracing tool - VPT
  * @class VPT
  */
 M3D.VPTController = class {
     // ============================ LIFECYCLE ============================ //
     constructor(canvas){
+        CommonUtils.extend(this);
         //this._canvas = canvas;
         this._render = this._render.bind(this);
         this._webglcontextlostHandler = this._webglcontextlostHandler.bind(this);
@@ -269,6 +270,26 @@ M3D.VPTController = class {
 
     // ============================ INSTANCE METHODS ============================ //
 
+    _chooseRenderer(renderer) {
+        this._renderer.destroy();
+        switch (renderer) {
+            case 'MIP':
+                this._renderer = new MIPRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+            case 'ISO':
+                this._renderer = new ISORenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+            case 'EAM':
+                this._renderer = new EAMRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+            case 'MCS':
+                this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+        }
+        this._toneMapper.setTexture(this._renderer.getTexture());
+        this._isTransformationDirty = true;
+    };
+    
     _updateMvpInverseMatrix(){
         if (this._camera.isDirty || this._isTransformationDirty) {
             this._camera.isDirty = false;

@@ -4,9 +4,6 @@
 
 var vptSidebarController = function($scope, PublicRenderData) {
     $scope.publicRenderData = PublicRenderData;
-
-
-
 };
 
 app.controller('VPTSidebarController', vptSidebarController);

@@ -13,7 +13,26 @@ app.directive("vptSidebar", function () {
 
             // Fetch the id used for sidebar content toggling
             element.attr("id", attributes.toggleId);
-            
+
+            scope.allRenderers = ["MIP", "ISO", "EAM", "MCS"];
+            scope.rendererMethods
+            scope.renderer = 3; //default pick
+            scope.setRenderer = function (i) {
+                if (i != scope.renderer) {
+                    console.log("VPT previous renderer: " + scope.allRenderers[scope.renderer]);
+                    console.log("VPT new renderer: " + scope.allRenderers[i]);
+                    scope.renderer = i;
+
+                    scope.publicRenderData.getVPTController()._chooseRenderer(scope.allRenderers[scope.renderer]);
+                    //TODO: update renderer dialog form.
+                }
+            };
+
+
+
+
+
+            /*
             //MCS renderer
             this.sigmaMax = element.find('[name="sigma-max"]');
             this.alphaCorrection = element.find('[name="alpha-correction"]');
@@ -52,8 +71,9 @@ app.directive("vptSidebar", function () {
             this.max.change(function() {
                 scope.publicRenderData.getVPTController().getToneMapper()._max = parseFloat(this.max.val());
             }.bind(this));
+            */
         },
-        templateUrl: function(element, attributes) {
+        templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/vptSidebar.html';
         }
     }
