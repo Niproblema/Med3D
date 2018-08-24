@@ -72,7 +72,12 @@
     <script src="/web/app/components/navbar/navbarController.js"></script>
     <script src="/web/app/components/chat/chatController.js"></script>
     <script src="/web/app/components/cameras/camerasSidebarController.js"></script>
-    <script src="/web/app/components/VPT/vptSidebarController.js"></script>
+    <!-- VPT controllers-->
+        <script src="/web/app/components/VPT/vptSidebarController.js"></script>
+        <script src="/web/app/components/VPT/EAMd/eamSettingsController.js"></script>
+        <script src="/web/app/components/VPT/ISOd/isoSettingsController.js"></script>
+        <script src="/web/app/components/VPT/MCSd/mcsSettingsController.js"></script>
+        <script src="/web/app/components/VPT/MIPd/mipSettingsController.js"></script>
 
     <!-- Directives -->
     <script src="/web/app/components/task_manager/taskProgressDirective.js"></script>
@@ -92,7 +97,13 @@
     <script src="/web/app/components/navbar/navbarDirective.js"></script>
     <script src="/web/app/components/chat/chatDirective.js"></script>
     <script src="/web/app/components/cameras/camerasSidebarDirective.js"></script>
-    <script src="/web/app/components/VPT/vptSidebarDirective.js"></script>
+    <!-- VPT directives -->
+        <script src="/web/app/components/VPT/vptSidebarDirective.js"></script>
+        <script src="/web/app/components/VPT/EAMd/eamSettingsDirective.js"></script>
+        <script src="/web/app/components/VPT/ISOd/isoSettingsDirective.js"></script>
+        <script src="/web/app/components/VPT/MCSd/mcsSettingsDirective.js"></script>
+        <script src="/web/app/components/VPT/MIPd/mipSettingsDirective.js"></script>
+        
 
     <!-- DEBUG INCLUDE -->
     <script src="/libraries/three-math.min.js"></script>
@@ -267,7 +278,6 @@
             <annotations-sidebar ng-controller="AnnotationsSidebarController" toggle-id="annotationSidebarContent"></annotations-sidebar>
 
             <drawn-annotations-sidebar ng-controller="AnnotationsSidebarController" toggle-id="drawnAnnotationSidebarContent"></drawn-annotations-sidebar>
-
 
             <cameras-sidebar ng-controller="CamerasSidebarController" toggle-id="camerasSidebarContent"></cameras-sidebar>
 

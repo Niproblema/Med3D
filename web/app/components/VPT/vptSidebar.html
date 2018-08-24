@@ -42,23 +42,63 @@
 
         -->
 
-        <div class="sidebar-sub-content-title"> <!-- TODO: Add tooltips! -->
+        <!-- Renderer radio selector. MCS is default, TODO remove manual default selection -->
+        <div class="sidebar-sub-content-title">
+            <!-- TODO: Add tooltips! -->
             Selected render method
             <div class="panel-body">
-                <div class="btn-group" data-toggle="buttons"> <!-- TODO: Change to med3d styling! -->
-                    <label class="btn btn-primary" ng-click="setRenderer(0)">          
+                <div class="btn-group" data-toggle="buttons">
+                    <!-- TODO: Change to med3d styling! -->
+                    <label class="btn btn-primary" ng-click="setRenderer(0)" href="#settingsMIP" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer1" autocomplete="off"> MIP
                     </label>
-                    <label class="btn btn-primary" ng-click="setRenderer(1)">
+                    <label class="btn btn-primary" ng-click="setRenderer(1)" href="#settingsISO" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer2" autocomplete="off"> ISO
                     </label>
-                    <label class="btn btn-primary" ng-click="setRenderer(2)">
+                    <label class="btn btn-primary" ng-click="setRenderer(2)" href="#settingsEAM" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer3" autocomplete="off"> EAM
                     </label>
-                    <label class="btn btn-primary active" ng-click="setRenderer(3)">
+                    <label class="btn btn-primary active" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer4" autocomplete="off" checked> MCS
-                    </label> <!-- TODO: link default renderer to selection the one in VPTController -->
+                    </label>
+                    <!-- TODO: link default renderer to selection the one in VPTController -->
                 </div>
+            </div>
+        </div>
+
+        <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 0px">
+
+        <!-- Renderer settings tabs -->
+        <div class="sidebar-sub-content-title">
+            Renderer settings
+            <div class="tab-content">
+                <div class="tab-pane fade" id="settingsMIP">
+                    <mip-settings ng-controller="MIPSettingsController"></mip-settings>
+                </div>
+                <div class="tab-pane fade" id="settingsISO">
+                    <iso-settings ng-controller="ISOSettingsController"></iso-settings>
+                </div>
+                <div class="tab-pane fade" id="settingsEAM">
+                    <eam-settings ng-controller="EAMSettingsController"></eam-settings>
+                </div>
+                <div class="tab-pane fade active in" id="settingsMCS">
+                    <mcs-settings ng-controller="MCSSettingsController"></mcs-settings>
+                </div>
+            </div>
+        </div>
+
+
+        <div style="    position: fixed; bottom: 35px">
+            <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 10px">
+
+            <div class="sidebar-sub-content-title">
+                Reinhard Tone Mapper settings
+            </div>
+
+            <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 10px">
+
+            <div class="sidebar-sub-content-title">
+                Range Tone Mapper settings
             </div>
         </div>
 
