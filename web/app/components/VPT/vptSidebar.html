@@ -3,44 +3,6 @@
         Volumetric render options
     </div>
     <div class="sidebar-content" style="height: calc(100% - 73px);">
-        <!--
-        <div class="sidebar-sub-content-title">
-            MCS Properties
-            <div class="panel-body">
-                    <div class="input-group input-group-sm">
-                      <label class="input-group-addon">Sigma max</label>
-                      <input name="sigma-max" class="form-control" type="number" min="0" step="0.1">
-                    </div>
-                    <div class="input-group input-group-sm">
-                      <label class="input-group-addon">Alpha correction</label>
-                      <input name="alpha-correction" class="form-control" type="number" min="0" step="0.1">
-                    </div>
-                    <div class="tfw-container">
-            </div>
-        </div>
-        <hr class="med3d-sidebar-hr">
-        <div class="sidebar-sub-content-title">
-            Reinhard Tone Mapper
-            <div class="input-group input-group-sm">
-                <label class="input-group-addon">Exposure</label>
-                <input name="exposure" class="form-control" type="number" min="0" step="0.1">
-            </div>
-        </div>
-        <hr class="med3d-sidebar-hr">
-        <div class="sidebar-sub-content-title">
-            Range Tone Mapper
-            <div class="input-group input-group-sm">
-                <label class="input-group-addon">Min</label>
-                <input name="min" class="form-control" type="number" min="0" step="0.1">
-            </div>
-            <div class="input-group input-group-sm">
-                <label class="input-group-addon">Max</label>
-                <input name="max" class="form-control" type="number" min="0" step="0.1">
-            </div>
-    
-        </div>
-
-        -->
 
         <!-- Renderer radio selector. MCS is default, TODO remove manual default selection -->
         <div class="sidebar-sub-content-title">
@@ -68,6 +30,8 @@
 
         <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 0px">
 
+        <div class="list-group mCustomScrollbar" data-mcs-axis="y" style="-webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; height: calc(100vh - 350px);">
+
         <!-- Renderer settings tabs -->
         <div class="sidebar-sub-content-title">
             Renderer settings
@@ -86,21 +50,35 @@
                 </div>
             </div>
         </div>
+    </div>
 
-
-        <div style="    position: fixed; bottom: 35px">
+    
+        <div style="position: fixed; bottom: 35px">
             <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 10px">
 
             <div class="sidebar-sub-content-title">
                 Reinhard Tone Mapper settings
             </div>
 
-            <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 10px">
+            <div class="sidebar-sub-content-title">
+                <b style="color: white; font-size: 14px; font-weight: 500;"></b>Exposure</b>
+                <div id="exposureSlider" class="med3d-slider">
+                    <div id="exposureHandle"  class="ui-slider-handle med3d-slider-handle"></div>
+                </div>
+
+                
+            </div>
+
 
             <div class="sidebar-sub-content-title">
-                Range Tone Mapper settings
+                <b style="color: white; font-size: 14px; font-weight: 500;"></b>Range</b>
+                <div id="rangeSlider" class="med3d-slider">
+                    <div id="rangeHandle1"  class="ui-slider-handle med3d-slider-handle"></div>
+                    <div id="rangeHandle2"  class="ui-slider-handle med3d-slider-handle"></div>
+                </div>
             </div>
         </div>
-
+    
+        
     </div>
 </span>
