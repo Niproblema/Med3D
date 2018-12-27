@@ -11,15 +11,21 @@ app.directive("mipSettings", function () {
 
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
-            
+
+            //Start notification for restoring UI values
+            scope.$on('startMIP', function () {
+                inSteps.val(Math.round(1 / scope.publicRenderData.getVPTController().getRenderer()._stepSize));
+            });
+            //
+
             let inSteps = element.find('[name="inSteps"]');
-            inSteps.change(function(){
+            inSteps.change(function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
                 scope.publicRenderData.getVPTController().getRenderer()._stepSize = 1 / value;
                 inSteps.val(value);
             }.bind(this));
         },
-        templateUrl: function(element, attributes) {
+        templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/MIPd/mipSettings.html';
         }
     }

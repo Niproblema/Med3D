@@ -20,6 +20,7 @@
     <link href="/web/assets/css/sidebar.css" rel="stylesheet">
     <link href="/web/assets/css/chat.css" rel="stylesheet">
     <link href="/web/assets/css/jquery.mCustomScrollbar.min.css" rel="stylesheet">
+    <link href="/web/assets/css/vpt-tfunction.css" rel="stylesheet">
 
     <!-- endbuild -->
 
@@ -73,12 +74,12 @@
     <script src="/web/app/components/chat/chatController.js"></script>
     <script src="/web/app/components/cameras/camerasSidebarController.js"></script>
     <!-- VPT controllers-->
-        <script src="/web/app/components/VPT/vptSidebarController.js"></script>
-        <script src="/web/app/components/VPT/TransferFunction/tfDialogController.js"></script>
-        <script src="/web/app/components/VPT/EAMd/eamSettingsController.js"></script>
-        <script src="/web/app/components/VPT/ISOd/isoSettingsController.js"></script>
-        <script src="/web/app/components/VPT/MCSd/mcsSettingsController.js"></script>
-        <script src="/web/app/components/VPT/MIPd/mipSettingsController.js"></script>
+    <script src="/web/app/components/VPT/vptSidebarController.js"></script>
+    <script src="/web/app/components/VPT/TransferFunction/tfDialogController.js"></script>
+    <script src="/web/app/components/VPT/EAMd/eamSettingsController.js"></script>
+    <script src="/web/app/components/VPT/ISOd/isoSettingsController.js"></script>
+    <script src="/web/app/components/VPT/MCSd/mcsSettingsController.js"></script>
+    <script src="/web/app/components/VPT/MIPd/mipSettingsController.js"></script>
 
     <!-- Directives -->
     <script src="/web/app/components/task_manager/taskProgressDirective.js"></script>
@@ -99,14 +100,14 @@
     <script src="/web/app/components/chat/chatDirective.js"></script>
     <script src="/web/app/components/cameras/camerasSidebarDirective.js"></script>
     <!-- VPT directives -->
-        <script src="/web/app/components/VPT/vptSidebarDirective.js"></script>
-        <script src="/web/app/components/VPT/TransferFunction/tfDialogDirective.js"></script>
-        <script src="/web/app/components/VPT/EAMd/eamSettingsDirective.js"></script>
-        <script src="/web/app/components/VPT/ISOd/isoSettingsDirective.js"></script>
-        <script src="/web/app/components/VPT/MCSd/mcsSettingsDirective.js"></script>
-        <script src="/web/app/components/VPT/MIPd/mipSettingsDirective.js"></script>
+    <script src="/web/app/components/VPT/vptSidebarDirective.js"></script>
+    <script src="/web/app/components/VPT/TransferFunction/tfDialogDirective.js"></script>
+    <script src="/web/app/components/VPT/EAMd/eamSettingsDirective.js"></script>
+    <script src="/web/app/components/VPT/ISOd/isoSettingsDirective.js"></script>
+    <script src="/web/app/components/VPT/MCSd/mcsSettingsDirective.js"></script>
+    <script src="/web/app/components/VPT/MIPd/mipSettingsDirective.js"></script>
 
-        
+
 
     <!-- DEBUG INCLUDE -->
     <script src="/libraries/three-math.min.js"></script>
@@ -192,7 +193,7 @@
     <script src="/src/controls/KeyboardInput.js"></script>
     <script src="/src/controls/GamepadInput.js"></script>
     <script src="/src/controls/MouseInput.js"></script>
-   <!-- <script src="scripts/Input.js"></script>-->
+    <!-- <script src="scripts/Input.js"></script>-->
 
     <script src="/src/marching_cubes/MarchingCubes.js"></script>
 
@@ -203,35 +204,38 @@
 
     <!-- VPT - Volumetric path tracing -->
     <script src="/src/VPT/VPTrepo/build/js/shaders.js"></script>
-    <script src="/src/VPT/VPTrepo/build/js/templates.js"></script><!-- TODO: remove build requirement -->
+    <script src="/src/VPT/VPTrepo/build/js/templates.js"></script>
+    <!-- TODO: remove build requirement -->
     <script src="/src/VPT/VPTrepo/app/js/Volume.js"></script>
     <script src="/src/VPT/VPTrepo/app/js/WebGLUtils.js"></script>
-    
-        <!-- VPT utils -->
-        <script src="/src/VPT/VPTrepo/app/js/utils/CommonUtils.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/utils/DOMUtils.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/utils/Utils.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/utils/XHRUtils.js"></script>
 
-        <!-- VPT math utils -->
-        <script src="/src/VPT/VPTrepo/app/js/math/Matrix.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/math/Quaternion.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/math/Vector.js"></script>
-        <!-- VPT renderers -->
-        <script src="/src/VPT/VPTrepo/app/js/renderers/AbstractRenderer.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/renderers/EAMRenderer.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/renderers/ISORenderer.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/renderers/MCSRenderer.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/renderers/MIPRenderer.js"></script>
-        <!-- VPT tonemappers -->
-        <script src="/src/VPT/VPTrepo/app/js/tonemappers/AbstractToneMapper.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/tonemappers/RangeToneMapper.js"></script>
-        <script src="/src/VPT/VPTrepo/app/js/tonemappers/ReinhardToneMapper.js"></script>
-    
+    <!-- VPT utils -->
+    <script src="/src/VPT/VPTrepo/app/js/utils/CommonUtils.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/utils/DOMUtils.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/utils/Utils.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/utils/XHRUtils.js"></script>
+
+    <!-- VPT math utils -->
+    <script src="/src/VPT/VPTrepo/app/js/math/Matrix.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/math/Quaternion.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/math/Vector.js"></script>
+    <!-- VPT renderers -->
+    <script src="/src/VPT/VPTrepo/app/js/renderers/AbstractRenderer.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/renderers/EAMRenderer.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/renderers/ISORenderer.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/renderers/MCSRenderer.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/renderers/MIPRenderer.js"></script>
+    <!-- VPT tonemappers -->
+    <script src="/src/VPT/VPTrepo/app/js/tonemappers/AbstractToneMapper.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/tonemappers/RangeToneMapper.js"></script>
+    <script src="/src/VPT/VPTrepo/app/js/tonemappers/ReinhardToneMapper.js"></script>
+
     <script src="/src/VPT/VPTrepo/app/js/Camera.js"></script>
     <script src="/src/VPT/VPTrepo/app/js/DoubleBuffer.js"></script>
-    <script src="/src/VPT/VPTrepo/app/js/OrbitCameraController.js"></script>    <!-- here-->
-    <script src="/src/VPT/VPTController.js"></script>   <!-- Med3D's vpt controller -->
+    <script src="/src/VPT/VPTrepo/app/js/OrbitCameraController.js"></script>
+    <!-- here-->
+    <script src="/src/VPT/VPTController.js"></script>
+    <!-- Med3D's vpt controller -->
     <script src="/src/VPT/VPTrepo/app/js/RenderingContext.js"></script>
     <script src="/src/VPT/VPTrepo/app/js/SingleBuffer.js"></script>
     <script src="/src/VPT/VPTrepo/app/js/Ticker.js"></script>
@@ -247,32 +251,32 @@
     <!-- CANVAS -->
     <m3d-canvas ng-controller="RenderingController" shaderPath="/src/shaders"></m3d-canvas>
 
-    <div id="wrapper" >
+    <div id="wrapper">
         <div id="sidebar-wrapper" class="hover-div">
 
             <div id="sidebar-nav-wrapper">
                 <ul class="sidebar-nav">
                     <li>
                         <a href="" data-target="#annotationSidebarContent">
-                            <img class="sidebar-icon" src="/web/assets/img/note.png"/>
+                            <img class="sidebar-icon" src="/web/assets/img/note.png" />
                         </a>
                     </li>
 
                     <li>
                         <a href="" data-target="#drawnAnnotationSidebarContent">
-                            <img class="sidebar-icon" src="/web/assets/img/pen.png"/>
+                            <img class="sidebar-icon" src="/web/assets/img/pen.png" />
                         </a>
                     </li>
 
                     <li>
                         <a href="" data-target="#camerasSidebarContent">
-                            <img class="sidebar-icon" src="/web/assets/img/eye.png"/>
+                            <img class="sidebar-icon" src="/web/assets/img/eye.png" />
                         </a>
                     </li>
 
                     <li>
                         <a href="" data-target="#vptSidebarContent">
-                            <img class="sidebar-icon" src="/web/assets/img/VPT/logo.png"/>
+                            <img class="sidebar-icon" src="/web/assets/img/VPT/logo.png" />
                         </a>
                     </li>
                 </ul>
@@ -284,7 +288,7 @@
 
             <cameras-sidebar ng-controller="CamerasSidebarController" toggle-id="camerasSidebarContent"></cameras-sidebar>
 
-            <vpt-sidebar ng-controller="VPTSidebarController" toggle-id="vptSidebarContent" ></vpt-sidebar>
+            <vpt-sidebar ng-controller="VPTSidebarController" toggle-id="vptSidebarContent"></vpt-sidebar>
 
         </div>
     </div>
@@ -308,7 +312,8 @@
 
     <!-- NAVIGATORS -->
     <div ng-controller="NavigatorController">
-        <navigator navigator-toggle="navigatorToggle" translation-values="translationValues" ng-show="navigatorToggle.translation" type="translation"></navigator>
+        <navigator navigator-toggle="navigatorToggle" translation-values="translationValues" ng-show="navigatorToggle.translation"
+            type="translation"></navigator>
         <navigator navigator-toggle="navigatorToggle" rotation-values="rotationValues" ng-show="navigatorToggle.rotation" type="rotation"></navigator>
     </div>
 
@@ -355,16 +360,16 @@
     <chat ng-controller="ChatController"></chat>
 
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
 
             new Clipboard(".clipboard");
 
             $(".hover-div").stop().fadeTo("slow", 0.5);
 
-            $(".hover-div").hover(function(){
-                $(this).stop().fadeTo( "fast" , 1.0);
-            }, function(){
-                $(this).stop().fadeTo( "fast" , 0.5);
+            $(".hover-div").hover(function () {
+                $(this).stop().fadeTo("fast", 1.0);
+            }, function () {
+                $(this).stop().fadeTo("fast", 0.5);
             });
 
             $(".floating-window").draggable({

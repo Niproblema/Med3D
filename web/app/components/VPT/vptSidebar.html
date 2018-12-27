@@ -30,30 +30,30 @@
 
         <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 0px">
 
-        <div class="list-group mCustomScrollbar" data-mcs-axis="y" style="-webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; height: calc(100vh - 350px);">
+        <div class="list-group mCustomScrollbar" data-mcs-axis="y" style="-webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; height: calc(100vh - 325px);">
 
-        <!-- Renderer settings tabs -->
-        <div class="sidebar-sub-content-title">
-            Renderer settings
-            <div class="tab-content">
-                <div class="tab-pane fade" id="settingsMIP">
-                    <mip-settings ng-controller="MIPSettingsController"></mip-settings>
-                </div>
-                <div class="tab-pane fade" id="settingsISO">
-                    <iso-settings ng-controller="ISOSettingsController"></iso-settings>
-                </div>
-                <div class="tab-pane fade" id="settingsEAM">
-                    <eam-settings ng-controller="EAMSettingsController"></eam-settings>
-                </div>
-                <div class="tab-pane fade active in" id="settingsMCS">
-                    <mcs-settings ng-controller="MCSSettingsController"></mcs-settings>
+            <!-- Renderer settings tabs -->
+            <div class="sidebar-sub-content-title">
+                Renderer settings
+                <div class="tab-content">
+                    <div class="tab-pane fade" id="settingsMIP">
+                        <mip-settings ng-controller="MIPSettingsController"></mip-settings>
+                    </div>
+                    <div class="tab-pane fade" id="settingsISO">
+                        <iso-settings ng-controller="ISOSettingsController"></iso-settings>
+                    </div>
+                    <div class="tab-pane fade" id="settingsEAM">
+                        <eam-settings ng-controller="EAMSettingsController"></eam-settings>
+                    </div>
+                    <div class="tab-pane fade active in" id="settingsMCS">
+                        <mcs-settings ng-controller="MCSSettingsController"></mcs-settings>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    
-        <div style="position: fixed; bottom: 35px">
+
+        <div style="position: fixed; bottom: 10px; width: 300px">
             <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 10px">
 
             <div class="sidebar-sub-content-title">
@@ -63,22 +63,23 @@
             <div class="sidebar-sub-content-title">
                 <b style="color: white; font-size: 14px; font-weight: 500;"></b>Exposure</b>
                 <div id="exposureSlider" class="med3d-slider">
-                    <div id="exposureHandle"  class="ui-slider-handle med3d-slider-handle"></div>
+                    <div id="exposureHandle" class="ui-slider-handle med3d-slider-handle"></div>
                 </div>
 
-                
+
             </div>
 
 
             <div class="sidebar-sub-content-title">
                 <b style="color: white; font-size: 14px; font-weight: 500;"></b>Range</b>
                 <div id="rangeSlider" class="med3d-slider">
-                    <div id="rangeHandle1"  class="ui-slider-handle med3d-slider-handle"></div>
-                    <div id="rangeHandle2"  class="ui-slider-handle med3d-slider-handle"></div>
+                    <div id="rangeHandle1" class="ui-slider-handle med3d-slider-handle"></div>
+                    <div id="rangeHandle2" class="ui-slider-handle med3d-slider-handle"></div>
                 </div>
             </div>
         </div>
-    
-        
+    </div>
+
+
     </div>
 </span>

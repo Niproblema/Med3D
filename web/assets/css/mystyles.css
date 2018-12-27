@@ -765,16 +765,17 @@ body {
 }
 
 /*Used to make colorpicker bigger*/
-.colorpicker-hue {
+.colorpicker-hue,
+.colorpicker-alpha {
     height: 125px;
     width: 30px;
     background-size: 30px 125px;
 }
 
 .colorpicker-saturation {
-    width: 220px;
+    width: 210px;
     height: 125px;
-    background-size: 220px 125px;
+    background-size: 210px 125px;
 }
 
 .colorpicker-saturation i {

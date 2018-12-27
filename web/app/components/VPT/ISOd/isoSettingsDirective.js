@@ -12,7 +12,12 @@ app.directive("isoSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-
+            //Start notification for restoring UI values
+            scope.$on('startISO', function () {
+                inSteps.val(Math.round(1/scope.publicRenderData.getVPTController().getRenderer()._stepSize));
+                inISO.val(scope.publicRenderData.getVPTController().getRenderer()._isovalue);
+            });
+            //
             
             let inSteps = element.find('[name="inSteps"]');
             let inISO = element.find('[name="inISO"]');
@@ -20,7 +25,7 @@ app.directive("isoSettings", function () {
             // Configure color picker
             let sliders = {
                 saturation: {
-                    maxLeft: 220,
+                    maxLeft: 210,
                     maxTop: 125,
                     callLeft: 'setSaturation',
                     callTop: 'setBrightness'

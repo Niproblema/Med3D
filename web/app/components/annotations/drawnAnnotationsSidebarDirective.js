@@ -59,7 +59,7 @@ app.directive("drawnAnnotationsSidebar", function () {
             // Configure color picker
             let sliders = {
                 saturation: {
-                    maxLeft: 220,
+                    maxLeft: 210,
                     maxTop: 125,
                     callLeft: 'setSaturation',
                     callTop: 'setBrightness'
