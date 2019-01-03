@@ -22,7 +22,7 @@ M3D.VPTController = class {
         this._canvas                = null;
         this.isRunning              = false;
         this._camera                = null;
-        this._cameraController      = null;
+        //this._cameraController      = null;
         this._renderer              = null;
         this._toneMapper            = null;
         this._scale                 = null;
@@ -48,8 +48,8 @@ M3D.VPTController = class {
 
         this._initGL();
     
-        this._camera = new Camera();
-        this._cameraController = new OrbitCameraController(this._camera, this._canvas);
+        this._camera = new M3D.VPTsharedPerspectiveCamera(60, this._canvas.width / this._canvas.height, 0.1, 30);
+        //this._cameraController = new OrbitCameraController(this._camera, this._canvas);
         this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);   
         this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
     
@@ -62,9 +62,9 @@ M3D.VPTController = class {
         this._translation = new Vector(0, 0, 0);
         this._isTransformationDirty = true;
     
-        this._camera.position.z = 1.5;
-        this._camera.fovX = 0.3;
-        this._camera.fovY = 0.3;
+        this._camera.positionZ = 1.5;
+        //this._camera.fovX = 0.3;
+        //this._camera.fovY = 0.3;
     
         this._camera.updateMatrices();
         this._updateMvpInverseMatrix();
@@ -83,7 +83,7 @@ M3D.VPTController = class {
     
         this._toneMapper.destroy();
         this._renderer.destroy();
-        this._cameraController.destroy();
+        //this._cameraController.destroy();
         this._camera.destroy();
     
         this._nullify();
@@ -296,17 +296,17 @@ M3D.VPTController = class {
             this._isTransformationDirty = false;
             this._camera.updateMatrices();
     
-            var centerTranslation = new Matrix().fromTranslation(-0.5, -0.5, -0.5);
-            var volumeTranslation = new Matrix().fromTranslation(this._translation.x, this._translation.y, this._translation.z);
-            var volumeScale = new Matrix().fromScale(this._scale.x, this._scale.y, this._scale.z);
+            var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5);
+            var volumeTranslation = new THREE.Matrix4().makeTranslation(this._translation.x, this._translation.y, this._translation.z);
+            var volumeScale = new THREE.Matrix4().makeScale(this._scale.x, this._scale.y, this._scale.z);
     
-            var tr = new Matrix();
-            tr.multiply(volumeScale, centerTranslation);
-            tr.multiply(volumeTranslation, tr);
-            tr.multiply(this._camera.transformationMatrix, tr);
+            var tr = new THREE.Matrix4();
+            tr.multiplyMatrices(volumeScale, centerTranslation);
+            tr.multiplyMatrices(volumeTranslation, tr);
+            tr.multiplyMatrices(this._camera.transformationMatrix(), tr);
     
-            tr.inverse().transpose();
-            this._renderer.setMvpInverseMatrix(tr);
+            tr.getInverse(tr, true).transpose();
+            this._renderer._mvpInverseMatrix =  new Matrix(tr.elements);//setMvpInverseMatrixM3D(tr);
             this._renderer.reset();
         }
     }
