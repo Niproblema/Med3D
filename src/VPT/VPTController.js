@@ -48,7 +48,7 @@ M3D.VPTController = class {
 
         this._initGL();
     
-        this._camera = new M3D.VPTsharedPerspectiveCamera(60, this._canvas.width / this._canvas.height, 0.1, 30);
+        this._camera = new M3D.VPTsharedPerspectiveCamera(60, this._canvas.width / this._canvas.height, 0.1, 5);
         //this._cameraController = new OrbitCameraController(this._camera, this._canvas);
         this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);   
         this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
