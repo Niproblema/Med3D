@@ -35,6 +35,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
      */
     PublicRenderData.replaceRenderContent = function (...objects) {
         $scope.stopRenderLoop();
+        self.VPT.resetScene();
         PublicRenderData.contentRenderGroup.clear();
         self.renderer.clearCachedAttributes();
         $scope.$apply(Annotations.clear);
@@ -59,6 +60,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
      */
     PublicRenderData.replaceRenderContentVPT = function (...objects) {
         $scope.stopRenderLoop();
+        self.VPT.resetScene();
         PublicRenderData.contentRenderGroup.clear();
         self.renderer.clearCachedAttributes();
         $scope.$apply(Annotations.clear);

@@ -37,8 +37,6 @@ M3D.VPTController = class {
         this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
 
         this._activeCameraListener = new M3D.UpdateListener(function(update){this.isDirty = true;});
-        this._activeCameraListener._callbackRef = this;
-        this._volumeObjectListener = new M3D.UpdateListener(function(update) {this._isTransformationDirty = true});
     }
 
     _nullify() {
@@ -47,27 +45,22 @@ M3D.VPTController = class {
         this._camera = null;
         this._renderer = null;
         this._toneMapper = null;
-        this._isTransformationDirty = null;
         this._m3dVolumeObject = null;
         this._sceneReady = false;
+        this._isMvpSet = false;
         this._nullifyGL();
     }
 
     destroy() {
         this.stopRendering();
         this._destroyGL();
-
         this._canvas.removeEventListener('webglcontextlost', this._webglcontextlostHandler);
         this._canvas.removeEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
-
         if (this._canvas.parentNode) {
             this._canvas.parentNode.removeChild(this._canvas);
         }
-
         this._toneMapper.destroy();
         this._renderer.destroy();
-        this._camera.destroy();
-
         this._nullify();
     }
 
@@ -77,9 +70,6 @@ M3D.VPTController = class {
         if (this._render != null) {
             this.stopRendering();
             this.publicRenderData.vptSceneChangedListener();    //Notifies sidebar directive - disables buttons
-        }
-        if(this._m3dVolumeObject != null){
-            this._m3dVolumeObject._updateListenerManager.removeListener(this._volumeObjectListener);
         }
         this._m3dVolumeObject = null;
         this._sceneReady = false;
@@ -111,30 +101,14 @@ M3D.VPTController = class {
                 volObj = child;      //todo?multiple objects?
             }
         });
-        this._m3dVolumeObject = volObj;
-        this._m3dVolumeObject.addOnChangeListener(this._volumeObjectListener, false);
         if (!volObjectFound) {
             console.error('Failed to load volumetric data. No data parsed.');
             return;
         }
+        this._m3dVolumeObject = volObj;
         this.setVolInputData(this._m3dVolumeObject.data, { x: this._m3dVolumeObject.dimensions[0], y: this._m3dVolumeObject.dimensions[1], z: this._m3dVolumeObject.dimensions[2] }, this._m3dVolumeObject.meta.bitSize);
-
-
-        this._isTransformationDirty = true;
-        //this._scale = new Vector(1, 1, 1);
-        //this._translation = new Vector(0, 0, 0);
-        //this._camera.positionZ = 1.5;
-
-        //this._camera.resize(this._canvas.width, this._canvas.height);
-        //this._updateMvpInverseMatrix();
         this._sceneReady = true;
         this.startRendering();
-    }
-
-    //TODO: implement on Change listener on Camera and VPT objects.
-    sceneChanged() {
-        this._camera.isDirty = true;
-        this._isTransformationDirty = true;
     }
 
     chooseRenderer(renderer) {
@@ -154,7 +128,7 @@ M3D.VPTController = class {
                 break;
         }
         this._toneMapper.setTexture(this._renderer.getTexture());
-        this._isTransformationDirty = true;
+        this._isMvpSet = false;
     };
 
     // ============================ WEBGL LIFECYCLE ============================ //
@@ -254,15 +228,13 @@ M3D.VPTController = class {
 
     // ============================ SETTERS and GETTERS ============================ //
     resize(width, height) {
-        var gl = this._gl;
-        if (!gl) {
+
+        if (!this._gl) {
             return;
         }
 
         this._canvas.width = width;
         this._canvas.height = height;
-        if (this._camera)
-            this._camera.resize(width, height);
     }
 
     setVolume(volume) {
@@ -325,13 +297,10 @@ M3D.VPTController = class {
 
 
     _updateMvpInverseMatrix() {
-        if ((this._camera.isDirty || this._isTransformationDirty) && this._sceneReady) {
-            this._camera.isDirty = false;
-            this._isTransformationDirty = false;
+        if ((this._camera.isDirty || !this._isMvpSet)  && this._sceneReady) {
             this._camera.updateMatrices();
 
-            var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5); //TODO: cube center offset?
-            //var centerTranslation = new THREE.Matrix4().makeTranslation(0, 0, 0); 
+            var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5); //cube center offset ? 
             var volumeTranslation = new THREE.Matrix4().makeTranslation(this._m3dVolumeObject.positionX, this._m3dVolumeObject.positionY, this._m3dVolumeObject.positionZ);
             var volumeScale = new THREE.Matrix4().makeScale(this._m3dVolumeObject.scale.x, this._m3dVolumeObject.scale.y, this._m3dVolumeObject.scale.z);
 
@@ -340,8 +309,9 @@ M3D.VPTController = class {
             tr.multiplyMatrices(volumeTranslation, tr);
             tr.multiplyMatrices(this._camera.transformationMatrix, tr);
 
-            tr.getInverse(tr, true);//.transpose();
-            this._renderer._mvpInverseMatrix = new Matrix(tr.elements);//setMvpInverseMatrixM3D(tr);
+            tr.getInverse(tr, true);
+            this._renderer._mvpInverseMatrix = new Matrix(tr.elements);
+            this._isMvpSet = true;
             this._renderer.reset();
         }
     }
