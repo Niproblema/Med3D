@@ -41,7 +41,9 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             // Start execution
             //MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, values, nThreads, privateOnLoad, onProgress, privateOnError);
             //TODO: disabled marchingCubes, some errors? -Jan
+            
             onLoad(rez);
+            //onLoad(new M3D.VPTVolume(rez));
         };
 
         let task = {
@@ -107,7 +109,9 @@ let volumeLoadingController = function($scope, TaskManagerService) {
                 // Start execution
                 //MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, rez.data, nThreads, privateOnLoad, onProgress, privateOnError);
                 //TODO: disabled marchingCubes, some errors? -Jan
+
                 onLoad(rez);
+                //onLoad(new M3D.VPTVolume(rez));
             });
 
             reader.fileLoad(mhdFile, rawFile);
@@ -117,7 +121,7 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             uuid: THREE.Math.generateUUID(),
             meta: {
                 name: "Volumetric data loading",
-                description: "Loading volumetric data, MarchingCubes disabled, instead VPT",
+                description: "Loading volumetric data, MarchingCubes disabled",
                 icon: "no/icon/atm"
             },
             synchronous: true,

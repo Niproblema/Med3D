@@ -65,23 +65,20 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
 
         // Add new render content
         for (let i = 0; i < objects.length; i++) {
-            //TODO Transform volumetric data to VPT out objects
-            var o = objects[i];
-            var size = {x:o.meta.dimensions[0],
-                        y:o.meta.dimensions[1],
-                        z:o.meta.dimensions[2]};
-            self.VPT.setVolInputData(o.data, size, o.meta.bitSize);
+            var o = new M3D.VPTVolume(objects[i].data, objects[i].meta);
+            PublicRenderData.contentRenderGroup.add(o);
         }
 
-        self.VPT.startRendering();
-
+        self.VPT.setNewActiveCamera(self.cameraManager.activeCamera)
+        self.VPT.loadNewScene();
+        
         // Calculate content bounding sphere
-        //let contentSphere = PublicRenderData.contentRenderGroup.computeBoundingSphere();
+        let contentSphere = PublicRenderData.contentRenderGroup.computeBoundingSphere();
 
         // Focus all of the cameras on the newly added object
-        //self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
+        self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
 
-        //$scope.startRenderLoop();
+        $scope.startRenderLoop();
     };
 
     PublicRenderData.getVPTController = function(){
@@ -99,7 +96,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
         PublicRenderData.canvasDimensions = {width: canvas.clientWidth, height: canvas.clientHeight};
         InputService.setMouseSourceObject(canvas);
 
-        self.VPT = new M3D.VPTController(canvas);
+        self.VPT = new M3D.VPTController(PublicRenderData);
 
         // Store reference to renderer
         self.renderer = renderer;
@@ -111,7 +108,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
         self.raycaster = new M3D.Raycaster();
 
         // Camera initialization
-        let camera = new M3D.PerspectiveCamera(60, PublicRenderData.canvasDimensions.width / PublicRenderData.canvasDimensions.height, 0.1, 2000);
+        let camera = new M3D.VPTsharedPerspectiveCamera(60, PublicRenderData.canvasDimensions.width / PublicRenderData.canvasDimensions.height, 0.1, 2000);
         camera.position = new THREE.Vector3(0, 0, 200);
 
         // Add camera to public render data
@@ -131,6 +128,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
     $scope.resizeCanvas = function (width, height) {
         PublicRenderData.canvasDimensions = {width: width, height: height};
         self.cameraManager.aspectRatio = width/height;
+        self.VPT.resize(width, height); //TODO: find better way, maybe onChangeListener in camera
     };
 
     // region Annotations

@@ -14,6 +14,17 @@ app.directive("vptSidebar", function () {
             // Fetch the id used for sidebar content toggling
             element.attr("id", attributes.toggleId);
 
+            // On volume available change listener - enables or disables VPT options sidebar
+            scope.publicRenderData.vptSceneChangedListener = function(){
+                if(scope.publicRenderData.getVPTController().getIsRunning){
+                    //Enable menu    TODO!
+                }else{
+                    //Disable menu  TODO!
+
+                }
+            };
+            
+
             // Configure scroll bar
             element.find('.mCustomScrollbar').mCustomScrollbar({ alwaysShowScrollbar: 0, updateOnContentResize: true });
 
@@ -27,7 +38,7 @@ app.directive("vptSidebar", function () {
                     scope.renderer = i;
 
                     //Call VPTController
-                    scope.publicRenderData.getVPTController()._chooseRenderer(scope.allRenderers[scope.renderer]);
+                    scope.publicRenderData.getVPTController().chooseRenderer(scope.allRenderers[scope.renderer]);
                     //Call for Directive-Needed for tranform function application
                     scope.$broadcast('start'+scope.allRenderers[scope.renderer]);
                 }

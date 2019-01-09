@@ -9,149 +9,206 @@
  */
 M3D.VPTController = class {
     // ============================ LIFECYCLE ============================ //
-    constructor(canvas){
+    constructor(PublicRenderData) {
         CommonUtils.extend(this);
-        //this._canvas = canvas;
         this._render = this._render.bind(this);
+        this.publicRenderData = PublicRenderData;
         this._webglcontextlostHandler = this._webglcontextlostHandler.bind(this);
         this._webglcontextrestoredHandler = this._webglcontextrestoredHandler.bind(this);
-        this._init();
-    }
-
-    _nullify(){
-        this._canvas                = null;
-        this.isRunning              = false;
-        this._camera                = null;
-        //this._cameraController      = null;
-        this._renderer              = null;
-        this._toneMapper            = null;
-        this._scale                 = null;
-        this._translation           = null;
-        this._isTransformationDirty = null;
-    
-        this._nullifyGL();
-    }
-
-    _init(){
         this._nullify();
 
         this._canvas = document.createElement('canvas');
         //TODO: test only
         $(document.body).append(this._canvas);
-        $(window).resize(function() {
+        $(window).resize(function () {
             var width = window.innerWidth;
             var height = window.innerHeight;
-            this.resize(width, height);
         }.bind(this));
         $(window).resize();
         //
-
         this._initGL();
-    
-        this._camera = new M3D.VPTsharedPerspectiveCamera(60, this._canvas.width / this._canvas.height, 0.1, 5);
-        //this._cameraController = new OrbitCameraController(this._camera, this._canvas);
-        this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);   
-        this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
-    
+
         this._contextRestorable = true;
-    
+
         this._canvas.addEventListener('webglcontextlost', this._webglcontextlostHandler);
         this._canvas.addEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
-    
-        this._scale = new Vector(1, 1, 1);
-        this._translation = new Vector(0, 0, 0);
-        this._isTransformationDirty = true;
-    
-        this._camera.positionZ = 1.5;
-        //this._camera.fovX = 0.3;
-        //this._camera.fovY = 0.3;
-    
-        this._camera.updateMatrices();
-        this._updateMvpInverseMatrix();
+
+
+        this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+        this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
     }
-    
-    destroy(){
+
+    _nullify() {
+        this._canvas = null;
+        this.isRunning = false;
+        this._camera = null;
+        this._renderer = null;
+        this._toneMapper = null;
+        this._isTransformationDirty = null;
+        this._m3dVolumeObject = null;
+        this._sceneReady = false;
+        this._nullifyGL();
+    }
+
+    destroy() {
         this.stopRendering();
         this._destroyGL();
-    
+
         this._canvas.removeEventListener('webglcontextlost', this._webglcontextlostHandler);
         this._canvas.removeEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
-    
+
         if (this._canvas.parentNode) {
             this._canvas.parentNode.removeChild(this._canvas);
         }
-    
+
         this._toneMapper.destroy();
         this._renderer.destroy();
-        //this._cameraController.destroy();
         this._camera.destroy();
-    
+
         this._nullify();
     }
+
+    // ============================ M3D controls ============================ //
+
+    resetScene() {
+        if (this._render != null) {
+            this.stopRendering();
+            this.publicRenderData.vptSceneChangedListener();    //Notifies sidebar directive - disables buttons
+        }
+        this._sceneReady = false;
+    }
+
+    setNewActiveCamera(camera) {
+        this._camera = camera;
+        this._camera.isDirty = true;
+    }
+
+    /**
+     * Parses M3D scene, camera and volume objects. Starts render or logs error.
+     * @param camera 
+     */
+    loadNewScene() {
+        this.resetScene();
+
+        //Parse Volumtric data from PublicRenderData.contentRenderGroup
+        var items = this.publicRenderData.contentRenderGroup;
+        var volObjectFound = false;
+        var volObj;
+        items.traverse(function (child) {
+            if (child instanceof M3D.VPTVolume) {
+                volObjectFound = true;
+                volObj = child;      //todo?multiple objects?
+            }
+        });
+        this._m3dVolumeObject = volObj;
+        if (!volObjectFound) {
+            console.error('Failed to load volumetric data. No data parsed.');
+            return;
+        }
+        this.setVolInputData(this._m3dVolumeObject.data, { x: this._m3dVolumeObject.dimensions[0], y: this._m3dVolumeObject.dimensions[1], z: this._m3dVolumeObject.dimensions[2] }, this._m3dVolumeObject.meta.bitSize);
+
+
+        this._isTransformationDirty = true;
+        //this._scale = new Vector(1, 1, 1);
+        //this._translation = new Vector(0, 0, 0);
+        //this._camera.positionZ = 1.5;
+
+        //this._camera.resize(this._canvas.width, this._canvas.height);
+        //this._updateMvpInverseMatrix();
+        this._sceneReady = true;
+        this.startRendering();
+    }
+
+    //TODO: implement on Change listener on Camera and VPT objects.
+    sceneChanged() {
+        this._camera.isDirty = true;
+        this._isTransformationDirty = true;
+    }
+
+    chooseRenderer(renderer) {
+        this._renderer.destroy();
+        switch (renderer) {
+            case 'MIP':
+                this._renderer = new MIPRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+            case 'ISO':
+                this._renderer = new ISORenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+            case 'EAM':
+                this._renderer = new EAMRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+            case 'MCS':
+                this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
+                break;
+        }
+        this._toneMapper.setTexture(this._renderer.getTexture());
+        this._isTransformationDirty = true;
+    };
+
     // ============================ WEBGL LIFECYCLE ============================ //
 
-    _nullifyGL(){
-        this._gl                  = null;
-        this._volumeTexture       = null;
-        this._environmentTexture  = null;
-        this._transferFunction    = null;
-        this._program             = null;
-        this._clipQuad            = null;
-        this._extLoseContext      = null;
+    _nullifyGL() {
+        this._gl = null;
+        this._volumeTexture = null;
+        this._environmentTexture = null;
+        this._transferFunction = null;
+        this._program = null;
+        this._clipQuad = null;
+        this._extLoseContext = null;
         this._extColorBufferFloat = null;
     }
 
-    _initGL(){
+    _initGL() {
         this._nullifyGL();
-    
+
         this._gl = WebGLUtils.getContext(this._canvas, ['webgl2'], {
-            alpha                 : false,
-            depth                 : false,
-            stencil               : false,
-            antialias             : false,
-            preserveDrawingBuffer : true
+            alpha: false,
+            depth: false,
+            stencil: false,
+            antialias: false,
+            preserveDrawingBuffer: true
         });
         var gl = this._gl;
         this._extLoseContext = gl.getExtension('WEBGL_lose_context');
         this._extColorBufferFloat = gl.getExtension('EXT_color_buffer_float');
-    
+
         if (!this._extColorBufferFloat) {
             console.error('EXT_color_buffer_float not supported!');
         }
-    
+
         this._volumeTexture = WebGLUtils.createTexture(gl, {
-            target         : gl.TEXTURE_3D,
-            width          : 1,
-            height         : 1,
-            depth          : 1,
-            data           : new Float32Array([1]),
-            format         : gl.RED,
-            internalFormat : gl.R16F,
-            type           : gl.FLOAT,
-            wrapS          : gl.CLAMP_TO_EDGE,
-            wrapT          : gl.CLAMP_TO_EDGE,
-            wrapR          : gl.CLAMP_TO_EDGE,
-            min            : gl.LINEAR,
-            mag            : gl.LINEAR
+            target: gl.TEXTURE_3D,
+            width: 1,
+            height: 1,
+            depth: 1,
+            data: new Float32Array([1]),
+            format: gl.RED,
+            internalFormat: gl.R16F,
+            type: gl.FLOAT,
+            wrapS: gl.CLAMP_TO_EDGE,
+            wrapT: gl.CLAMP_TO_EDGE,
+            wrapR: gl.CLAMP_TO_EDGE,
+            min: gl.LINEAR,
+            mag: gl.LINEAR
         });
-    
+
         this._environmentTexture = WebGLUtils.createTexture(gl, {
-            width          : 1,
-            height         : 1,
-            data           : new Uint8Array([255, 255, 255, 255]),
-            format         : gl.RGBA,
-            internalFormat : gl.RGBA, // TODO: HDRI & OpenEXR support
-            type           : gl.UNSIGNED_BYTE,
-            wrapS          : gl.CLAMP_TO_EDGE,
-            wrapT          : gl.CLAMP_TO_EDGE,
-            min            : gl.LINEAR,
-            max            : gl.LINEAR
+            width: 1,
+            height: 1,
+            data: new Uint8Array([255, 255, 255, 255]),
+            format: gl.RGBA,
+            internalFormat: gl.RGBA, // TODO: HDRI & OpenEXR support
+            type: gl.UNSIGNED_BYTE,
+            wrapS: gl.CLAMP_TO_EDGE,
+            wrapT: gl.CLAMP_TO_EDGE,
+            min: gl.LINEAR,
+            max: gl.LINEAR
         });
-    
+
         this._program = WebGLUtils.compileShaders(gl, {
             quad: SHADERS.quad
         }, MIXINS).quad;
-    
+
         this._clipQuad = WebGLUtils.createClipQuad(gl);
     }
 
@@ -160,11 +217,11 @@ M3D.VPTController = class {
         if (!gl) {
             return;
         }
-    
+
         gl.deleteProgram(this._program.program);
         gl.deleteBuffer(this._clipQuad);
         gl.deleteTexture(this._volumeTexture);
-    
+
         this._contextRestorable = false;
         if (this._extLoseContext) {
             this._extLoseContext.loseContext();
@@ -184,23 +241,24 @@ M3D.VPTController = class {
     }
 
     // ============================ SETTERS and GETTERS ============================ //
-    resize(width, height){
+    resize(width, height) {
         var gl = this._gl;
         if (!gl) {
             return;
         }
-    
+
         this._canvas.width = width;
         this._canvas.height = height;
-        this._camera.resize(width, height);
+        if (this._camera)
+            this._camera.resize(width, height);
     }
 
-    setVolume(volume){
+    setVolume(volume) {
         var gl = this._gl;
         if (!gl) {
             return;
         }
-    
+
         // TODO: texture class, to avoid duplicating texture specs
         gl.bindTexture(gl.TEXTURE_3D, this._volumeTexture);
         gl.texImage3D(gl.TEXTURE_3D, 0, gl.R16F,
@@ -209,119 +267,84 @@ M3D.VPTController = class {
         gl.bindTexture(gl.TEXTURE_3D, null);
     }
 
-    setEnvironmentMap(image){
+    setEnvironmentMap(image) {
         var gl = this._gl;
         if (!gl) {
             return;
         }
-    
+
         // TODO: texture class, to avoid duplicating texture specs
         gl.bindTexture(gl.TEXTURE_2D, this._environmentTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl. RGBA,
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
             image.width, image.height,
             0, gl.RGBA, gl.UNSIGNED_BYTE, image);
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
-    getCanvas(){
+    getCanvas() {
         return this._canvas;
     }
 
-    getRenderer(){
+    getRenderer() {
         return this._renderer;
     }
 
-    getToneMapper(){
+    getToneMapper() {
         return this._toneMapper;
     }
 
-    getScale(){
-        return this._scale;
-    }
 
-    setScale(x,y,z){
-        this._scale.set(x, y, z);
-        this._isTransformationDirty = true;
-    }
-
-    getTranslation(){
-        return this._translation;
-    }
-
-    setTranslation(x,y,z){
-        this._translation.set(x,y,z);
-        this._isTransformationDirty = true;
-    }
-
-    setVolInputData(data, size, bits){
+    setVolInputData(data, size, bits) {
         var volume = new Volume(data, size.x, size.y, size.z, bits);
         this.setVolume(volume);
-        this.getRenderer().reset(); 
+        this.getRenderer().reset();
     }
-    
-    setEnvInputData(image){
+
+    setEnvInputData(image) {
         this.setEnvironmentMap(image);
         this.getRenderer().reset();
     }
 
-    getIsRunning(){
+    getIsRunning() {
         return this.isRunning;
     }
 
     // ============================ INSTANCE METHODS ============================ //
 
-    _chooseRenderer(renderer) {
-        this._renderer.destroy();
-        switch (renderer) {
-            case 'MIP':
-                this._renderer = new MIPRenderer(this._gl, this._volumeTexture, this._environmentTexture);
-                break;
-            case 'ISO':
-                this._renderer = new ISORenderer(this._gl, this._volumeTexture, this._environmentTexture);
-                break;
-            case 'EAM':
-                this._renderer = new EAMRenderer(this._gl, this._volumeTexture, this._environmentTexture);
-                break;
-            case 'MCS':
-                this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
-                break;
-        }
-        this._toneMapper.setTexture(this._renderer.getTexture());
-        this._isTransformationDirty = true;
-    };
-    
-    _updateMvpInverseMatrix(){
-        if (this._camera.isDirty || this._isTransformationDirty) {
+
+    _updateMvpInverseMatrix() {
+        if ((this._camera.isDirty || this._isTransformationDirty) && this._sceneReady) {
             this._camera.isDirty = false;
             this._isTransformationDirty = false;
             this._camera.updateMatrices();
-    
-            var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5);
-            var volumeTranslation = new THREE.Matrix4().makeTranslation(this._translation.x, this._translation.y, this._translation.z);
-            var volumeScale = new THREE.Matrix4().makeScale(this._scale.x, this._scale.y, this._scale.z);
-    
+
+            var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5); //TODO: cube center offset?
+            //var centerTranslation = new THREE.Matrix4().makeTranslation(0, 0, 0); 
+            var volumeTranslation = new THREE.Matrix4().makeTranslation(this._m3dVolumeObject.positionX, this._m3dVolumeObject.positionY, this._m3dVolumeObject.positionZ);
+            var volumeScale = new THREE.Matrix4().makeScale(this._m3dVolumeObject.scale.x, this._m3dVolumeObject.scale.y, this._m3dVolumeObject.scale.z);
+
             var tr = new THREE.Matrix4();
             tr.multiplyMatrices(volumeScale, centerTranslation);
             tr.multiplyMatrices(volumeTranslation, tr);
-            tr.multiplyMatrices(this._camera.transformationMatrix(), tr);
-    
-            tr.getInverse(tr, true).transpose();
-            this._renderer._mvpInverseMatrix =  new Matrix(tr.elements);//setMvpInverseMatrixM3D(tr);
+            tr.multiplyMatrices(this._camera.transformationMatrix, tr);
+
+            tr.getInverse(tr, true);//.transpose();
+            this._renderer._mvpInverseMatrix = new Matrix(tr.elements);//setMvpInverseMatrixM3D(tr);
             this._renderer.reset();
         }
     }
 
-    _render(){
+    _render() {
         var gl = this._gl;
         if (!gl) {
             return;
         }
-    
+
         this._updateMvpInverseMatrix();
-    
+
         this._renderer.render();
         this._toneMapper.render();
-    
+
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         var program = this._program;
         gl.useProgram(program.program);
@@ -334,18 +357,22 @@ M3D.VPTController = class {
         gl.bindTexture(gl.TEXTURE_2D, this._toneMapper.getTexture());
         gl.uniform1i(program.uniforms.uTexture, 0);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-    
+
         gl.disableVertexAttribArray(aPosition);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
-    startRendering(){
-        this.isRunning = true;
-        Ticker.add(this._render);
+    startRendering() {
+        if (this._sceneReady) {
+            this.isRunning = true;
+            Ticker.add(this._render);
+        } else {
+            console.error('Cannot render, scene not set up.');
+        }
     }
 
-    stopRendering(){
+    stopRendering() {
         this.isRunning = false;
         Ticker.remove(this._render);
     }

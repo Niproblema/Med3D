@@ -8,10 +8,6 @@ M3D.VPTsharedPerspectiveCamera = class extends M3D.PerspectiveCamera{
         this.isDirty = false;
         this.tranformationMatrix = new THREE.Matrix4();
         this.viewMatrix = new THREE.Matrix4();
-        
-        this.zoomFactorVPT = 0.001;
-        this.fovXVPT = 0;
-        this.fovYVPT = 0;
     }
     
     //legacy
@@ -22,7 +18,7 @@ M3D.VPTsharedPerspectiveCamera = class extends M3D.PerspectiveCamera{
     }
 
     //legacy
-    updateProjectionMatrix() {
+/*     updateProjectionMatrix() {
         var w = this.fovXVPT * this.near;
         var h = this.fovYVPT * this.near;
         //this.projectionMatrix.fromFrustum(-w, w, -h, h, this.near, this.far);
@@ -39,30 +35,24 @@ M3D.VPTsharedPerspectiveCamera = class extends M3D.PerspectiveCamera{
                                 0, 2 * near / (top - bottom), (top + bottom) / (top - bottom), 0,
                                 0,0,-(far + near) / (far - near), -2 * far * near / (far - near),
                                 0,0,-1,0);
+		//this.projectionMatrix.transpose();
 
         //
 
-    }
+    } */
 
     updateMatrices(){
         this.updateViewMatrix();
         this.updateProjectionMatrix();
+        this.tranformationMatrix.multiplyMatrices(this.projectionMatrix, this.viewMatrix);
     }
 
     resize(width, height){
-        //VPT Legacy
-        this.fovXVPT = width* this.zoomFactorVPT;
-        this.fovYVPT = height * this.zoomFactorVPT;
-        //
         this.aspect = width/height;
         this.isDirty = true;
     }
 
-    transformationMatrix(){
-        //if (scene.autoUpdate === true)
-        //    scene.updateMatrixWorld();
-
-        this.tranformationMatrix.multiplyMatrices(this.projectionMatrix, this.viewMatrix);
+    get transformationMatrix(){
         return this.tranformationMatrix;
     }
 
