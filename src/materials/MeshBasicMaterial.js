@@ -21,9 +21,9 @@ M3D.MeshBasicMaterial = class extends M3D.Material {
             this._color = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {color: this._color.getHex()}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -36,9 +36,9 @@ M3D.MeshBasicMaterial = class extends M3D.Material {
             this._lights = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {lights: this._lights}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }

@@ -17,9 +17,9 @@ M3D.Scene = class extends M3D.Object3D {
         if (val !== this._autoUpdate) {
             this._autoUpdate = val;
 
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {autoUpdate: this._autoUpdate}};
-                this._onChangeListener.objectUpdate(update)
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }

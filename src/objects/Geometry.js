@@ -21,7 +21,7 @@ M3D.Geometry = class {
         this._boundingSphere = null;
 
         // Parameter on change listener
-        this._onChangeListener = null;
+        this._updateListenerManager = new M3D.UpdateListenerManager(this);
 
         // If this is set to true.. wireframe will be rendered instead of planes
         this._drawWireframe = false;
@@ -232,43 +232,46 @@ M3D.Geometry = class {
         this._indices = values;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {array: this._indices.array.buffer.slice(0), itemSize: this._indices.itemSize}};
-            this._onChangeListener.geometryUpdate(update)
+            this._updateListenerManager.geometryUpdate(update)
         }
     }
     set vertices(values) {
         this._vertices = values;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {array: this._vertices.array.buffer.slice(0), itemSize: this._vertices.itemSize}};
-            this._onChangeListener.geometryUpdate(update)
+            this._updateListenerManager.geometryUpdate(update)
         }
     }
     set normals(values) {
         this._normals = values;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {array: this._normals.array.buffer.slice(0), itemSize: this._normals.itemSize}};
-            this._onChangeListener.geometryUpdate(update)
+            this._updateListenerManager.geometryUpdate(update)
         }
     }
     set vertColor(values) {
         this._vertColor = values;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {array: this._vertColor.array.buffer.slice(0), itemSize: this._vertColor.itemSize}};
-            this._onChangeListener.geometryUpdate(update)
+            this._updateListenerManager.geometryUpdate(update)
         }
     }
     set uv(values) { this._uv = values; }
     set wireframeIndices(values) { this._wireframeIndices = values; }
     set drawWireframe(val) { this._drawWireframe = val; }
-    set onChangeListener(listener) { this._onChangeListener = listener; }
     // endregion
+
+    addOnChangeListener(listener) {
+        this._updateListenerManager.addListener(listener);
+    }
 
     toJson() {
         var obj = {};

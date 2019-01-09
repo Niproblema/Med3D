@@ -17,18 +17,18 @@ M3D.PointLight = class extends M3D.Light {
         this._distance = dist;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {distance: this._distance}};
-            this._onChangeListener.objectUpdate(update)
+            this._updateListenerManager.objectUpdate(update)
         }
     }
     set decay(dec) {
         this._decay = dec;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {decay: this._decay}};
-            this._onChangeListener.objectUpdate(update)
+            this._updateListenerManager.objectUpdate(update)
         }
     }
 

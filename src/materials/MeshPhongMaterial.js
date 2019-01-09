@@ -17,27 +17,27 @@ M3D.MeshPhongMaterial = class extends M3D.Material {
         this._color = val;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {color: this._color.getHex()}};
-            this._onChangeListener.materialUpdate(update)
+            this._updateListenerManager.materialUpdate(update)
         }
     }
     set specular(val) {
         this._specular = val;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {specular: this._specular.getHex()}};
-            this._onChangeListener.materialUpdate(update)
+            this._updateListenerManager.materialUpdate(update)
         }
     }
     set shininess(val) {
         this._shininess = val;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {shininess: this._shininess}};
-            this._onChangeListener.materialUpdate(update)
+            this._updateListenerManager.materialUpdate(update)
         }
     }
 

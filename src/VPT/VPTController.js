@@ -33,9 +33,12 @@ M3D.VPTController = class {
         this._canvas.addEventListener('webglcontextlost', this._webglcontextlostHandler);
         this._canvas.addEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
 
-
         this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
         this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
+
+        this._activeCameraListener = new M3D.UpdateListener(function(update){this.isDirty = true;});
+        this._activeCameraListener._callbackRef = this;
+        this._volumeObjectListener = new M3D.UpdateListener(function(update) {this._isTransformationDirty = true});
     }
 
     _nullify() {
@@ -75,11 +78,19 @@ M3D.VPTController = class {
             this.stopRendering();
             this.publicRenderData.vptSceneChangedListener();    //Notifies sidebar directive - disables buttons
         }
+        if(this._m3dVolumeObject != null){
+            this._m3dVolumeObject._updateListenerManager.removeListener(this._volumeObjectListener);
+        }
+        this._m3dVolumeObject = null;
         this._sceneReady = false;
     }
 
     setNewActiveCamera(camera) {
+        if(this._camera != null)
+            this._camera._updateListenerManager.removeListener(this._activeCameraListener);
+
         this._camera = camera;
+        this._camera.addOnChangeListener(this._activeCameraListener, false);
         this._camera.isDirty = true;
     }
 
@@ -101,6 +112,7 @@ M3D.VPTController = class {
             }
         });
         this._m3dVolumeObject = volObj;
+        this._m3dVolumeObject.addOnChangeListener(this._volumeObjectListener, false);
         if (!volObjectFound) {
             console.error('Failed to load volumetric data. No data parsed.');
             return;

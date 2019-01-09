@@ -20,18 +20,18 @@ M3D.Light = class extends M3D.Object3D {
         this._color = val;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {color: this._color.getHex()}};
-            this._onChangeListener.objectUpdate(update)
+            this._updateListenerManager.objectUpdate(update)
         }
     }
     set intensity (val) {
         this._intensity = val;
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
+        if (!this._updateListenerManager.isEmpty()) {
             var update = {uuid: this._uuid, changes: {intensity: this._intensity}};
-            this._onChangeListener.objectUpdate(update)
+            this._updateListenerManager.objectUpdate(update)
         }
     }
     

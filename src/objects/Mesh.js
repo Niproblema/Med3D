@@ -21,9 +21,8 @@ M3D.Mesh = class extends M3D.Object3D {
 	}
 
 	addOnChangeListener(listener, recurse) {
-		this._material.onChangeListener = listener;
-		this._geometry.onChangeListener = listener;
-
+		this._material.addOnChangeListener(listener);
+		this._geometry.addOnChangeListener(listener);
 		super.addOnChangeListener(listener, recurse);
 	}
 
@@ -41,12 +40,6 @@ M3D.Mesh = class extends M3D.Object3D {
 	// TODO (Primoz): Figure out what to do when material or geometry is changed
     set material(mat) { this._material = mat; }
     set geometry(geom) { this._geometry = geom; }
-
-	set onChangeListener(listener) {
-		super.onChangeListener = listener;
-		this._geometry.onChangeListener = listener;
-		this._material.onChangeListener = listener;
-	}
 	// endregion
 
 

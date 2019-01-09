@@ -13,7 +13,7 @@ M3D.Material = class {
         this._uuid = THREE.Math.generateUUID();
         this.type = "Material";
 
-        this._onChangeListener = null;
+        this._updateListenerManager = new M3D.UpdateListenerManager(this);
 
         this._name = '';
 
@@ -42,9 +42,9 @@ M3D.Material = class {
             this._name = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {name: this._name}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -54,9 +54,9 @@ M3D.Material = class {
             this._side = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {side: this._side}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -66,9 +66,9 @@ M3D.Material = class {
             this._depthFunc = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {depthFunc: this._depthFunc}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -78,9 +78,9 @@ M3D.Material = class {
             this._depthTest = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {depthTest: this._depthTest}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -90,9 +90,9 @@ M3D.Material = class {
             this._depthWrite = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {depthWrite: this._depthWrite}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -102,9 +102,9 @@ M3D.Material = class {
             this._transparent = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {transparent: this._transparent}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -114,9 +114,9 @@ M3D.Material = class {
             this._opacity = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {opacity: this._opacity}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
@@ -129,14 +129,16 @@ M3D.Material = class {
             this._useVertexColors = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {useVertexColors: this._useVertexColors}};
-                this._onChangeListener.materialUpdate(update)
+                this._updateListenerManager.materialUpdate(update)
             }
         }
     }
 
-    set onChangeListener(listener) { this._onChangeListener = listener; }
+    addOnChangeListener(listener) {
+        this._updateListenerManager.addListener(listener);
+    }
 
     get name() { return this._name; }
     get side() { return this._side; }

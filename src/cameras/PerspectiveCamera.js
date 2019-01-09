@@ -51,9 +51,9 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
             this.updateProjectionMatrix();
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {fov: this._fov}};
-                this._onChangeListener.objectUpdate(update)
+                this._updateListenerManager.objectUpdate(update)
             }
         }
 	}
@@ -73,9 +73,9 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
             this.updateProjectionMatrix();
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {near: this._near}};
-                this._onChangeListener.objectUpdate(update)
+                this._updateListenerManager.objectUpdate(update)
             }
         }
 	}
@@ -87,9 +87,9 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
             this.updateProjectionMatrix();
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
+            if (!this._updateListenerManager.isEmpty()) {
                 var update = {uuid: this._uuid, changes: {far: this._far}};
-                this._onChangeListener.objectUpdate(update)
+                this._updateListenerManager.objectUpdate(update)
             }
         }
 	}

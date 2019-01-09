@@ -5,60 +5,60 @@
 
 M3D.Object3D = class {
 
-	constructor() {
+    constructor() {
 
-		// Self reference for callbacks
-		var self = this;
+        // Self reference for callbacks
+        var self = this;
 
-		// Unique identifier
-		this._uuid = THREE.Math.generateUUID();
-		this.type = "Object3D";
+        // Unique identifier
+        this._uuid = THREE.Math.generateUUID();
+        this.type = "Object3D";
 
-		this._parent = null;
-		this._children = [];
+        this._parent = null;
+        this._children = [];
 
-		this._position = new THREE.Vector3();
-		this._rotation = new THREE.Euler();
-		this._quaternion = new THREE.Quaternion();
-		this._scale = new THREE.Vector3(1, 1, 1);
+        this._position = new THREE.Vector3();
+        this._rotation = new THREE.Euler();
+        this._quaternion = new THREE.Quaternion();
+        this._scale = new THREE.Vector3(1, 1, 1);
 
         this._visible = true;
         this._frustumCulled = true;
 
-		function onRotationChange() {
-			self.quaternion.setFromEuler(self.rotation, false);
-		}
+        function onRotationChange() {
+            self.quaternion.setFromEuler(self.rotation, false);
+        }
 
-		function onQuaternionChange() {
-			self.rotation.setFromQuaternion(self.quaternion, undefined, false);
-		}
+        function onQuaternionChange() {
+            self.rotation.setFromQuaternion(self.quaternion, undefined, false);
+        }
 
-		this._rotation.onChange(onRotationChange);
-		this._quaternion.onChange(onQuaternionChange);
+        this._rotation.onChange(onRotationChange);
+        this._quaternion.onChange(onQuaternionChange);
 
 
-		this._matrix = new THREE.Matrix4();
-		this._matrixWorld = new THREE.Matrix4();
-		this._matrixWorldNeedsUpdate = false;
+        this._matrix = new THREE.Matrix4();
+        this._matrixWorld = new THREE.Matrix4();
+        this._matrixWorldNeedsUpdate = false;
 
-		this._matrixAutoUpdate = true;
+        this._matrixAutoUpdate = true;
 
-		this._onChangeListener = null;
+        this._updateListenerManager = new M3D.UpdateListenerManager(this);
 
-		// References to wrapped functions
-		this.rotateOnAxis = rotateOnAxis;
-		this.rotateX = rotateX;
-		this.rotateY = rotateY;
-		this.rotateZ = rotateZ;
-		this.rotate = rotate;
+        // References to wrapped functions
+        this.rotateOnAxis = rotateOnAxis;
+        this.rotateX = rotateX;
+        this.rotateY = rotateY;
+        this.rotateZ = rotateZ;
+        this.rotate = rotate;
         this.lookAt = lookAt;
 
-		this.translateOnAxis = translateOnAxis;
-		this.translateX = translateX;
-		this.translateY = translateY;
-		this.translateZ = translateZ;
+        this.translateOnAxis = translateOnAxis;
+        this.translateX = translateX;
+        this.translateY = translateY;
+        this.translateZ = translateZ;
         this.translate = translate;
-	}
+    }
 
     //region GETTERS
     get parent() { return this._parent; }
@@ -85,9 +85,9 @@ M3D.Object3D = class {
             this._visible = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {visible: this._visible}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { visible: this._visible } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -96,9 +96,9 @@ M3D.Object3D = class {
             this._position.copy(vec);
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {position: this._position.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { position: this._position.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -107,9 +107,9 @@ M3D.Object3D = class {
             this._position.x = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {position: this._position.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { position: this._position.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -118,9 +118,9 @@ M3D.Object3D = class {
             this._position.y = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {position: this._position.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { position: this._position.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -129,9 +129,9 @@ M3D.Object3D = class {
             this._position.z = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {position: this._position.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { position: this._position.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -140,53 +140,53 @@ M3D.Object3D = class {
             this._rotation.copy(euler);
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
     set rotationX(val) {
-	    if (this._rotation.x !== val) {
+        if (this._rotation.x !== val) {
             this._rotation.x = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
-	}
+    }
     set rotationY(val) {
         if (this._rotation.y !== val) {
             this._rotation.y = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
-	}
+    }
     set rotationZ(val) {
         if (this._rotation.z !== val) {
             this._rotation.z = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
-	}
+    }
     set quaternion(quat) {
         if (!quat.equals(this._quaternion)) {
             this._quaternion.copy(quat);
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -195,9 +195,9 @@ M3D.Object3D = class {
             this._scale = vec;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {scale: this._scale.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { scale: this._scale.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -206,9 +206,9 @@ M3D.Object3D = class {
             this._matrixAutoUpdate = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {matrixAutoUpdate: this._matrixAutoUpdate}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { matrixAutoUpdate: this._matrixAutoUpdate } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -217,16 +217,16 @@ M3D.Object3D = class {
             this._frustumCulled = val;
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: this._uuid, changes: {frustumCulled: this._frustumCulled}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: this._uuid, changes: { frustumCulled: this._frustumCulled } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
     //endregion
 
-    addOnChangeListener (listener, recurse) {
-        this._onChangeListener = listener;
+    addOnChangeListener(listener, recurse) {
+        this._updateListenerManager.addListener(listener);
 
         if (recurse) {
             for (var i = 0; i < this._children.length; i++) {
@@ -236,104 +236,105 @@ M3D.Object3D = class {
     }
 
     //region MATRIX UPDATING
-	applyMatrix(matrix) {
+    applyMatrix(matrix) {
         this._matrix.multiplyMatrices(matrix, this._matrix);
         this._matrix.decompose(this._position, this._quaternion, this._scale);
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
-            let update = {uuid: this._uuid,
+        if (!this._updateListenerManager.isEmpty()) {
+            let update = {
+                uuid: this._uuid,
                 changes: {
                     position: this._position.toArray(),
                     quaternion: this._quaternion.toArray(),
                     scale: this._scale.toArray()
                 }
             };
-            this._onChangeListener.objectUpdate(update)
+            this._updateListenerManager.objectUpdate(update)
         }
-	}
+    }
 
-	updateMatrix() {
-		this._matrix.compose(this._position, this._quaternion, this._scale);
-		this._matrixWorldNeedsUpdate = true;
-	}
+    updateMatrix() {
+        this._matrix.compose(this._position, this._quaternion, this._scale);
+        this._matrixWorldNeedsUpdate = true;
+    }
 
-	updateMatrixWorld() {
-		if ( this._matrixAutoUpdate === true ) this.updateMatrix();
+    updateMatrixWorld() {
+        if (this._matrixAutoUpdate === true) this.updateMatrix();
 
-		if (this._matrixWorldNeedsUpdate) {
-			if (this.parent === null) {
-				this._matrixWorld.copy(this._matrix);
-			} else {
-				this._matrixWorld.multiplyMatrices(this.parent._matrixWorld, this._matrix);
-			}
-			this._matrixWorldNeedsUpdate = false;
-		}
+        if (this._matrixWorldNeedsUpdate) {
+            if (this.parent === null) {
+                this._matrixWorld.copy(this._matrix);
+            } else {
+                this._matrixWorld.multiplyMatrices(this.parent._matrixWorld, this._matrix);
+            }
+            this._matrixWorldNeedsUpdate = false;
+        }
 
-		for (var i = 0; i < this._children.length; i++) {
-			this._children[i].updateMatrixWorld();
-		}
-	}
+        for (var i = 0; i < this._children.length; i++) {
+            this._children[i].updateMatrixWorld();
+        }
+    }
     //endregion
 
     //region HIERARCHY FUNCTIONS
-	add(object) {
-		if (object === this) {
-			return;
-		}
-		if (object._parent !== null) {
-			object._parent.remove(object);
-		}
+    add(object) {
+        if (object === this) {
+            return;
+        }
+        if (object._parent !== null) {
+            object._parent.remove(object);
+        }
 
-		object._parent = this;
-		this._children.push(object);
+        object._parent = this;
+        this._children.push(object);
 
         // Notify onChange subscriber
-        if (this._onChangeListener) {
-            object.onChangeListener = this._onChangeListener;
-            var update = {uuid: object._uuid, changes: {parentUuid: this._uuid, objectRef: object}};
-            this._onChangeListener.hierarchyUpdate(update)
+        if (!this._updateListenerManager.isEmpty()) {
+            object._updateListenerManager._listeners = object._updateListenerManager._listeners.concat(this._updateListenerManager._listeners);
+            var update = { uuid: object._uuid, changes: { parentUuid: this._uuid, objectRef: object } };
+            this._updateListenerManager.hierarchyUpdate(update)
         }
-	}
+    }
 
-	remove(object) {
-		var index = this._children.indexOf(object);
-		if (index !== -1) {
-			object._parent = null;
-			this._children.splice(index, 1);
+    remove(object) {
+        var index = this._children.indexOf(object);
+        if (index !== -1) {
+            object._parent = null;
+            this._children.splice(index, 1);
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                var update = {uuid: object._uuid, changes: {parentUuid: null, objectRef: object}};
-                this._onChangeListener.hierarchyUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                var update = { uuid: object._uuid, changes: { parentUuid: null, objectRef: object } };
+                this._updateListenerManager.hierarchyUpdate(update)
             }
-		}
-	}
+        }
+    }
 
-	clear() {
+    clear() {
         let self = this;
 
         this._children = this._children.filter(function (child) {
             // Notify onChange subscriber
-            if (self._onChangeListener) {
-                var update = {uuid: child._uuid, changes: {parentUuid: null, objectRef: child}};
-                self._onChangeListener.hierarchyUpdate(update)
+            if (!self._updateListenerManager.isEmpty()) {
+                var update = { uuid: child._uuid, changes: { parentUuid: null, objectRef: child } };
+                self._updateListenerManager.hierarchyUpdate(update)
             }
 
             return false;
         });
     }
 
-	traverse(callback) {
-		callback(this);
-		for (let i = 0, l = this._children.length; i < l; i++) {
-			this._children[i].traverse(callback);
-		}
-	}
+    traverse(callback) {
+        callback(this);
+        for (let i = 0, l = this._children.length; i < l; i++) {
+            this._children[i].traverse(callback);
+        }
+    }
     //endregion
 
     // region RAYCASTING
-    raycast() {}
+    raycast() { }
     // endregion
 
     // region BOUNDING SPHERE
@@ -361,12 +362,12 @@ M3D.Object3D = class {
     // endregion
 
     //region EXPORT/IMPORT JSON FUNCTIONS
-	toJson() {
-		var obj = {};
+    toJson() {
+        var obj = {};
 
-		// Export UUID and object type
-		obj.uuid = this._uuid;
-		obj.type = this.type;
+        // Export UUID and object type
+        obj.uuid = this._uuid;
+        obj.type = this.type;
 
         // Store its parent UUID
         if (this._parent) {
@@ -374,19 +375,19 @@ M3D.Object3D = class {
         }
 
         // Export position, orientation and scale
-		obj.position = this._position.toArray();
-		obj.quaternion = this._quaternion.toArray();
-		obj.scale = this._scale.toArray();
+        obj.position = this._position.toArray();
+        obj.quaternion = this._quaternion.toArray();
+        obj.scale = this._scale.toArray();
 
         // Export visibility and frustum culling settings
         obj.visible = this._visible;
         obj.frustumCulled = this._frustumCulled;
 
         // Export matrix auto update setting
-		obj.matrixAutoUpdate = this._matrixAutoUpdate;
+        obj.matrixAutoUpdate = this._matrixAutoUpdate;
 
-		return obj;
-	}
+        return obj;
+    }
 
     static fromJson(data, object) {
 
@@ -560,37 +561,37 @@ M3D.Object3D = class {
  * @param {THREE.Vector3} axis A normalized 3D vector in space
  * @param angle The angle in radians.
  */
-let rotateOnAxis = (function() {
-	// Private static quaternion
-	let q1 = new THREE.Quaternion();
+let rotateOnAxis = (function () {
+    // Private static quaternion
+    let q1 = new THREE.Quaternion();
 
-	return function (axis, angle) {
+    return function (axis, angle) {
         if (angle !== 0) {
             q1.setFromAxisAngle(axis, angle);
             this._quaternion.multiply(q1);
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                let update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                let update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
 
             return this;
         }
-	};
+    };
 })();
 
 /**
  * Incrementally rotates the object in X axis for the given angle.
  * @param angle The angle in radians
  */
-let rotateX = (function() {
-	// Private static axis vector
-	let v1 = new THREE.Vector3(1, 0, 0);
+let rotateX = (function () {
+    // Private static axis vector
+    let v1 = new THREE.Vector3(1, 0, 0);
 
-	return function (angle) {
-		return this.rotateOnAxis(v1, angle);
-	};
+    return function (angle) {
+        return this.rotateOnAxis(v1, angle);
+    };
 })();
 
 
@@ -598,13 +599,13 @@ let rotateX = (function() {
  * Incrementally rotates the object in Y axis for the given angle.
  * @param angle The angle in radians
  */
-let rotateY = (function() {
-	// Private static axis vector
-	var v1 = new THREE.Vector3(0, 1, 0);
+let rotateY = (function () {
+    // Private static axis vector
+    var v1 = new THREE.Vector3(0, 1, 0);
 
-	return function (angle) {
-		return this.rotateOnAxis(v1, angle);
-	};
+    return function (angle) {
+        return this.rotateOnAxis(v1, angle);
+    };
 })();
 
 /**
@@ -612,12 +613,12 @@ let rotateY = (function() {
  * @param angle The angle in radians
  */
 let rotateZ = (function () {
-	// Private static axis vector
-	var v1 = new THREE.Vector3(0, 0, 1);
+    // Private static axis vector
+    var v1 = new THREE.Vector3(0, 0, 1);
 
-	return function (angle) {
-		return this.rotateOnAxis(v1, angle);
-	};
+    return function (angle) {
+        return this.rotateOnAxis(v1, angle);
+    };
 })();
 
 let rotate = function (angleVector) {
@@ -631,7 +632,7 @@ let lookAt = (function () {
     let m = new THREE.Matrix4();
     let q = new THREE.Quaternion();
 
-    return function(vector, up) {
+    return function (vector, up) {
         m.lookAt(this._position, vector, up);
         q.setFromRotationMatrix(m);
 
@@ -639,9 +640,9 @@ let lookAt = (function () {
             this._quaternion.copy(q);
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                let update = {uuid: this._uuid, changes: {quaternion: this._quaternion.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                let update = { uuid: this._uuid, changes: { quaternion: this._quaternion.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
     }
@@ -655,26 +656,26 @@ let lookAt = (function () {
  */
 let translateOnAxis = (function () {
 
-	// translate object by distance along axis in object space
-	// axis is assumed to be normalized
+    // translate object by distance along axis in object space
+    // axis is assumed to be normalized
 
-	let v1 = new THREE.Vector3();
+    let v1 = new THREE.Vector3();
 
-	return function (axis, distance) {
+    return function (axis, distance) {
         if (distance !== 0) {
             v1.copy(axis).applyQuaternion(this._quaternion);
 
             this._position.add(v1.multiplyScalar(distance));
 
             // Notify onChange subscriber
-            if (this._onChangeListener) {
-                let update = {uuid: this._uuid, changes: {position: this._position.toArray()}};
-                this._onChangeListener.objectUpdate(update)
+            if (!this._updateListenerManager.isEmpty()) {
+                let update = { uuid: this._uuid, changes: { position: this._position.toArray() } };
+                this._updateListenerManager.objectUpdate(update)
             }
         }
 
-		return this;
-	};
+        return this;
+    };
 })();
 
 /**
@@ -682,12 +683,12 @@ let translateOnAxis = (function () {
  * @param distance The distance to translate.
  */
 let translateX = (function () {
-	// Private axis vector
-    let v1 = new THREE.Vector3( 1, 0, 0 );
+    // Private axis vector
+    let v1 = new THREE.Vector3(1, 0, 0);
 
-	return function (distance) {
-		return this.translateOnAxis(v1, distance);
-	};
+    return function (distance) {
+        return this.translateOnAxis(v1, distance);
+    };
 })();
 
 /**
@@ -695,12 +696,12 @@ let translateX = (function () {
  * @param distance The distance to translate.
  */
 let translateY = (function () {
-	// Private axis vector
-    let v1 = new THREE.Vector3( 0, 1, 0 );
+    // Private axis vector
+    let v1 = new THREE.Vector3(0, 1, 0);
 
-	return function (distance) {
-		return this.translateOnAxis(v1, distance);
-	};
+    return function (distance) {
+        return this.translateOnAxis(v1, distance);
+    };
 })();
 
 /**
@@ -708,12 +709,12 @@ let translateY = (function () {
  * @param distance The distance to translate.
  */
 let translateZ = (function () {
-	// Private axis vector
-	let v1 = new THREE.Vector3(0, 0, 1);
+    // Private axis vector
+    let v1 = new THREE.Vector3(0, 0, 1);
 
-	return function (distance) {
-		return this.translateOnAxis(v1, distance);
-	};
+    return function (distance) {
+        return this.translateOnAxis(v1, distance);
+    };
 })();
 
 let translate = function (angleVector) {

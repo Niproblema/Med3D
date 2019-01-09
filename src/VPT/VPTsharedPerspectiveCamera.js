@@ -3,7 +3,7 @@ M3D.VPTsharedPerspectiveCamera = class extends M3D.PerspectiveCamera{
     constructor(fov, aspect, near, far) {
 		super(fov, aspect, near, far);
 
-		this.type = "PerspectiveCamera";
+		this.type = "vptPerspectiveCamera";
 
         this.isDirty = false;
         this.tranformationMatrix = new THREE.Matrix4();
