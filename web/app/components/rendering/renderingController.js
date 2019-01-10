@@ -130,7 +130,7 @@ let renderingController = function($scope, SettingsService, InputService, TaskMa
     $scope.resizeCanvas = function (width, height) {
         PublicRenderData.canvasDimensions = {width: width, height: height};
         self.cameraManager.aspectRatio = width/height;
-        self.VPT.resize(width, height); //TODO: find better way, maybe onChangeListener in camera
+        self.VPT.resize(width, height);
     };
 
     // region Annotations

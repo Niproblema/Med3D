@@ -19,6 +19,10 @@ M3D.VPTController = class {
 
         this._canvas = document.createElement('canvas');
         //TODO: test only
+        this._canvas.style.right = "0px";
+        this._canvas.style.left = "50%";
+        this._canvas.style.float = "right";
+
         $(document.body).append(this._canvas);
         $(window).resize(function () {
             var width = window.innerWidth;
@@ -36,7 +40,7 @@ M3D.VPTController = class {
         this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
         this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
 
-        this._activeCameraListener = new M3D.UpdateListener(function(update){this.isDirty = true;});
+        this._activeCameraListener = new M3D.UpdateListener(function (update) { this.isDirty = true; });
     }
 
     _nullify() {
@@ -76,7 +80,7 @@ M3D.VPTController = class {
     }
 
     setNewActiveCamera(camera) {
-        if(this._camera != null)
+        if (this._camera != null)
             this._camera._updateListenerManager.removeListener(this._activeCameraListener);
 
         this._camera = camera;
@@ -235,6 +239,9 @@ M3D.VPTController = class {
 
         this._canvas.width = width;
         this._canvas.height = height;
+        if (this._camera){
+            this._camera.aspect = width/height;
+        }
     }
 
     setVolume(volume) {
@@ -297,7 +304,7 @@ M3D.VPTController = class {
 
 
     _updateMvpInverseMatrix() {
-        if ((this._camera.isDirty || !this._isMvpSet)  && this._sceneReady) {
+        if ((this._camera.isDirty || !this._isMvpSet) && this._sceneReady) {
             this._camera.updateMatrices();
 
             var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5); //cube center offset ? 

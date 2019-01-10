@@ -2,7 +2,7 @@
  * Created by Ziga & Primoz on 1.4.2016.
  */
 
- //@@Camera.js
+//@@Camera.js
 
 M3D.PerspectiveCamera = class extends M3D.Camera {
 
@@ -31,7 +31,7 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
 	* Updates projection matrix based on current values of properties.
 	*/
 	updateProjectionMatrix() {
-		let top = this._near * Math.tan((Math.PI/180) * 0.5 * this._fov),
+		let top = this._near * Math.tan((Math.PI / 180) * 0.5 * this._fov),
 			height = 2 * top,
 			width = this._aspect * height,
 			left = - 0.5 * width;
@@ -45,53 +45,59 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
 	get far() { return this._far; }
 
 	set fov(val) {
-        if (val !== this._fov) {
-            this._fov = val;
+		if (val !== this._fov) {
+			this._fov = val;
 
-            this.updateProjectionMatrix();
+			this.updateProjectionMatrix();
 
-            // Notify onChange subscriber
-            if (!this._updateListenerManager.isEmpty()) {
-                var update = {uuid: this._uuid, changes: {fov: this._fov}};
-                this._updateListenerManager.objectUpdate(update)
-            }
-        }
+			// Notify onChange subscriber
+			if (!this._updateListenerManager.isEmpty()) {
+				var update = { uuid: this._uuid, changes: { fov: this._fov } };
+				this._updateListenerManager.objectUpdate(update)
+			}
+		}
 	}
 
 	set aspect(val) {
-        if (val !== this._aspect) {
-            this._aspect = val;
+		if (val !== this._aspect) {
+			this._aspect = val;
 
-            this.updateProjectionMatrix();
-        }
+			this.updateProjectionMatrix();
+
+			// Notify onChange subscriber
+			if (!this._updateListenerManager.isEmpty()) {
+				var update = { uuid: this._uuid, changes: { aspect: this.aspect } };
+				this._updateListenerManager.objectUpdate(update)
+			}
+		}
 	}
 
 	set near(val) {
-        if (val !== this._near) {
-            this._near = val;
+		if (val !== this._near) {
+			this._near = val;
 
-            this.updateProjectionMatrix();
+			this.updateProjectionMatrix();
 
-            // Notify onChange subscriber
-            if (!this._updateListenerManager.isEmpty()) {
-                var update = {uuid: this._uuid, changes: {near: this._near}};
-                this._updateListenerManager.objectUpdate(update)
-            }
-        }
+			// Notify onChange subscriber
+			if (!this._updateListenerManager.isEmpty()) {
+				var update = { uuid: this._uuid, changes: { near: this._near } };
+				this._updateListenerManager.objectUpdate(update)
+			}
+		}
 	}
 
 	set far(val) {
-        if (val !== this._far) {
-            this._far = val;
+		if (val !== this._far) {
+			this._far = val;
 
-            this.updateProjectionMatrix();
+			this.updateProjectionMatrix();
 
-            // Notify onChange subscriber
-            if (!this._updateListenerManager.isEmpty()) {
-                var update = {uuid: this._uuid, changes: {far: this._far}};
-                this._updateListenerManager.objectUpdate(update)
-            }
-        }
+			// Notify onChange subscriber
+			if (!this._updateListenerManager.isEmpty()) {
+				var update = { uuid: this._uuid, changes: { far: this._far } };
+				this._updateListenerManager.objectUpdate(update)
+			}
+		}
 	}
 
 	toJson() {
@@ -144,5 +150,5 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
 			this.updateProjectionMatrix();
 		}
 	}
-	
+
 };
