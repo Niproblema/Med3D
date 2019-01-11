@@ -20,10 +20,19 @@ M3D.GLManager = class {
 
         var glKeys = (glVersion == M3D.WEBGL1) ? ["webgl", "experimental-webgl"] : ["webgl2", "experimental-webgl2"];
 
+        
+        var options = { //TODO: consult
+            //alpha: false,
+            //depth: false,
+            //stencil: false,
+            antialias: false,
+            preserveDrawingBuffer: true
+        }; 
+
         // Try to fetch GL context
         for (var i = 0; i < glKeys.length; i++) {
             try {
-                this._gl = canvas.getContext(glKeys[i]);
+                this._gl = canvas.getContext(glKeys[i], options);
             } catch (e){
                 console.error(e);
             }

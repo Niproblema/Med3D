@@ -9,37 +9,21 @@
  */
 M3D.VPTController = class {
     // ============================ LIFECYCLE ============================ //
-    constructor(PublicRenderData) {
+    constructor(PublicRenderData, gl, canvas) {
         CommonUtils.extend(this);
-        this._render = this._render.bind(this);
         this.publicRenderData = PublicRenderData;
-        this._webglcontextlostHandler = this._webglcontextlostHandler.bind(this);
-        this._webglcontextrestoredHandler = this._webglcontextrestoredHandler.bind(this);
         this._nullify();
+        this._canvas = canvas;
+        this._gl = gl;
+        this._render = this._render.bind(this);
 
-        this._canvas = document.createElement('canvas');
-        //TODO: test only
-        this._canvas.style.right = "0px";
-        this._canvas.style.left = "50%";
-        this._canvas.style.float = "right";
-
-        $(document.body).append(this._canvas);
-        $(window).resize(function () {
-            var width = window.innerWidth;
-            var height = window.innerHeight;
-        }.bind(this));
-        $(window).resize();
-        //
         this._initGL();
 
-        this._contextRestorable = true;
-
-        this._canvas.addEventListener('webglcontextlost', this._webglcontextlostHandler);
-        this._canvas.addEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
-
+        //First selection
         this._renderer = new MCSRenderer(this._gl, this._volumeTexture, this._environmentTexture);
         this._toneMapper = new ReinhardToneMapper(this._gl, this._renderer.getTexture());
 
+        //Camera onChangeListener
         this._activeCameraListener = new M3D.UpdateListener(function (update) { this.isDirty = true; });
     }
 
@@ -49,7 +33,7 @@ M3D.VPTController = class {
         this._camera = null;
         this._renderer = null;
         this._toneMapper = null;
-        this._m3dVolumeObject = null;
+        this._m3dVolumeObjects = null;
         this._sceneReady = false;
         this._isMvpSet = false;
         this._nullifyGL();
@@ -58,11 +42,6 @@ M3D.VPTController = class {
     destroy() {
         this.stopRendering();
         this._destroyGL();
-        this._canvas.removeEventListener('webglcontextlost', this._webglcontextlostHandler);
-        this._canvas.removeEventListener('webglcontextrestored', this._webglcontextrestoredHandler);
-        if (this._canvas.parentNode) {
-            this._canvas.parentNode.removeChild(this._canvas);
-        }
         this._toneMapper.destroy();
         this._renderer.destroy();
         this._nullify();
@@ -138,28 +117,18 @@ M3D.VPTController = class {
     // ============================ WEBGL LIFECYCLE ============================ //
 
     _nullifyGL() {
-        this._gl = null;
+        //this._gl = null;
         this._volumeTexture = null;
         this._environmentTexture = null;
         this._transferFunction = null;
         this._program = null;
         this._clipQuad = null;
-        this._extLoseContext = null;
         this._extColorBufferFloat = null;
     }
 
     _initGL() {
         this._nullifyGL();
-
-        this._gl = WebGLUtils.getContext(this._canvas, ['webgl2'], {
-            alpha: false,
-            depth: false,
-            stencil: false,
-            antialias: false,
-            preserveDrawingBuffer: true
-        });
         var gl = this._gl;
-        this._extLoseContext = gl.getExtension('WEBGL_lose_context');
         this._extColorBufferFloat = gl.getExtension('EXT_color_buffer_float');
 
         if (!this._extColorBufferFloat) {
@@ -212,33 +181,13 @@ M3D.VPTController = class {
         gl.deleteBuffer(this._clipQuad);
         gl.deleteTexture(this._volumeTexture);
 
-        this._contextRestorable = false;
-        if (this._extLoseContext) {
-            this._extLoseContext.loseContext();
-        }
         this._nullifyGL();
     }
 
-    _webglcontextlostHandler() {
-        if (this._contextRestorable) {
-            event.preventDefault();
-        }
-        this._nullifyGL();
-    }
-
-    _webglcontextrestoredHandler() {
-        this._initGL();
-    }
 
     // ============================ SETTERS and GETTERS ============================ //
     resize(width, height) {
 
-        if (!this._gl) {
-            return;
-        }
-
-        this._canvas.width = width;
-        this._canvas.height = height;
         if (this._camera){
             this._camera.aspect = width/height;
         }
@@ -250,6 +199,8 @@ M3D.VPTController = class {
             return;
         }
 
+        
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);  //todo: Conflict with GLTextureManager
         // TODO: texture class, to avoid duplicating texture specs
         gl.bindTexture(gl.TEXTURE_3D, this._volumeTexture);
         gl.texImage3D(gl.TEXTURE_3D, 0, gl.R16F,
