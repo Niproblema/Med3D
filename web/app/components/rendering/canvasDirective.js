@@ -9,7 +9,7 @@ app.directive("m3dCanvas", function () {
         link: function (scope, canvas, attributes) {
 
             // Initialize renderer
-            var renderer = new M3D.MeshRenderer(canvas[0], M3D.WEBGL2);
+            var renderer = new M3D.MainRenderer(canvas[0], M3D.WEBGL2);
             // Set the specified shader path
             renderer.addShaderLoaderUrls(attributes.shaderpath);
 

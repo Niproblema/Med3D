@@ -205,7 +205,7 @@ M3D.Renderer = class {
     }
 
     getViewport() {
-        return {width: this._canvas.width, height: this._canvas._height};
+        return {width: this._canvas.width, height: this._canvas.height};
     }
     // endregion
 };

@@ -18,6 +18,10 @@ app.factory('PublicRenderData', function(){
 
         // Function binder
         replaceRenderContent: null,
-        setActiveCamera: null
+        setActiveCamera: null,
+
+        //UI interface to VPTrendInterface
+        //Avoid string comparisons - VPT renderers - 0=Abstract, 1=EAM, 2=ISO, 3=MCS, 4=MIP
+        vptRendererChoice : 0       
     };
 });

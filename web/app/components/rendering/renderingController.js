@@ -14,7 +14,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
 
     // Private renderer components
-    this.VPT = null;
+    //this.VPT = null;
     this.renderer = null;
     this.renderQueue = null;
     this.redrawQueue = null;
@@ -35,7 +35,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      */
     PublicRenderData.replaceRenderContent = function (...objects) {
         $scope.stopRenderLoop();
-        self.VPT.resetScene();
+        //self.VPT.resetScene();
         PublicRenderData.contentRenderGroup.clear();
         self.renderer.clearCachedAttributes();
         $scope.$apply(Annotations.clear);
@@ -58,9 +58,9 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      * Transforms volumetric input data with VPT and create objects for render.
      * @param {*} objects 
      */
-    PublicRenderData.replaceRenderContentVPT = function (...objects) {
+    PublicRenderData.replaceRenderContentVolume = function (...objects) {
         $scope.stopRenderLoop();
-        self.VPT.resetScene();
+        //self.VPT.resetScene();
         PublicRenderData.contentRenderGroup.clear();
         self.renderer.clearCachedAttributes();
         $scope.$apply(Annotations.clear);
@@ -71,7 +71,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
             PublicRenderData.contentRenderGroup.add(o);
         }
 
-        self.VPT.setNewActiveCamera(self.cameraManager.activeCamera)
+        //self.VPT.setNewActiveCamera(self.cameraManager.activeCamera)
 
 
         // Calculate content bounding sphere
@@ -81,13 +81,10 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
 
         $scope.startRenderLoop();
-        $scope.stopRenderLoop();
-        self.VPT.loadNewScene();
+        //$scope.stopRenderLoop();
+        //self.VPT.loadNewScene();
     };
 
-    PublicRenderData.getVPTController = function () {
-        return self.VPT;
-    };
 
 
     /**
@@ -103,17 +100,27 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Store reference to renderer
         self.renderer = renderer;
 
+        // Reference to VPT interface. Used for UI controls
+        self.vptInterface = new M3D.VPTrendInterface(PublicRenderData, self.renderer._gl);
+
+        //Renderer uses vpt interface for vptRenderers
+        if(self.renderer instanceof M3D.MainRenderer)
+            self.renderer.linkVPTinterface(self.vptInterface);
+
+        //One way to reference VPT to the UI
+        PublicRenderData.vptInterface = self.vptInterface;
+
         // Pre-download the programs that will likely be used
         self.renderer.preDownloadPrograms(self.requiredPrograms);
 
         //Init Volume renderer
-        self.VPT = new M3D.VPTController(PublicRenderData, self.renderer._gl, canvas);
+        //self.VPT = new M3D.VPTController(PublicRenderData, self.renderer._gl, canvas);
 
         // Initialize raycaster
         self.raycaster = new M3D.Raycaster();
 
         // Camera initialization
-        let camera = new M3D.VPTsharedPerspectiveCamera(60, PublicRenderData.canvasDimensions.width / PublicRenderData.canvasDimensions.height, 0.1, 2000);
+        let camera = new M3D.PerspectiveCamera(60, PublicRenderData.canvasDimensions.width / PublicRenderData.canvasDimensions.height, 0.1, 2000);
         camera.position = new THREE.Vector3(0, 0, 200);
 
         // Add camera to public render data
@@ -133,7 +140,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     $scope.resizeCanvas = function (width, height) {
         PublicRenderData.canvasDimensions = { width: width, height: height };
         self.cameraManager.aspectRatio = width / height;
-        self.VPT.resize(width, height); //TODO: don't need, remove later
+        //self.VPT.resize(width, height); //TODO: don't need, remove later
     };
 
     // region Annotations
@@ -729,9 +736,9 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      */
     $scope.stopRenderLoop = function () {
         //TODO do VPT stuff differently
-        if (self.VPT.getIsRunning()) {
+/*         if (self.VPT.getIsRunning()) {
             self.VPT.stopRendering();
-        }
+        } */
 
         if (self.animationRequestId) {
             cancelAnimationFrame(self.animationRequestId);
@@ -772,7 +779,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     // endregion
 
     TaskManagerService.addResultCallback("ObjLoader", PublicRenderData.replaceRenderContent);
-    TaskManagerService.addResultCallback("MHDLoader", PublicRenderData.replaceRenderContentVPT);
+    TaskManagerService.addResultCallback("MHDLoader", PublicRenderData.replaceRenderContentVolume);
     // endregion
 };
 

@@ -13,9 +13,9 @@ app.directive("mipSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-            scope.$on('startMIP', function () {
+/*             scope.$on('startMIP', function () {  TODO: disabled for testing...
                 inSteps.val(Math.round(1 / scope.publicRenderData.getVPTController().getRenderer()._stepSize));
-            });
+            }); */
             //
 
             let inSteps = element.find('[name="inSteps"]');

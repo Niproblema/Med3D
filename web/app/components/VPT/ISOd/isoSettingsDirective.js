@@ -13,10 +13,10 @@ app.directive("isoSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-            scope.$on('startISO', function () {
+/*             scope.$on('startISO', function () {  TODO: disabled for testing...
                 inSteps.val(Math.round(1/scope.publicRenderData.getVPTController().getRenderer()._stepSize));
                 inISO.val(scope.publicRenderData.getVPTController().getRenderer()._isovalue);
-            });
+            }); */
             //
             
             let inSteps = element.find('[name="inSteps"]');

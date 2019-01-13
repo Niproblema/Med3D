@@ -13,12 +13,12 @@ app.directive("mcsSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-            scope.$on('startMCS', function () {
+/*             scope.$on('startMCS', function () {  TODO: disabled for testing...
                 inSigma.val(Math.round(scope.publicRenderData.getVPTController().getRenderer()._sigmaMax));
                 inACorr.val(scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
-            });
+            }); */
             //
 
             //////TF variables//////

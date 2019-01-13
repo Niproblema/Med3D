@@ -13,12 +13,12 @@ app.directive("eamSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-            scope.$on('startEAM', function () {
+/*             scope.$on('startEAM', function () {  TODO: disabled for testing...
                 inSteps.val(Math.round(1/scope.publicRenderData.getVPTController().getRenderer()._stepSize));
                 inACorr.val(scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
-            });
+            }); */
             //
 
 

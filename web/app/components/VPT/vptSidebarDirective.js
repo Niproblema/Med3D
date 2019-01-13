@@ -15,22 +15,23 @@ app.directive("vptSidebar", function () {
             element.attr("id", attributes.toggleId);
 
             // On volume available change listener - enables or disables VPT options sidebar
-            scope.publicRenderData.vptSceneChangedListener = function(){
+/*             scope.publicRenderData.vptSceneChangedListener = function(){
                 if(scope.publicRenderData.getVPTController().getIsRunning){
                     //Enable menu    TODO!
                 }else{
                     //Disable menu  TODO!
 
                 }
-            };
+            }; */
             
 
             // Configure scroll bar
             element.find('.mCustomScrollbar').mCustomScrollbar({ alwaysShowScrollbar: 0, updateOnContentResize: true });
 
-            scope.allRenderers = ["MIP", "ISO", "EAM", "MCS"];
-            scope.rendererMethods
-            scope.renderer = 3; //default pick
+            //VPT renderer switcher
+            scope.allRenderers = ["ERROR", "EAM", "ISO", "MCS", "MIP"];
+
+            scope.renderer = 3; //current selected - also default
             scope.setRenderer = function (i) {
                 if (i != scope.renderer) {
                     console.log("VPT previous renderer: " + scope.allRenderers[scope.renderer]);
@@ -38,11 +39,14 @@ app.directive("vptSidebar", function () {
                     scope.renderer = i;
 
                     //Call VPTController
-                    scope.publicRenderData.getVPTController().chooseRenderer(scope.allRenderers[scope.renderer]);
+                    scope.publicRenderData.vptRendererChoice = i;
                     //Call for Directive-Needed for tranform function application
                     scope.$broadcast('start'+scope.allRenderers[scope.renderer]);
                 }
             };
+            //Apply default!
+            scope.publicRenderData.vptRendererChoice = i;
+            scope.$broadcast('start'+scope.allRenderers[scope.renderer]);
 
 
 
@@ -54,11 +58,11 @@ app.directive("vptSidebar", function () {
                 max: 32,
                 step: 0.1,
                 create: function () {
-                    scope.publicRenderData.getVPTController().getToneMapper()._exposure = parseFloat($(this).slider("value"));
+                   // scope.publicRenderData.getVPTController().getToneMapper()._exposure = parseFloat($(this).slider("value"));
                     exposureHandle.text($(this).slider("value"));
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.getVPTController().getToneMapper()._exposure = parseFloat(ui.value);
+                    //scope.publicRenderData.getVPTController().getToneMapper()._exposure = parseFloat(ui.value);
                     exposureHandle.text(ui.value);
                 }
             });
@@ -76,8 +80,8 @@ app.directive("vptSidebar", function () {
                     //scope.publicRenderData.lineHardness = $(this).slider( "value" );
                     rangeHandle1.text($(this).slider("values")[0]);
                     rangeHandle2.text($(this).slider("values")[1]);
-                    scope.publicRenderData.getVPTController().getToneMapper()._min = parseFloat($(this).slider("values")[0]);
-                    scope.publicRenderData.getVPTController().getToneMapper()._max = parseFloat($(this).slider("values")[1]);
+                    //scope.publicRenderData.getVPTController().getToneMapper()._min = parseFloat($(this).slider("values")[0]);
+                    //scope.publicRenderData.getVPTController().getToneMapper()._max = parseFloat($(this).slider("values")[1]);
                 },
                 slide: function (event, ui) {
                     //scope.publicRenderData.lineHardness = ui.value;
