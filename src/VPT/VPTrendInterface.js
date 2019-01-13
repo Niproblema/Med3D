@@ -31,13 +31,12 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS = new V_MCSRenderer(this._gl);
         this._renderer_MIP = new V_MIPRenderer(this._gl);
         this._renderers = [null, this._renderer_EAM, this._renderer_ISO, this._renderer_MCS, this._renderer_MIP]
-        this._toneMapper = null;
-
-        //this.cameraListener = new M3D.UpdateListener(function{this.});
+        this._toneMapper = new ReinhardToneMapper(this._gl, null);
     }
 
     _setupVars() {
         this._lastCamera = null;
+        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; });
         this._renderer_EAM = null;
         this._renderer_ISO = null;
         this._renderer_MCS = null;
@@ -48,6 +47,7 @@ M3D.VPTrendInterface = class {
         this._program = null;
         this._clipQuad = null;
         this._extColorBufferFloat = null;
+        this._softReset = false;
     }
 
     // ============================ M3D controls ============================ //
@@ -62,37 +62,38 @@ M3D.VPTrendInterface = class {
         }
 
         // == Camera updates setup == //
-        if(this._lastCamera != camera){
+        if (this._lastCamera != camera) {
             //Unsubscribe from last camera
-            if(this._lastCamera){
-
+            if (this._lastCamera) {
+                this._lastCamera.removeOnChangeListener(this._cameraListener);
             }
-
+            this._lastCamera = camera;
+            this._lastCamera._isDirty = true;
+            this._lastCamera.addOnChangeListener(this._cameraListener);
         }
         //
 
 
         var gl = this._gl;
-        var renderer = this._renderers[this._publicRenderData.vptRendererChoice];
+        var renderer = this._renderers[this._publicRenderData.vptBundle.rendererChoiceID];
 
         var savedState = this._saveGLstate(gl);
+
+        this._parseSettings();
 
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
 
             //Different renderer than last time - hardResetBuffers
-            if (this._publicRenderData.vptRendererChoice != object.lastRenderTypeID) {
+            if (this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID) {
                 this._hardResetBuffers(renderer, object);
             }
 
-            if (this._toneMapper) {
-                this._toneMapper.setTexture(object.renderBuffer.getTexture());
-            } else {
-                this._toneMapper = new ReinhardToneMapper(this._gl, object.renderBuffer.getTexture());
-            }
+            this._toneMapper.setTexture(object.renderBuffer.getTexture());
+
 
             //set  matrix
-            if (true) {    //TODO: condition camera == dirty || object == dirty
+            if (camera._isDirty || object._isDirty || this._softReset) {    //TODO: condition camera == dirty || object == dirty
                 var cameraProjectionWorldMatrix = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
                 var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5); //todo: does this scale?
                 var volumeTranslation = new THREE.Matrix4().makeTranslation(object.positionX, object.positionY, object.positionZ);
@@ -114,7 +115,9 @@ M3D.VPTrendInterface = class {
                 object.accumulationBuffer.use();
                 renderer._resetFrame();
                 object.accumulationBuffer.swap();
-
+                camera._isDirty = false;
+                object._isDirty = false;
+                this._softReset = false;
             }
             //Bind object references
             this._linkObjectReferencedToRenderer(renderer, object);
@@ -136,7 +139,7 @@ M3D.VPTrendInterface = class {
             gl.uniform1i(program.uniforms.uTexture, 0);
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
-            gl.disableVertexAttribArray(aPosition);  
+            gl.disableVertexAttribArray(aPosition);
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
@@ -259,16 +262,49 @@ M3D.VPTrendInterface = class {
 
     // ==== Saved and restore GL state ==== //
 
-    _saveGLstate(gl){
+    _saveGLstate(gl) {
         return {
-            viewport : gl.getParameter(gl.VIEWPORT),
-            framebuffer : gl.getParameter(gl.FRAMEBUFFER_BINDING)
+            viewport: gl.getParameter(gl.VIEWPORT),
+            framebuffer: gl.getParameter(gl.FRAMEBUFFER_BINDING)
         };
     }
 
-    _restoreGLstate(gl, state){
-        
-        gl.viewport(state.viewport[0],state.viewport[1],state.viewport[2],state.viewport[3]);
+    _restoreGLstate(gl, state) {
+
+        gl.viewport(state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3]);
         gl.bindFramebuffer(gl.FRAMEBUFFER, state.framebuffer);
+    }
+
+    /**
+     * Parses publicRenderData for new settings
+     */
+    _parseSettings() {
+        var settings = this._publicRenderData.vptBundle;
+
+        this._softReset = settings.resetRequest;
+        this._publicRenderData.vptBundle.resetRequest = false;
+
+        this._renderer_EAM._stepSize = 1 / settings.eam.steps;
+        this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
+        if (settings.eam.tf)
+            this._renderer_EAM.setTransferFunction(settings.eam.tf);
+
+        this._renderer_ISO._stepSize = 1 / settings.iso.steps
+        this._renderer_ISO._isovalue = settings.iso.isoVal;
+        this._renderer_ISO._diffuse[0] = settings.iso.color.r;
+        this._renderer_ISO._diffuse[1] = settings.iso.color.g;
+        this._renderer_ISO._diffuse[2] = settings.iso.color.b;
+
+        this._renderer_MCS._sigmaMax = settings.mcs.sigma
+        this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
+        if (settings.mcs.tf)
+            this._renderer_MCS.setTransferFunction = settings.mcs.tf;
+
+        this._renderer_MIP._stepSize = 1/settings.mip.steps;
+
+        this._toneMapper._exposure = settings.reinhard.exposure;
+        //todo: rangeToneMapper is not enabled.
+        //this._toneMapper._min  = settings.range.rangeLower;
+        //this._toneMapper._max  = settings.range.rangeHigher;
     }
 }

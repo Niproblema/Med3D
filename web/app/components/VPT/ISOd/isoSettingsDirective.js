@@ -13,12 +13,15 @@ app.directive("isoSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-/*             scope.$on('startISO', function () {  TODO: disabled for testing...
-                inSteps.val(Math.round(1/scope.publicRenderData.getVPTController().getRenderer()._stepSize));
-                inISO.val(scope.publicRenderData.getVPTController().getRenderer()._isovalue);
-            }); */
+            scope.$on('startISO', function () {
+                inSteps.val(scope.publicRenderData.vptBundle.iso.steps);
+                inISO.val(scope.publicRenderData.vptBundle.iso.isoVal);
+                var newColor = scope.publicRenderData.vptBundle.iso.color;
+                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                inColor.colorpicker('setValue', changeTo);
+            });
             //
-            
+
             let inSteps = element.find('[name="inSteps"]');
             let inISO = element.find('[name="inISO"]');
             let inColor = element.find('#inColor');
@@ -38,17 +41,17 @@ app.directive("isoSettings", function () {
                 }
             };
 
-            
-            inSteps.change(function(){
+
+            inSteps.change(function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
-                scope.publicRenderData.getVPTController().getRenderer()._stepSize = 1 / value;
+                scope.publicRenderData.vptBundle.iso.steps = value;
                 inSteps.val(value);
             }.bind(this));
 
-            
-            inISO.change(function(){
+
+            inISO.change(function () {
                 value = Math.max(0.01, parseFloat(inISO.val())) || 0.5;
-                scope.publicRenderData.getVPTController().getRenderer()._isovalue = value;
+                scope.publicRenderData.vptBundle.iso.isoVal = value;
                 inISO.val(value);
             }.bind(this));
 
@@ -57,17 +60,27 @@ app.directive("isoSettings", function () {
                 container: true,
                 inline: true,
                 format: "rgb",
-                sliders: sliders}).on('changeColor', function(e) {
-                                        color = e.color.toString('rgb').match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);                                        
-                                        scope.publicRenderData.getVPTController().getRenderer()._diffuse[0] = color[1] / 255;// parseInt(color.substr(1, 2), 16) / 255;
-                                        scope.publicRenderData.getVPTController().getRenderer()._diffuse[1] = color[2] / 255;//  parseInt(color.substr(3, 2), 16) / 255;
-                                        scope.publicRenderData.getVPTController().getRenderer()._diffuse[2] = color[3] / 255; //parseInt(color.substr(5, 2), 16) / 255;
+                sliders: sliders
+            }).on('changeColor', function (e) {
+                color = e.color.toString('rgb').match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
+                scope.publicRenderData.vptBundle.iso.color.r = color[1] / 255;// parseInt(color.substr(1, 2), 16) / 255;
+                scope.publicRenderData.vptBundle.iso.color.g = color[2] / 255;//  parseInt(color.substr(3, 2), 16) / 255;
+                scope.publicRenderData.vptBundle.iso.color.b = color[3] / 255; //parseInt(color.substr(5, 2), 16) / 255;
 
-                                    });
+            });
+
+
+            let toHex = function (int) {
+                var hex = Number(int).toString(16);
+                if (hex.length < 2) {
+                    hex = "0" + hex;
+                }
+                return hex;
+            };
 
 
         },
-        templateUrl: function(element, attributes) {
+        templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/ISOd/isoSettings.html';
         }
     }

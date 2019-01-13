@@ -235,6 +235,18 @@ M3D.Object3D = class {
         }
     }
 
+    /**
+     * Unsubscribes listener. Must be same object, that has been subscribed originally
+     * @param {} listener 
+     */
+    removeOnChangeListener(listener){
+        this._updateListenerManager.removeListener(listener);
+    }
+
+    removeAllOnChangeListeners(){
+        this._updateListenerManager.removeAll();
+    }
+
     //region MATRIX UPDATING
     applyMatrix(matrix) {
         this._matrix.multiplyMatrices(matrix, this._matrix);

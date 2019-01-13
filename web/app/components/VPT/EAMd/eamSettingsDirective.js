@@ -13,12 +13,12 @@ app.directive("eamSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-/*             scope.$on('startEAM', function () {  TODO: disabled for testing...
-                inSteps.val(Math.round(1/scope.publicRenderData.getVPTController().getRenderer()._stepSize));
-                inACorr.val(scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
+            scope.$on('startEAM', function () {
+                inSteps.val(scope.publicRenderData.vptBundle.eam.steps);   //Math.round(1 / scope.publicRenderData.getVPTController().getRenderer()._stepSize));
+                inACorr.val(scope.publicRenderData.vptBundle.eam.alphaCorrection);//scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
-            }); */
+            });
             //
 
 
@@ -62,14 +62,14 @@ app.directive("eamSettings", function () {
             ///
             inSteps.change(function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
-                scope.publicRenderData.getVPTController().getRenderer()._stepSize = 1 / value;
+                scope.publicRenderData.vptBundle.eam.steps = value;
                 inSteps.val(value);
             }.bind(this));
 
 
             inACorr.change(function () {
                 value = Math.max(0, parseFloat(inACorr.val())) || 1;
-                scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection = value;
+                scope.publicRenderData.vptBundle.eam.alphaCorrection = value;
                 inACorr.val(value);
             }.bind(this));
 
@@ -133,7 +133,7 @@ app.directive("eamSettings", function () {
                 render();
                 onChange();
             };
-            scope.loadTF_EAM = function () {          //TODO
+            scope.loadTF_EAM = function () {        
                 CommonUtils.readTextFile(function (data) {
                     tfBumps = JSON.parse(data);
                     render();
@@ -274,8 +274,8 @@ app.directive("eamSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.getVPTController().getRenderer().reset();
-                scope.publicRenderData.getVPTController().getRenderer().setTransferFunction(canvas);
+                scope.publicRenderData.vptBundle.resetRequest = true;
+                scope.publicRenderData.vptBundle.eam.tf = canvas;                
             }
 
             initTF();

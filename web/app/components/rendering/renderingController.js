@@ -68,10 +68,13 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Add new render content
         for (let i = 0; i < objects.length; i++) {
             var o = new M3D.VPTVolume(objects[i].data, objects[i].meta);
+
+            //Setup listener onChangeListener - Used by VPT interface to determine when to reset accumulationBuffer
+            o._isDirty = true;
+            o.addOnChangeListener(new M3D.UpdateListener(function (update) { this._isDirty = true; }));
+
             PublicRenderData.contentRenderGroup.add(o);
         }
-
-        //self.VPT.setNewActiveCamera(self.cameraManager.activeCamera)
 
 
         // Calculate content bounding sphere
@@ -81,8 +84,6 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         self.cameraManager.focusCamerasOn(contentSphere, offsetDir);
 
         $scope.startRenderLoop();
-        //$scope.stopRenderLoop();
-        //self.VPT.loadNewScene();
     };
 
 

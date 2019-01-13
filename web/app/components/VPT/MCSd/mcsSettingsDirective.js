@@ -13,12 +13,12 @@ app.directive("mcsSettings", function () {
             scope.getKeys = Object.keys;
 
             //Start notification for restoring UI values
-/*             scope.$on('startMCS', function () {  TODO: disabled for testing...
-                inSigma.val(Math.round(scope.publicRenderData.getVPTController().getRenderer()._sigmaMax));
-                inACorr.val(scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
+            scope.$on('startMCS', function () { 
+                inSigma.val(scope.publicRenderData.vptBundle.mcs.sigma);
+                inACorr.val(scope.publicRenderData.vptBundle.mcs.alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
-            }); */
+            });
             //
 
             //////TF variables//////
@@ -62,7 +62,7 @@ app.directive("mcsSettings", function () {
 
             inSigma.change(function(){
                 value = Math.max(0, parseFloat(inSigma.val())) || 1;
-                scope.publicRenderData.getVPTController().getRenderer()._sigmaMax = value;
+                scope.publicRenderData.vptBundle.mcs.sigma = value;
                 inSigma.val(value);
                 //TODO: crashes at 0.0
             }.bind(this));
@@ -70,7 +70,7 @@ app.directive("mcsSettings", function () {
             
             inACorr.change(function(){
                 value = Math.max(0, parseFloat(inACorr.val())) || 1;
-                scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection = value;
+                scope.publicRenderData.vptBundle.mcs.alphaCorrection = value;
                 inACorr.val(value);
             }.bind(this));
 
@@ -275,8 +275,8 @@ app.directive("mcsSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.getVPTController().getRenderer().reset();
-                scope.publicRenderData.getVPTController().getRenderer().setTransferFunction(canvas);
+                scope.publicRenderData.vptBundle.resetRequest = true;
+                scope.publicRenderData.vptBundle.mcs.tf = canvas;       
             }
 
             initTF();
