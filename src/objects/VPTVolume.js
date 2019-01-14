@@ -7,16 +7,19 @@
 M3D.VPTVolume = class extends M3D.Mesh {
     constructor(data, meta) {
 
-        //var material = new M3D.VolumeBasicMaterial();   //TODO: other stuff!
-        var material = new M3D.MeshPhongMaterial(); //TODO: custom material, no reflections, no lightning
-        material = new M3D.MeshPhongMaterial();
-        material.specular = new THREE.Color("#444444");
-        material.color = new THREE.Color("#8A0707");
-        material.shininess = 8;
+        
+        var material = new M3D.CustomShaderMaterial("volumeProject");
+        material.lights = false;
+        material.transparent = true;
+        material.color = new THREE.Color(0xffffff);
+        var textur = new M3D.Texture();
+        textur._dirty = false;
+        textur._glTex = null;
+        material.addMap(textur);  //Can't set tex later, or template get set wrong
+        
 
-
-        //Geometry setup
-        var geometry = new M3D.Geometry();
+        //Geometry setup - Base geometry, replaced by Marching cubes asynchronously (todo)
+        var geometry = new M3D.Geometry();      
 
         // Quad vertices
         geometry.vertices = M3D.Float32Attribute([
@@ -57,6 +60,14 @@ M3D.VPTVolume = class extends M3D.Mesh {
             -1.0, 1.0, -1.0
         ], 3);
 
+/*         geometry.uv = M3D.Float32Attribute(
+            [
+                0, 0,
+                1, 1,
+                0, 1,
+                1, 0
+            ], 2
+        ); */
 
         geometry.indices = M3D.Uint32Attribute([
             0, 1, 2, 0, 2, 3,    // Front face
@@ -71,7 +82,7 @@ M3D.VPTVolume = class extends M3D.Mesh {
 
         // Super M3D.Mesh
         super(geometry, material);
-        this.type = "VolumeCube";
+        this.type = "Volume";
         this._meta = meta;
         this._width = this._meta.dimensions[0];
         this._height = this._meta.dimensions[1];

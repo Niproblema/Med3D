@@ -51,7 +51,7 @@ M3D.VPTrendInterface = class {
     }
 
     // ============================ M3D controls ============================ //
-    renderObjects(objects, camera) {
+    renderObjects(objects, camera, glManager) {
         //Init
         if (camera instanceof M3D.OrthographicCamera)
             return;
@@ -143,9 +143,10 @@ M3D.VPTrendInterface = class {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
-        }
 
-        //gl.bindFramebuffer(gl.FRAMEBUFFER, savedState.framebuffer);
+            //Update object's texture.
+            this._setObjectMaterialTexture(object, glManager);
+        }
         this._restoreGLstate(gl, savedState);
     }
 
@@ -306,5 +307,19 @@ M3D.VPTrendInterface = class {
         //todo: rangeToneMapper is not enabled.
         //this._toneMapper._min  = settings.range.rangeLower;
         //this._toneMapper._max  = settings.range.rangeHigher;
+    }
+
+
+    /**
+     * Updates object's texture to match it's vpt output buffer.
+     * @param {M3D.VPTVolume} object 
+     */
+    _setObjectMaterialTexture(object, glManager){
+        var tex = object.material.maps[0];
+
+
+        tex._glTex = object._outputBuffer.getTexture();
+        tex._dirty = false;
+        glManager._textureManager._cached_textures.set(tex, tex._glTex); //todo: better way....
     }
 }

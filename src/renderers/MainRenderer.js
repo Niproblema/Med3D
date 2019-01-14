@@ -67,7 +67,7 @@ M3D.MainRenderer = class extends M3D.Renderer {
 
         // Render volume objects with VPT
         if(this._vptObjects.length > 0 && this._vptInterface){
-            this._vptInterface.renderObjects(this._vptObjects, camera);
+            this._vptInterface.renderObjects(this._vptObjects, camera, this._glManager); //todo: better way  
         }
 
         // Render opaque objects

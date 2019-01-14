@@ -38,32 +38,32 @@ M3D.Texture = class {
 	}
 
 	applyConfig(texConfig) {
-        this.wrapS = texConfig.wrapS;
-        this.wrapT = texConfig.wrapT;
-        this.minFilter = texConfig.minFilter;
-        this.magFilter = texConfig.magFilter;
-        this.internalFormat = texConfig.internalFormat;
-        this.format = texConfig.format;
-        this.type = texConfig.type;
+		this.wrapS = texConfig.wrapS;
+		this.wrapT = texConfig.wrapT;
+		this.minFilter = texConfig.minFilter;
+		this.magFilter = texConfig.magFilter;
+		this.internalFormat = texConfig.internalFormat;
+		this.format = texConfig.format;
+		this.type = texConfig.type;
 	}
 
 	// region GETTERS
 	get dirty() { return this._dirty; }
 	get image() { return this._image; }
 
-    get wrapS() {
+	get wrapS() {
 		return this._wrapS;
 	}
-	get wrapT(){
-            return this._wrapT;
-        }
+	get wrapT() {
+		return this._wrapT;
+	}
 
-	get minFilter(){
-            return this._minFilter;
-        }
-	get magFilter(){
-            return this._magFilter;
-        }
+	get minFilter() {
+		return this._minFilter;
+	}
+	get magFilter() {
+		return this._magFilter;
+	}
 
 	get internalFormat() {
 		return this._internalFormat;
@@ -80,69 +80,69 @@ M3D.Texture = class {
 	// region SETTERS
 	set image(value) {
 		if (value !== this._image) {
-            this._image = value;
-            this._dirty = true;
-        }
+			this._image = value;
+			this._dirty = true;
+		}
 	}
 
 	set wrapS(value) {
-        if (value !== this._wrapS) {
-            this._wrapS = value;
-            this._dirty = true;
-        }
+		if (value !== this._wrapS) {
+			this._wrapS = value;
+			this._dirty = true;
+		}
 	}
 	set wrapT(value) {
-        if (value !== this._wrapT) {
-            this._wrapT = value;
-            this._dirty = true;
-        }
+		if (value !== this._wrapT) {
+			this._wrapT = value;
+			this._dirty = true;
+		}
 	}
 
 	set minFilter(value) {
-        if (value !== this._minFilter) {
-            this._minFilter = value;
-            this._dirty = true;
-        }
+		if (value !== this._minFilter) {
+			this._minFilter = value;
+			this._dirty = true;
+		}
 	}
 	set magFilter(value) {
-        if (value !== this._magFilter) {
-            this._magFilter = value;
-            this._dirty = true;
-        }
+		if (value !== this._magFilter) {
+			this._magFilter = value;
+			this._dirty = true;
+		}
 	}
 
 	set internalFormat(value) {
-        if (value !== this._internalFormat) {
-            this._internalFormat = value;
-            this._dirty = true;
-        }
+		if (value !== this._internalFormat) {
+			this._internalFormat = value;
+			this._dirty = true;
+		}
 	}
 	set format(value) {
-        if (value !== this._format) {
-            this._format = value;
-            this._dirty = true;
-        }
+		if (value !== this._format) {
+			this._format = value;
+			this._dirty = true;
+		}
 	}
 
 	set width(value) {
-        if (value !== this._width) {
-            this._width = value;
-            this._dirty = true;
-        }
+		if (value !== this._width) {
+			this._width = value;
+			this._dirty = true;
+		}
 	}
 
 	set height(value) {
-        if (value !== this._height) {
-            this._height = value;
-            this._dirty = true;
-        }
+		if (value !== this._height) {
+			this._height = value;
+			this._dirty = true;
+		}
 	}
 
 	set type(value) {
-        if (value !== this._type) {
-            this._type = value;
-            this._dirty = true;
-        }
+		if (value !== this._type) {
+			this._type = value;
+			this._dirty = true;
+		}
 	}
 	// endregion
 };

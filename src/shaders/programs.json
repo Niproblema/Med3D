@@ -71,6 +71,14 @@
         }
     },
 
+    "custom_volumeProject": {
+        "description": "Projects mesh with VPT's rendered texture",
+        "shaders": {
+            "vertex": "custom/VPT/volumeProject.vert",
+            "fragment": "custom/VPT/volumeProject.frag"
+        }
+    },
+
     "basicVolume": {
         "description": "Default volume.",
         "shaders": {
