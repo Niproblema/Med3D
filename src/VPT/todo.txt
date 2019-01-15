@@ -12,6 +12,7 @@ iso value in load volume dialog.
 
 Maybe:
  -Reuse VPT renderers instead of copies in /src/VPT/v_renderers.	-Maybe extend?
+ -File loading menu, server files don't work
 
 Rethink:
  -Depth		  - export from VPT ?

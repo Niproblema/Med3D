@@ -19,8 +19,8 @@ app.directive("marchingCubesModal", function () {
             // DOM references
             var volumeMhdFileInput = modal.find("#volumeMhdFileInput");
             var volumeRawFileInput = modal.find("#volumeRawFileInput");
-            var localTabIsoInput = modal.find("#localMhdTab .volume-loader-iso-input");
-            var serverTabIsoInput = modal.find("#serverMhdTab .volume-loader-iso-input");
+            //var localTabIsoInput = modal.find("#localMhdTab .volume-loader-iso-input");
+            //var serverTabIsoInput = modal.find("#serverMhdTab .volume-loader-iso-input");
             var volumeFileOpenButton = modal.find("#volumeFileOpenButton");
             var volumeButtonTooltipWrapper = volumeFileOpenButton.closest(".tooltip-wrapper");
 
@@ -36,7 +36,7 @@ app.directive("marchingCubesModal", function () {
 
             // Local tab input checking
             var localMhdValidate = function() {
-                if (volumeMhdFileInput.val() === "" || volumeRawFileInput.val() === "" || localTabIsoInput.val() === "") {
+                if (volumeMhdFileInput.val() === "" || volumeRawFileInput.val() === "" ){ // || localTabIsoInput.val() === "") {
                     toggleLoadButton(false);
                 }
                 else {
@@ -47,7 +47,7 @@ app.directive("marchingCubesModal", function () {
             // Setup local tab listeners
             volumeMhdFileInput.change(localMhdValidate);
             volumeRawFileInput.change(localMhdValidate);
-            localTabIsoInput.change(localMhdValidate);
+            //localTabIsoInput.change(localMhdValidate);
 
 
             // SERVER
@@ -192,18 +192,18 @@ app.directive("marchingCubesModal", function () {
             var localOnLoadClick = function () {
                 var mhdFile = volumeMhdFileInput.prop('files')[0];
                 var rawFile = volumeRawFileInput.prop('files')[0];
-                var isoVal = parseFloat(localTabIsoInput.val());
+                //var isoVal = parseFloat(localTabIsoInput.val());
 
-                scope.localMhdLoad(mhdFile, rawFile, isoVal);
+                scope.localMhdLoad(mhdFile, rawFile, 0); //isoVal);
 
                 modal.modal('hide');
             };
 
             var serverOnLoadClick = function () {
                 var filename = activeMhdListItem.data('filename');
-                var isoVal = parseFloat(serverTabIsoInput.val());
+                //var isoVal = parseFloat(serverTabIsoInput.val());
 
-                scope.serverMhdLoad(filename, isoVal);
+                scope.serverMhdLoad(filename, 0);// isoVal);
 
                 modal.modal('hide');
             };

@@ -43,7 +43,6 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             //TODO: disabled marchingCubes, some errors? -Jan
             
             onLoad(rez);
-            //onLoad(new M3D.VPTVolume(rez));
         };
 
         let task = {
@@ -111,7 +110,6 @@ let volumeLoadingController = function($scope, TaskManagerService) {
                 //TODO: disabled marchingCubes, some errors? -Jan
 
                 onLoad(rez);
-                //onLoad(new M3D.VPTVolume(rez));
             });
 
             reader.fileLoad(mhdFile, rawFile);
