@@ -64,6 +64,7 @@ app.directive("mcsSettings", function () {
                 value = Math.max(0, parseFloat(inSigma.val())) || 1;
                 scope.publicRenderData.vptBundle.mcs.sigma = value;
                 inSigma.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
                 //TODO: crashes at 0.0
             }.bind(this));
 
@@ -72,6 +73,7 @@ app.directive("mcsSettings", function () {
                 value = Math.max(0, parseFloat(inACorr.val())) || 1;
                 scope.publicRenderData.vptBundle.mcs.alphaCorrection = value;
                 inACorr.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }.bind(this));
 
             inColor.colorpicker({
@@ -275,8 +277,8 @@ app.directive("mcsSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.vptBundle.resetRequest = true;
-                scope.publicRenderData.vptBundle.mcs.tf = canvas;       
+                scope.publicRenderData.vptBundle.mcs.tf = canvas; 
+                scope.publicRenderData.vptBundle.resetMVP = true;      
             }
 
             initTF();

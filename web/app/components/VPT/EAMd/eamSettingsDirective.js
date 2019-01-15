@@ -64,6 +64,7 @@ app.directive("eamSettings", function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
                 scope.publicRenderData.vptBundle.eam.steps = value;
                 inSteps.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }.bind(this));
 
 
@@ -71,6 +72,7 @@ app.directive("eamSettings", function () {
                 value = Math.max(0, parseFloat(inACorr.val())) || 1;
                 scope.publicRenderData.vptBundle.eam.alphaCorrection = value;
                 inACorr.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }.bind(this));
 
             inColor.colorpicker({
@@ -274,8 +276,8 @@ app.directive("eamSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.vptBundle.resetRequest = true;
-                scope.publicRenderData.vptBundle.eam.tf = canvas;                
+                scope.publicRenderData.vptBundle.eam.tf = canvas;   
+                scope.publicRenderData.vptBundle.resetMVP = true;             
             }
 
             initTF();

@@ -25,7 +25,8 @@ app.factory('PublicRenderData', function () {
         vptBundle: {
             rendererChoiceID: 3,
             rendererName: "MCS",
-            resetRequest: false,
+            resetMVP: false,
+            resetBuffers : false,
             eam: {
                 steps: 10,
                 alphaCorrection: 1,

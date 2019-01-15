@@ -28,6 +28,7 @@ app.directive("vptSidebar", function () {
 
                     //Call VPTController
                     scope.publicRenderData.vptBundle.rendererChoiceID = i;
+                    
                     //Call for Directive-Needed for tranform function application
                     scope.$broadcast('start'+scope.allRenderers[scope.renderer]);
                 }

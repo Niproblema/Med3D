@@ -46,6 +46,7 @@ app.directive("isoSettings", function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
                 scope.publicRenderData.vptBundle.iso.steps = value;
                 inSteps.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }.bind(this));
 
 
@@ -53,6 +54,7 @@ app.directive("isoSettings", function () {
                 value = Math.max(0.01, parseFloat(inISO.val())) || 0.5;
                 scope.publicRenderData.vptBundle.iso.isoVal = value;
                 inISO.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }.bind(this));
 
             inColor.colorpicker({
@@ -66,7 +68,7 @@ app.directive("isoSettings", function () {
                 scope.publicRenderData.vptBundle.iso.color.r = color[1] / 255;// parseInt(color.substr(1, 2), 16) / 255;
                 scope.publicRenderData.vptBundle.iso.color.g = color[2] / 255;//  parseInt(color.substr(3, 2), 16) / 255;
                 scope.publicRenderData.vptBundle.iso.color.b = color[3] / 255; //parseInt(color.substr(5, 2), 16) / 255;
-
+                scope.publicRenderData.vptBundle.resetMVP = true;
             });
 
 

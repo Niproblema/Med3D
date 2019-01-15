@@ -28,6 +28,7 @@ void main() {
 
     // Projected position
     posT = PMat * VPos4;
+    posT = vec4(posT.xyz / posT.w,1);
     gl_Position = posT;
 
     #if (LIGHTS)

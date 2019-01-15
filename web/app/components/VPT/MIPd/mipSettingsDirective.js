@@ -23,6 +23,7 @@ app.directive("mipSettings", function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
                 scope.publicRenderData.vptBundle.mip.steps = value; //1 / value;
                 inSteps.val(value);
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }.bind(this));
         },
         templateUrl: function (element, attributes) {

@@ -85,8 +85,10 @@ M3D.VPTrendInterface = class {
             var object = objects[i];
 
             //Different renderer than last time - hardResetBuffers
-            if (this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID) {
+            if (this._publicRenderData.vptBundle.resetBuffers || this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID) {
                 this._hardResetBuffers(renderer, object);
+
+
             }
 
             this._toneMapper.setTexture(object.renderBuffer.getTexture());
@@ -95,7 +97,7 @@ M3D.VPTrendInterface = class {
             //set  matrix
             if (camera._isDirty || object._isDirty || this._softReset) {    //TODO: condition camera == dirty || object == dirty
                 var cameraProjectionWorldMatrix = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-                var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5); //todo: does this scale?
+                var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5);
                 var volumeTranslation = new THREE.Matrix4().makeTranslation(object.positionX, object.positionY, object.positionZ);
                 var volumeScale = new THREE.Matrix4().makeScale(object.scale.x, object.scale.y, object.scale.z);
 
@@ -123,12 +125,11 @@ M3D.VPTrendInterface = class {
             this._linkObjectReferencedToRenderer(renderer, object);
             renderer.render();
             this._unlinkObjectFromRenderer(renderer);
-            this._toneMapper.render();
+            this._toneMapper.render(); 
 
-            //gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);   
+
             var program = this._program;
             gl.useProgram(program.program);
-            //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             object._outputBuffer.use();
             gl.bindBuffer(gl.ARRAY_BUFFER, object.clipQuad);
             var aPosition = program.attributes.aPosition;
@@ -259,6 +260,8 @@ M3D.VPTrendInterface = class {
         this.__setupBuffers(renderer, object);
         this.__setupVolumeTexture(object);
         object._lastRendererTypeID = renderer._type_id;
+        this._publicRenderData.vptBundle.resetBuffers = false;
+        this._publicRenderData.vptBundle.resetMVP = true;
     }
 
     // ==== Saved and restore GL state ==== //
@@ -282,8 +285,8 @@ M3D.VPTrendInterface = class {
     _parseSettings() {
         var settings = this._publicRenderData.vptBundle;
 
-        this._softReset = settings.resetRequest;
-        this._publicRenderData.vptBundle.resetRequest = false;
+        this._softReset = settings.resetMVP;
+        this._publicRenderData.vptBundle.resetMVP = false;
 
         this._renderer_EAM._stepSize = 1 / settings.eam.steps;
         this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
@@ -301,7 +304,7 @@ M3D.VPTrendInterface = class {
         if (settings.mcs.tf)
             this._renderer_MCS.setTransferFunction = settings.mcs.tf;
 
-        this._renderer_MIP._stepSize = 1/settings.mip.steps;
+        this._renderer_MIP._stepSize = 1 / settings.mip.steps;
 
         this._toneMapper._exposure = settings.reinhard.exposure;
         //todo: rangeToneMapper is not enabled.
@@ -314,7 +317,7 @@ M3D.VPTrendInterface = class {
      * Updates object's texture to match it's vpt output buffer.
      * @param {M3D.VPTVolume} object 
      */
-    _setObjectMaterialTexture(object, glManager){
+    _setObjectMaterialTexture(object, glManager) {
         var tex = object.material.maps[0];
 
 
