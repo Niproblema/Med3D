@@ -176,6 +176,16 @@ M3D.Renderer = class {
     }
 
     /**
+     * Resets all gl managers - deletes attributes, and textures.
+     */
+    reset(){
+        //todo: CHECK IF IT's RUNNING - don't
+        this._glManager.clearAttributeBuffers();
+        //this._glManager.clearFrameBuffers();  //Don't need to reset fbs. Maybe later
+        //this._glManager.clearTextures();    //Need this, but it's connected to FrameBuffers, TODO: later
+    }
+
+    /**
      * Sets the url to shader server & directory from which the shaders source is loaded.
      * @param url Full url to the shader server directory
      */

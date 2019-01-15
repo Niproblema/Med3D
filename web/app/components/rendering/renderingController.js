@@ -14,7 +14,6 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
 
     // Private renderer components
-    //this.VPT = null;
     this.renderer = null;
     this.renderQueue = null;
     this.redrawQueue = null;
@@ -35,9 +34,8 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      */
     PublicRenderData.replaceRenderContent = function (...objects) {
         $scope.stopRenderLoop();
-        //self.VPT.resetScene();
         PublicRenderData.contentRenderGroup.clear();
-        self.renderer.clearCachedAttributes();
+        self.renderer.reset();
         $scope.$apply(Annotations.clear);
 
         // Add new render content
@@ -60,9 +58,8 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      */
     PublicRenderData.replaceRenderContentVolume = function (...objects) {
         $scope.stopRenderLoop();
-        //self.VPT.resetScene();
         PublicRenderData.contentRenderGroup.clear();
-        self.renderer.clearCachedAttributes();
+        self.renderer.reset();
         $scope.$apply(Annotations.clear);
 
         // Add new render content
@@ -114,9 +111,6 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Pre-download the programs that will likely be used
         self.renderer.preDownloadPrograms(self.requiredPrograms);
 
-        //Init Volume renderer
-        //self.VPT = new M3D.VPTController(PublicRenderData, self.renderer._gl, canvas);
-
         // Initialize raycaster
         self.raycaster = new M3D.Raycaster();
 
@@ -141,7 +135,6 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     $scope.resizeCanvas = function (width, height) {
         PublicRenderData.canvasDimensions = { width: width, height: height };
         self.cameraManager.aspectRatio = width / height;
-        //self.VPT.resize(width, height); //TODO: don't need, remove later
     };
 
     // region Annotations
@@ -736,11 +729,6 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      * Stops rendering loop.
      */
     $scope.stopRenderLoop = function () {
-        //TODO do VPT stuff differently
-/*         if (self.VPT.getIsRunning()) {
-            self.VPT.stopRendering();
-        } */
-
         if (self.animationRequestId) {
             cancelAnimationFrame(self.animationRequestId);
             self.animationRequestId = null;

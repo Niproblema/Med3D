@@ -239,6 +239,14 @@ M3D.GLManager = class {
         this._attributeManager.clearBuffers();
     }
 
+    clearFrameBuffers(){
+        this._fboManager.clearFrameBuffers();
+    }
+
+    clearTextures(){
+        this._textureManager.clearTextures();
+    }
+
     //region CLEARING FUNCTIONS
     /**
      * Clears the selected gl buffers with their preset value

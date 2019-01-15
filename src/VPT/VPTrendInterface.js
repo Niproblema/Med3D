@@ -36,7 +36,7 @@ M3D.VPTrendInterface = class {
 
     _setupVars() {
         this._lastCamera = null;
-        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; console.log(Date.now() +" CAMERA EVENT: "+update) });
+        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true;});
         this._renderer_EAM = null;
         this._renderer_ISO = null;
         this._renderer_MCS = null;
@@ -108,7 +108,7 @@ M3D.VPTrendInterface = class {
                 object.lastMVPMatrix = new Matrix(tr.elements);
 
                 //reset object's accumulation
-                gl.bindBuffer(gl.ARRAY_BUFFER, object.clipQuad);
+                gl.bindBuffer(gl.ARRAY_BUFFER, this._clipQuad);
                 gl.enableVertexAttribArray(0); // position always bound to attribute 0
                 gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
@@ -129,7 +129,7 @@ M3D.VPTrendInterface = class {
             var program = this._program;
             gl.useProgram(program.program);
             object._outputBuffer.use();
-            gl.bindBuffer(gl.ARRAY_BUFFER, object.clipQuad);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this._clipQuad);
             var aPosition = program.attributes.aPosition;
             gl.enableVertexAttribArray(aPosition);
             gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
@@ -168,7 +168,7 @@ M3D.VPTrendInterface = class {
         renderer._frameBuffer = object.frameBuffer;
         renderer._accumulationBuffer = object.accumulationBuffer;
         renderer._renderBuffer = object.renderBuffer;
-        renderer._clipQuad = object._clipQuad;
+        renderer._clipQuad = this._clipQuad;
         renderer._volumeTexture = object.volumeTexture;
         renderer._environmentTexture = object.environmentTexture;
     }
@@ -251,7 +251,7 @@ M3D.VPTrendInterface = class {
             internalFormat: this._gl.RGBA16F,
             type: this._gl.FLOAT
         });
-        object._clipQuad = new WebGLUtils.createClipQuad(this._gl);
+        this._clipQuad = new WebGLUtils.createClipQuad(this._gl);
     }
 
     _hardResetBuffers(renderer, object) {

@@ -1,13 +1,21 @@
-kreš conteksta
 kreš z anglom
 update bootstrap + alpha v colorpickerju
 Marching cubes,
-vpt frame background
-garbage collect old scenes.(don't forget texture in texture manager...)
-render stutter na camera move w right button..
+vpt frame background settings
+volume sharing session.
+garbage collect volumeTextures in Texture manager
 depth export
+parse scene cameras and replicate to VPT
+Some input files render different ? vertebra16
+iso value in load volume dialog.
 
 
+Maybe:
+ -Reuse VPT renderers instead of copies in /src/VPT/v_renderers.	-Maybe extend?
 
- -Depth
- -unlimited zoom  - scale cube? fov change?
+Rethink:
+ -Depth		  - export from VPT ?
+ -unlimited zoom  - scale cube? fov change? cut volume cube data to show layers
+ -offscreeen canvas - advantage: non shared GL settings
+ -Reinhard tonemapper
+ -Range tonemapper

@@ -15,7 +15,7 @@ M3D.VPTVolume = class extends M3D.Mesh {
         var textur = new M3D.Texture();
         textur._dirty = false;
         textur._glTex = null;
-        material.addMap(textur);  //Can't set tex later, or template get set wrong
+        material.addMap(textur);  //Can't set tex later, or template gets set wrong
         
 
         //Geometry setup - Base geometry, replaced by Marching cubes asynchronously (todo)
@@ -101,7 +101,6 @@ M3D.VPTVolume = class extends M3D.Mesh {
         this._frameBuffer = null;
         this._accumulationBuffer = null;
         this._renderBuffer = null;
-        this._clipQuad = null;
         this._outputBuffer = null;
         this._volumeTexture = null;
         this._environmentTexture = null;
@@ -126,10 +125,23 @@ M3D.VPTVolume = class extends M3D.Mesh {
     set lastRenderTypeID(id) { this._lastRendererTypeID = id; }
     get frameBuffer() { return this._frameBuffer; }
     get accumulationBuffer() { return this._accumulationBuffer; }
-    get clipQuad() { return this._clipQuad; }
     get renderBuffer() { return this._renderBuffer; }
     get volumeTexture() {return this._volumeTexture; }
     get environmentTexture() {return this._environmentTexture;}
     get lastMVPMatrix() { return this._lastMVPMatrix; }
     set lastMVPMatrix(newP) { this._lastMVPMatrix = newP; }
+
+
+    // ========== ============ //
+
+    /**
+     *Extended clear to gc buffers
+     */
+    clear(){
+        super.clear();
+        this._frameBuffer.destroy();
+        this._accumulationBuffer.destroy();
+        this._renderBuffer.destroy();
+        this._outputBuffer.destroy();
+    }
 };
