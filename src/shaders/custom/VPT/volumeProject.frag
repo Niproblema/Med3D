@@ -79,9 +79,7 @@ void main() {
     #if (TEXTURE)
         // Apply all of the textures
         #for I_TEX in 0 to NUM_TEX
-
              color = texture(material.texture##I_TEX, vec2(posT.x, posT.y)*0.5+0.5);
-             //color = vec4(0,0,1,1); //texture(material.texture##I_TEX, vec2(posT.x, posT.y));
         #end
     #fi
 }

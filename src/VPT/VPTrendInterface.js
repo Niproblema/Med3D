@@ -36,7 +36,7 @@ M3D.VPTrendInterface = class {
 
     _setupVars() {
         this._lastCamera = null;
-        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; });
+        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; console.log(Date.now() +" CAMERA EVENT: "+update) });
         this._renderer_EAM = null;
         this._renderer_ISO = null;
         this._renderer_MCS = null;
@@ -72,8 +72,6 @@ M3D.VPTrendInterface = class {
             this._lastCamera.addOnChangeListener(this._cameraListener);
         }
         //
-
-
         var gl = this._gl;
         var renderer = this._renderers[this._publicRenderData.vptBundle.rendererChoiceID];
 
@@ -95,7 +93,7 @@ M3D.VPTrendInterface = class {
 
 
             //set  matrix
-            if (camera._isDirty || object._isDirty || this._softReset) {    //TODO: condition camera == dirty || object == dirty
+            if (camera._isDirty || object._isDirty || this._softReset) { 
                 var cameraProjectionWorldMatrix = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
                 var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5);
                 var volumeTranslation = new THREE.Matrix4().makeTranslation(object.positionX, object.positionY, object.positionZ);

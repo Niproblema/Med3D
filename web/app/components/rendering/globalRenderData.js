@@ -25,7 +25,7 @@ app.factory('PublicRenderData', function () {
         vptBundle: {
             rendererChoiceID: 3,
             rendererName: "MCS",
-            resetMVP: false,
+            resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
             resetBuffers : false,
             eam: {
                 steps: 10,
@@ -34,7 +34,7 @@ app.factory('PublicRenderData', function () {
             },
             iso: {
                 steps: 10,
-                isoVal: 0.5,
+                isoVal: 0.3,
                 color: {
                     r: 1,
                     g: 1,

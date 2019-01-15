@@ -323,13 +323,13 @@ let _updateHandle = function () {
         }
 
         if (inputData.mouse.buttons.right && !inputData.mouse.buttons.left) {
-            translationVec.x = (inputData.mouse.prevPosition.x - inputData.mouse.position.x) * deltaT * 10;
-            translationVec.y = (inputData.mouse.prevPosition.y - inputData.mouse.position.y) * deltaT * 10;
+            translationVec.x = (inputData.mouse.prevPosition.x - inputData.mouse.position.x) * deltaT;
+            translationVec.y = (inputData.mouse.prevPosition.y - inputData.mouse.position.y) * deltaT; //*10 was just too rapid
             translationVec.z = 0;
 
             translationVec.applyEuler(this._camera.rotation);
             this._orbitCenter.add(translationVec);
-            this._camera.position.add(translationVec);
+            this._camera.translate(translationVec);
         }
 
         centerOffset.copy(this._camera.position).sub(this._orbitCenter);

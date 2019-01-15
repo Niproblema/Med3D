@@ -1,0 +1,13 @@
+kreš conteksta
+kreš z anglom
+update bootstrap + alpha v colorpickerju
+Marching cubes,
+vpt frame background
+garbage collect old scenes.(don't forget texture in texture manager...)
+render stutter na camera move w right button..
+depth export
+
+
+
+ -Depth
+ -unlimited zoom  - scale cube? fov change?

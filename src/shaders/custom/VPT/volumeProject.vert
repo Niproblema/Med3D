@@ -41,8 +41,5 @@ void main() {
         fragVColor = VColor;
     #fi
 
-/*     #if (TEXTURE)
-        // Pass uv coordinate to fragment shader
-        fragUV = uv;
-    #fi */
+
  }
