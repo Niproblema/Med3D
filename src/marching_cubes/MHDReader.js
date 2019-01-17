@@ -63,8 +63,8 @@ M3D.MHDReader = class {
         this._rawFile = rawFile;
         var self = this;
 
-        var rawParser = function(event) {
-            var status = {code: 0, msg: ""};
+        var rawParser = function (event) {
+            var status = { code: 0, msg: "" };
             var rez = {};
             var data;
             try {
@@ -75,7 +75,7 @@ M3D.MHDReader = class {
 
                 // Build the correct typed array based on the volume element type
                 switch (self._mhdMeta.elementType) {
-                    case "MET_BYTE":    //TODO: check če je prav
+                    case "MET_BYTE":
                     case "MET_CHAR":
                         data = new Int8Array(this.result);
                         requiredByteLength = dataLength;
@@ -130,11 +130,11 @@ M3D.MHDReader = class {
             }
             self._mhdMeta.bitSize = bitSize;
             // Return the result and toggle the loading flag.   //TODO retun data instead of this.result?
-            self._onLoad({meta: self._mhdMeta, data: this.result, status: status, warnings: self._warnings});
+            self._onLoad({ meta: self._mhdMeta, data: this.result, status: status, warnings: self._warnings });
         };
 
-        var mhdParser = function(event) {
-            var status = {code: 0, msg: ""};
+        var mhdParser = function (event) {
+            var status = { code: 0, msg: "" };
             try {
                 var mhdData = this.result;
 
@@ -149,7 +149,7 @@ M3D.MHDReader = class {
 
                 // Check if the file RAW name matches the one specified in the MHD file
                 if (self._rawFile.name !== dataFileName) {
-                    self._warnings.push({code: 1, msg: "RAW name does not match the one specified in the MHD file."})
+                    self._warnings.push({ code: 1, msg: "RAW name does not match the one specified in the MHD file." })
                 }
                 // Check if this is indeed 3 dimensional data
                 if (nDims !== 3) {
@@ -164,7 +164,7 @@ M3D.MHDReader = class {
 
             // Check if there has been an error while parsing the meta data
             if (status.code !== 0) {
-                self._onLoad({status: status});
+                self._onLoad({ status: status });
                 self._loadingInProgress = false;
 
                 return;
@@ -203,7 +203,7 @@ M3D.MHDReader = class {
         // Put up the loading flag
         this._loadingInProgress = true;
 
-        var status = {code: 0, msg: ""};
+        var status = { code: 0, msg: "" };
 
         try {
             // Parse MHD content
@@ -227,7 +227,7 @@ M3D.MHDReader = class {
 
         // Check if there has been an error while parsing the meta data
         if (status.code !== 0) {
-            this._onLoad({status: status});
+            this._onLoad({ status: status });
             this._loadingInProgress = false;
 
             return true;
@@ -235,6 +235,7 @@ M3D.MHDReader = class {
 
         var data;
         var rawBuffer = this._strToBuffer(rawString);
+        var bitSize = 0;
         try {
 
             var dataLength = this._mhdMeta.dimensions[0] * this._mhdMeta.dimensions[1] * this._mhdMeta.dimensions[2];
@@ -242,37 +243,46 @@ M3D.MHDReader = class {
 
             // Build the correct typed array based on the volume element type
             switch (this._mhdMeta.elementType) {
+                case "MET_BYTE":
                 case "MET_CHAR":
                     data = new Int8Array(rawBuffer);
                     requiredByteLength = dataLength;
+                    bitSize = 8;
                     break;
                 case "MET_UCHAR":
                     data = new Uint8Array(rawBuffer);
                     requiredByteLength = dataLength;
+                    bitSize = 8;
                     break;
                 case "MET_SHORT":
                     data = new Int16Array(rawBuffer);
                     requiredByteLength = dataLength * 2;
+                    bitSize = 16;
                     break;
                 case "MET_USHORT":
                     data = new Uint16Array(rawBuffer);
                     requiredByteLength = dataLength * 2;
+                    bitSize = 16;
                     break;
                 case "MET_INT":
                     data = new Int32Array(rawBuffer);
                     requiredByteLength = dataLength * 4;
+                    bitSize = 32;
                     break;
                 case "MET_UINT":
                     data = new Uint32Array(rawBuffer);
                     requiredByteLength = dataLength * 4;
+                    bitSize = 32;
                     break;
                 case "MET_FLOAT":
                     data = new Float32Array(rawBuffer);
                     requiredByteLength = dataLength * 4;
+                    bitSize = 32;
                     break;
                 case "MET_DOUBLE":
                     data = new Float64Array(rawBuffer);
                     requiredByteLength = dataLength * 8;
+                    bitSize = 64;
                     break;
             }
 
@@ -286,9 +296,10 @@ M3D.MHDReader = class {
             status.code = 4;
             status.msg = "Failed while parsing the RAW file!";
         }
+        this._mhdMeta.bitSize = bitSize;
 
         // Return the result and toggle the loading flag.
-        this._onLoad({meta: this._mhdMeta, data: data, status: status, warnings: this._warnings});
+        this._onLoad({ meta: this._mhdMeta, data: data, status: status, warnings: this._warnings });
     }
 
 };

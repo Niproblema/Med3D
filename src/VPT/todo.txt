@@ -1,7 +1,8 @@
 Marching cubes,
+marching cubes UI setting,
+VTP render res UI setting
 vpt frame background settings
 volume sharing session.
-garbage collect volumeTextures in Texture manager
 parse scene cameras and replicate to VPT
 load volume from server error - Vertebrah too big
 

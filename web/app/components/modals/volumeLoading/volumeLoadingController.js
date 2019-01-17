@@ -42,7 +42,7 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             //MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, isoLevel: isoValue}, values, nThreads, privateOnLoad, onProgress, privateOnError);
             //TODO: disabled marchingCubes, some errors? -Jan
             
-            onLoad(rez);
+            onLoad({meta : mhdMeta, data : values, iso: isoValue});
         };
 
         let task = {
