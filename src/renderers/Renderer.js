@@ -176,13 +176,11 @@ M3D.Renderer = class {
     }
 
     /**
-     * Resets all gl managers - deletes attributes, and textures.
+     * Prepares for new scene
      */
     reset(){
         //todo: CHECK IF IT's RUNNING - don't
         this._glManager.clearAttributeBuffers();
-        //this._glManager.clearFrameBuffers();  //Don't need to reset fbs. Maybe later
-        //this._glManager.clearTextures();    //Need this, but it's connected to FrameBuffers, TODO: later
     }
 
     /**

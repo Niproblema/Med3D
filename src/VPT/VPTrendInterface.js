@@ -34,9 +34,21 @@ M3D.VPTrendInterface = class {
         this._toneMapper = new ReinhardToneMapper(this._gl, null);
     }
 
+    /**
+     * Cleans up assets for new scene.
+     */
+    reset(glManager){
+        var objects = this._publicRenderData.vptBundle.objects;
+        while(objects.length !== 0){
+            var object = objects.pop();
+            var tex = object.material.maps[0];
+            glManager._textureManager.clearTexture(tex);
+        }
+    }
+
     _setupVars() {
         this._lastCamera = null;
-        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true;});
+        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; });
         this._renderer_EAM = null;
         this._renderer_ISO = null;
         this._renderer_MCS = null;
@@ -93,7 +105,7 @@ M3D.VPTrendInterface = class {
 
 
             //set  matrix
-            if (camera._isDirty || object._isDirty || this._softReset) { 
+            if (camera._isDirty || object._isDirty || this._softReset) {
                 var cameraProjectionWorldMatrix = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
                 var centerTranslation = new THREE.Matrix4().makeTranslation(-0.5, -0.5, -0.5);
                 var volumeTranslation = new THREE.Matrix4().makeTranslation(object.positionX, object.positionY, object.positionZ);
@@ -115,6 +127,9 @@ M3D.VPTrendInterface = class {
                 object.accumulationBuffer.use();
                 renderer._resetFrame();
                 object.accumulationBuffer.swap();
+                //
+
+
                 camera._isDirty = false;
                 object._isDirty = false;
                 this._softReset = false;
@@ -123,7 +138,7 @@ M3D.VPTrendInterface = class {
             this._linkObjectReferencedToRenderer(renderer, object);
             renderer.render();
             this._unlinkObjectFromRenderer(renderer);
-            this._toneMapper.render(); 
+            this._toneMapper.render();
 
 
             var program = this._program;
@@ -272,7 +287,6 @@ M3D.VPTrendInterface = class {
     }
 
     _restoreGLstate(gl, state) {
-
         gl.viewport(state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3]);
         gl.bindFramebuffer(gl.FRAMEBUFFER, state.framebuffer);
     }
@@ -317,7 +331,6 @@ M3D.VPTrendInterface = class {
      */
     _setObjectMaterialTexture(object, glManager) {
         var tex = object.material.maps[0];
-
 
         tex._glTex = object._outputBuffer.getTexture();
         tex._dirty = false;

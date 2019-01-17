@@ -49,7 +49,7 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             uuid: THREE.Math.generateUUID(),
             meta: {
                 name: "Marching cubes",
-                description: "Loading volumetric data, MarchingCubes disabled, instead VPT",
+                description: "Loading volumetric data",
                 icon: "no/icon/atm"
             },
             synchronous: true,
@@ -119,7 +119,7 @@ let volumeLoadingController = function($scope, TaskManagerService) {
             uuid: THREE.Math.generateUUID(),
             meta: {
                 name: "Volumetric data loading",
-                description: "Loading volumetric data, MarchingCubes disabled",
+                description: "Loading volumetric data",
                 icon: "no/icon/atm"
             },
             synchronous: true,

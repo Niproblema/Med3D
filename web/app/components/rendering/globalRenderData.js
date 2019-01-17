@@ -55,7 +55,11 @@ app.factory('PublicRenderData', function () {
             range: {
                 rangeLower: 0,
                 rangeHigher: 1
-            }
+            },
+
+
+            //Volume object collection. Used for MarchingCubes geometry updating, garbage collection
+            objects: []
         }
     };
 });

@@ -518,6 +518,14 @@ M3D.MainRenderer = class extends M3D.Renderer {
 
     //// VPT extensionm ////
 
+    reset(){
+        super.reset();
+        if(this._vptInterface){
+            this._vptInterface.reset(this._glManager);
+        }
+    }
+
+
     /** Sets interface used for access to VPT renderes */
     linkVPTinterface(vInterface) { this._vptInterface = vInterface; }
 

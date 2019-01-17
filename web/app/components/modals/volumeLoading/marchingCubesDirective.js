@@ -58,7 +58,7 @@ app.directive("marchingCubesModal", function () {
             var mhdListGroup = modal.find("#mhdListGroup");
 
             var serverMhdValidate = function () {
-                if (activeMhdListItem !== undefined && serverTabIsoInput.val() !== "") {
+                if (activeMhdListItem !== undefined ){ //&& serverTabIsoInput.val() !== "") {
                     toggleLoadButton(true);
                 }
                 else {

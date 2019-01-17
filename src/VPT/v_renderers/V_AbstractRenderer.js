@@ -30,6 +30,7 @@ Class.defaults = {
 
 _._nullify = function() {
     this._frameBuffer        = null;
+    this._background         = null;
     this._accumulationBuffer = null;
     this._renderBuffer       = null;
     this._transferFunction   = null;

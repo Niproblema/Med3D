@@ -117,6 +117,16 @@ M3D.GLTextureManager = class {
         this._cached_textures.clear();
     }
 
+    clearTexture(key){
+        var glTex = this._cached_textures.get(key);
+        if(glTex){
+            this._gl.deleteTexture(glTex);
+            if(!this._cached_textures.delete(key))
+                console.error("Could not delete texture in GLTextureManager.")
+        }else
+            console.error("Could not find texture to be deleted in GLTextureManager")
+    }
+
     // region CONSTANT CONVERSION
     _formatToGL(format) {
         switch (format) {

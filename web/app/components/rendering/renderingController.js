@@ -11,8 +11,6 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
     $scope.annotations = Annotations;
 
-
-
     // Private renderer components
     this.renderer = null;
     this.renderQueue = null;
@@ -20,6 +18,12 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     this.cameraManager = PublicRenderData.cameraManager;
     this.raycaster = null;
     this.scene = null;
+
+    // MarchingCubes 
+    this.MC = null;
+
+    // VPT interface
+    this.vptInterface = null;
 
     // This ID is used for stopping and starting animation loop
     this.animationRequestId = null;
@@ -66,11 +70,18 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         for (let i = 0; i < objects.length; i++) {
             var o = new M3D.VPTVolume(objects[i].data, objects[i].meta);
 
+            /* self.MC.extractMesh({dimensions : objects[i].meta.dimensions, voxelDimensions : {x: objects[i].meta.elementSpacing[0], y: objects[i].meta.elementSpacing[1], z: objects[i].meta.elementSpacing[2]}, isoLevel: 0.5}, objects[i].data, Math.ceil(window.navigator.hardwareConcurrency / 2),
+                function () { console.log("Loaded"); },
+                function (val) { console.log("Progress " + val + ". "); },
+                function () { console.log("Error"); });
+ */
+
             //Setup listener onChangeListener - Used by VPT interface to determine when to reset accumulationBuffer
             o._isDirty = true;
             o.addOnChangeListener(new M3D.UpdateListener(function (update) { this._isDirty = true; }));
 
             PublicRenderData.contentRenderGroup.add(o);
+            PublicRenderData.vptBundle.objects.push(o);
         }
 
 
@@ -98,15 +109,14 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Store reference to renderer
         self.renderer = renderer;
 
+        self.MC = new M3D.MarchingCubes();
+
         // Reference to VPT interface. Used for UI controls
         self.vptInterface = new M3D.VPTrendInterface(PublicRenderData, self.renderer._gl);
 
         //Renderer uses vpt interface for vptRenderers
-        if(self.renderer instanceof M3D.MainRenderer)
+        if (self.renderer instanceof M3D.MainRenderer)
             self.renderer.linkVPTinterface(self.vptInterface);
-
-        //One way to reference VPT to the UI
-        PublicRenderData.vptInterface = self.vptInterface;
 
         // Pre-download the programs that will likely be used
         self.renderer.preDownloadPrograms(self.requiredPrograms);

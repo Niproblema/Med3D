@@ -1,22 +1,27 @@
-kreš z anglom
-update bootstrap + alpha v colorpickerju
 Marching cubes,
 vpt frame background settings
 volume sharing session.
 garbage collect volumeTextures in Texture manager
-depth export
 parse scene cameras and replicate to VPT
-Some input files render different ? vertebra16
-iso value in load volume dialog.
+load volume from server error - Vertebrah too big
 
 
 Maybe:
  -Reuse VPT renderers instead of copies in /src/VPT/v_renderers.	-Maybe extend?
  -File loading menu, server files don't work
+ -Angle issues - VPT shaders can't compile - undefined loop (at compile) in EAM render.frag
+ 	-MCS crash graphic driver(nvidia)
+        -Artifacting with ISO, MIP in chrome, but not mozilla - maybe due to TriangleFans deprecated in dx10+
+ -update bootstrap + alpha v colorpickerju
 
 Rethink:
- -Depth		  - export from VPT ?
- -unlimited zoom  - scale cube? fov change? cut volume cube data to show layers
+ -Depth		  ? export from VPT ! back culling disabled, near 0.0 for inside view =o
+ -unlimited zoom  - scale cube? fov change? cut volume cube data to show layers !back culling disabled, near 0.0 for inside view =o
  -offscreeen canvas - advantage: non shared GL settings
  -Reinhard tonemapper
  -Range tonemapper
+
+
+Consult :
+ -primož, èemu background color  v vseh shaderjeeh, a lah izklopim. Tone mapper ?  Range mapper ? 
+ 
