@@ -4,7 +4,6 @@ VTP render res UI setting
 vpt frame background settings
 volume sharing session.
 parse scene cameras and replicate to VPT
-load volume from server error - Vertebrah too big
 
 
 Maybe:

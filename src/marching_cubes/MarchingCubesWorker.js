@@ -11,36 +11,36 @@
 // who in turn got them from Cory Gene Bloyd.
 
 var MC_EDGE_TABLE = new Int32Array([
-    0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
+    0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
     0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
-    0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
+    0x190, 0x99, 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
     0x99c, 0x895, 0xb9f, 0xa96, 0xd9a, 0xc93, 0xf99, 0xe90,
-    0x230, 0x339, 0x33 , 0x13a, 0x636, 0x73f, 0x435, 0x53c,
+    0x230, 0x339, 0x33, 0x13a, 0x636, 0x73f, 0x435, 0x53c,
     0xa3c, 0xb35, 0x83f, 0x936, 0xe3a, 0xf33, 0xc39, 0xd30,
-    0x3a0, 0x2a9, 0x1a3, 0xaa , 0x7a6, 0x6af, 0x5a5, 0x4ac,
+    0x3a0, 0x2a9, 0x1a3, 0xaa, 0x7a6, 0x6af, 0x5a5, 0x4ac,
     0xbac, 0xaa5, 0x9af, 0x8a6, 0xfaa, 0xea3, 0xda9, 0xca0,
-    0x460, 0x569, 0x663, 0x76a, 0x66 , 0x16f, 0x265, 0x36c,
+    0x460, 0x569, 0x663, 0x76a, 0x66, 0x16f, 0x265, 0x36c,
     0xc6c, 0xd65, 0xe6f, 0xf66, 0x86a, 0x963, 0xa69, 0xb60,
-    0x5f0, 0x4f9, 0x7f3, 0x6fa, 0x1f6, 0xff , 0x3f5, 0x2fc,
+    0x5f0, 0x4f9, 0x7f3, 0x6fa, 0x1f6, 0xff, 0x3f5, 0x2fc,
     0xdfc, 0xcf5, 0xfff, 0xef6, 0x9fa, 0x8f3, 0xbf9, 0xaf0,
-    0x650, 0x759, 0x453, 0x55a, 0x256, 0x35f, 0x55 , 0x15c,
+    0x650, 0x759, 0x453, 0x55a, 0x256, 0x35f, 0x55, 0x15c,
     0xe5c, 0xf55, 0xc5f, 0xd56, 0xa5a, 0xb53, 0x859, 0x950,
-    0x7c0, 0x6c9, 0x5c3, 0x4ca, 0x3c6, 0x2cf, 0x1c5, 0xcc ,
+    0x7c0, 0x6c9, 0x5c3, 0x4ca, 0x3c6, 0x2cf, 0x1c5, 0xcc,
     0xfcc, 0xec5, 0xdcf, 0xcc6, 0xbca, 0xac3, 0x9c9, 0x8c0,
     0x8c0, 0x9c9, 0xac3, 0xbca, 0xcc6, 0xdcf, 0xec5, 0xfcc,
-    0xcc , 0x1c5, 0x2cf, 0x3c6, 0x4ca, 0x5c3, 0x6c9, 0x7c0,
+    0xcc, 0x1c5, 0x2cf, 0x3c6, 0x4ca, 0x5c3, 0x6c9, 0x7c0,
     0x950, 0x859, 0xb53, 0xa5a, 0xd56, 0xc5f, 0xf55, 0xe5c,
-    0x15c, 0x55 , 0x35f, 0x256, 0x55a, 0x453, 0x759, 0x650,
+    0x15c, 0x55, 0x35f, 0x256, 0x55a, 0x453, 0x759, 0x650,
     0xaf0, 0xbf9, 0x8f3, 0x9fa, 0xef6, 0xfff, 0xcf5, 0xdfc,
-    0x2fc, 0x3f5, 0xff , 0x1f6, 0x6fa, 0x7f3, 0x4f9, 0x5f0,
+    0x2fc, 0x3f5, 0xff, 0x1f6, 0x6fa, 0x7f3, 0x4f9, 0x5f0,
     0xb60, 0xa69, 0x963, 0x86a, 0xf66, 0xe6f, 0xd65, 0xc6c,
-    0x36c, 0x265, 0x16f, 0x66 , 0x76a, 0x663, 0x569, 0x460,
+    0x36c, 0x265, 0x16f, 0x66, 0x76a, 0x663, 0x569, 0x460,
     0xca0, 0xda9, 0xea3, 0xfaa, 0x8a6, 0x9af, 0xaa5, 0xbac,
-    0x4ac, 0x5a5, 0x6af, 0x7a6, 0xaa , 0x1a3, 0x2a9, 0x3a0,
+    0x4ac, 0x5a5, 0x6af, 0x7a6, 0xaa, 0x1a3, 0x2a9, 0x3a0,
     0xd30, 0xc39, 0xf33, 0xe3a, 0x936, 0x83f, 0xb35, 0xa3c,
-    0x53c, 0x435, 0x73f, 0x636, 0x13a, 0x33 , 0x339, 0x230,
+    0x53c, 0x435, 0x73f, 0x636, 0x13a, 0x33, 0x339, 0x230,
     0xe90, 0xf99, 0xc93, 0xd9a, 0xa96, 0xb9f, 0x895, 0x99c,
-    0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x99 , 0x190,
+    0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x99, 0x190,
     0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
     0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0]);
 
@@ -304,7 +304,7 @@ var MC_TRI_TABLE = new Int32Array([
 
 
 // Linear interpolation between this vec1 and vec2, where alpha is the percent along the line.
-lerp = function(vec1, vec2, alpha) {
+lerp = function (vec1, vec2, alpha) {
     var rez = [];
     rez.push(vec1[0] + (vec2[0] - vec1[0]) * alpha);
     rez.push(vec1[1] + (vec2[1] - vec1[1]) * alpha);
@@ -320,14 +320,15 @@ var voxelDim;
 var isoLevel;
 var offset;
 var refreshRate;
-
+var bitSize;
+var rawDataType;
 var valuesType;
 var values;
 
 // Vertice buffer 36MB big must be divisible with 9
 let BUFFER_SIZE = 9000000;
 
-onmessage = function(msg) {
+onmessage = function (msg) {
     // First message should specify the meta data
     if (msgCount <= 0) {
         var meta = msg.data;
@@ -336,6 +337,8 @@ onmessage = function(msg) {
         isoLevel = meta.isoLevel;
         // If parallelized take correctly offset z axis
         offset = (meta.dimensions.offset) ? meta.dimensions.offset : 0;
+        bitSize = meta.bitSize;
+        rawDataType = meta.rawDataType;
         valuesType = meta.valuesType;
         refreshRate = Math.round(dimensions.z / 20);
 
@@ -343,7 +346,37 @@ onmessage = function(msg) {
         return;
     }
     else if (msgCount === 1) {
-        values = eval("new " + valuesType + "(msg.data);");
+        if (valuesType != "ArrayBuffer") {
+            values = eval("new " + valuesType + "(msg.data);");
+        } else {
+            switch (rawDataType) {
+                case "MET_BYTE":
+                case "MET_CHAR":
+                    values = new Int8Array(msg.data);
+                    break;
+                case "MET_UCHAR":
+                    values = new Uint8Array(msg.data);
+                    break;
+                case "MET_SHORT":
+                    values = new Int16Array(msg.data);
+                    break;
+                case "MET_USHORT":
+                    values = new Uint16Array(msg.data);
+                    break;
+                case "MET_INT":
+                    values = new Int32Array(msg.data);
+                    break;
+                case "MET_UINT":
+                    values = new Uint32Array(msg.data);
+                    break;
+                case "MET_FLOAT":
+                    values = new Float32Array(msg.data);
+                    break;
+                case "MET_DOUBLE":  //Might not work
+                    values = new Float64Array(msg.data);  
+                    break;
+            }
+        }
     }
 
     // Actual position along edge weighted according to function values.
@@ -361,7 +394,7 @@ onmessage = function(msg) {
 
         // Send updates about the progress to the controlling object
         if (z > 0 && z % refreshRate === 0) {
-            postMessage({type: "progress", zCount: z});
+            postMessage({ type: "progress", zCount: z });
         }
 
         for (var y = 0; y < dimensions.y - 1; y++) {
@@ -426,53 +459,53 @@ onmessage = function(msg) {
 
                 // bottom of the cube
                 if (bits & 1) {
-                    mu = ( isoLevel - value0 ) / ( value1 - value0 );
+                    mu = (isoLevel - value0) / (value1 - value0);
                     vlist[0] = lerp(position, [position[0] + voxelDim.x, position[1], position[2]], mu);
                 }
                 if (bits & 2) {
-                    mu = ( isoLevel - value1 ) / ( value3 - value1 );
+                    mu = (isoLevel - value1) / (value3 - value1);
                     vlist[1] = lerp([position[0] + voxelDim.x, position[1], position[2]], [position[0] + voxelDim.x, position[1] + voxelDim.y, position[2]], mu);
                 }
                 if (bits & 4) {
-                    mu = ( isoLevel - value2 ) / ( value3 - value2 );
+                    mu = (isoLevel - value2) / (value3 - value2);
                     vlist[2] = lerp([position[0], position[1] + voxelDim.y, position[2]], [position[0] + voxelDim.x, position[1] + voxelDim.y, position[2]], mu);
                 }
                 if (bits & 8) {
-                    mu = ( isoLevel - value0 ) / ( value2 - value0 );
+                    mu = (isoLevel - value0) / (value2 - value0);
                     vlist[3] = lerp(position, [position[0], position[1] + voxelDim.y, position[2]], mu);
                 }
                 // top of the cube
                 if (bits & 16) {
-                    mu = ( isoLevel - value4 ) / ( value5 - value4 );
+                    mu = (isoLevel - value4) / (value5 - value4);
                     vlist[4] = lerp([position[0], position[1], position[2] + voxelDim.z], [position[0] + voxelDim.x, position[1], position[2] + voxelDim.z], mu);
                 }
                 if (bits & 32) {
-                    mu = ( isoLevel - value5 ) / ( value7 - value5 );
+                    mu = (isoLevel - value5) / (value7 - value5);
                     vlist[5] = lerp([position[0] + voxelDim.x, position[1], position[2] + voxelDim.z], [position[0] + voxelDim.x, position[1] + voxelDim.y, position[2] + voxelDim.z], mu);
                 }
                 if (bits & 64) {
-                    mu = ( isoLevel - value6 ) / ( value7 - value6 );
+                    mu = (isoLevel - value6) / (value7 - value6);
                     vlist[6] = lerp([position[0], position[1] + voxelDim.y, position[2] + voxelDim.z], [position[0] + voxelDim.x, position[1] + voxelDim.y, position[2] + voxelDim.z], mu);
                 }
                 if (bits & 128) {
-                    mu = ( isoLevel - value4 ) / ( value6 - value4 );
+                    mu = (isoLevel - value4) / (value6 - value4);
                     vlist[7] = lerp([position[0], position[1], position[2] + voxelDim.z], [position[0], position[1] + voxelDim.y, position[2] + voxelDim.z], mu);
                 }
                 // vertical lines of the cube
                 if (bits & 256) {
-                    mu = ( isoLevel - value0 ) / ( value4 - value0 );
+                    mu = (isoLevel - value0) / (value4 - value0);
                     vlist[8] = lerp(position, [position[0], position[1], position[2] + voxelDim.z], mu);
                 }
                 if (bits & 512) {
-                    mu = ( isoLevel - value1 ) / ( value5 - value1 );
+                    mu = (isoLevel - value1) / (value5 - value1);
                     vlist[9] = lerp([position[0] + voxelDim.x, position[1], position[2]], [position[0] + voxelDim.x, position[1], position[2] + voxelDim.z], mu);
                 }
                 if (bits & 1024) {
-                    mu = ( isoLevel - value3 ) / ( value7 - value3 );
+                    mu = (isoLevel - value3) / (value7 - value3);
                     vlist[10] = lerp([position[0] + voxelDim.x, position[1] + voxelDim.y, position[2]], [position[0] + voxelDim.x, position[1] + voxelDim.y, position[2] + voxelDim.z], mu);
                 }
                 if (bits & 2048) {
-                    mu = ( isoLevel - value2 ) / ( value6 - value2 );
+                    mu = (isoLevel - value2) / (value6 - value2);
                     vlist[11] = lerp([position[0], position[1] + voxelDim.y, position[2]], [position[0], position[1] + voxelDim.y, position[2] + voxelDim.z], mu);
                 }
 
@@ -504,7 +537,7 @@ onmessage = function(msg) {
                         postMessage(vertices.buffer, [vertices.buffer]);
                         vertices = new Float32Array(BUFFER_SIZE);
                         // Notify triangle count
-                        postMessage({type: "triangleCount", count: idx / 9});
+                        postMessage({ type: "triangleCount", count: idx / 9 });
                         idx = 0;
                     }
                 }
@@ -512,11 +545,11 @@ onmessage = function(msg) {
         }
     }
     // Last 100% progress update
-    postMessage({type: "progress", zCount: dimensions.z});
+    postMessage({ type: "progress", zCount: dimensions.z });
     // Return last vertice buffer
     postMessage(vertices.buffer, [vertices.buffer]);
     // Notify triangle count
-    postMessage({type: "triangleCount", count: idx / 9});
+    postMessage({ type: "triangleCount", count: idx / 9 });
     // Return last vertice buffer size
-    postMessage({type: "finished", lastLength: idx});
+    postMessage({ type: "finished", lastLength: idx });
 };

@@ -123,9 +123,11 @@ M3D.MarchingCubes = class {
 
             // Start the worker task
             // Pass meta data
-            worker.postMessage({dimensions: meta.dimensions, voxelDimensions: meta.voxelDimensions, isoLevel: meta.isoLevel, valuesType: this._jobQueue[0].values.constructor.name});
+            worker.postMessage({dimensions: meta.dimensions, voxelDimensions: meta.voxelDimensions, isoLevel: meta.isoLevel, bitSize: meta.bitSize, rawDataType : meta.elementType,  valuesType: this._jobQueue[0].values.constructor.name});
             // Pass data
-            worker.postMessage(this._jobQueue[0].values.buffer, [this._jobQueue[0].values.buffer]);
+            var msgData = (this._jobQueue[0].values instanceof ArrayBuffer) ? this._jobQueue[0].values : this._jobQueue[0].values.buffer;
+            var transfer = (this._jobQueue[0].values instanceof ArrayBuffer) ? [this._jobQueue[0].values] : [this._jobQueue[0].values.buffer];
+            worker.postMessage(msgData, transfer);
 
             // Clear the values once passed to the worker
             this._jobQueue[0].values = null;
@@ -264,9 +266,13 @@ M3D.MarchingCubes = class {
                 
                 // Pass meta data
                 worker.postMessage({dimensions: {x: meta.dimensions.x, y: meta.dimensions.y, z: paddedSize, zFull: meta.dimensions.z, offset: zAxisOffset},
-                            voxelDimensions: meta.voxelDimensions, isoLevel: meta.isoLevel, valuesType: this._jobQueue[0].values.constructor.name});
+                            voxelDimensions: meta.voxelDimensions, isoLevel: meta.isoLevel, bitSize: meta.bitSize, rawDataType : meta.elementType, valuesType: this._jobQueue[0].values.constructor.name});
+                            
+
                 // Pass data
-                worker.postMessage(valuesSegment.buffer, [valuesSegment.buffer]);
+                var msgData = (valuesSegment instanceof ArrayBuffer) ? valuesSegment : valuesSegment.buffer;
+                var transfer = (valuesSegment instanceof ArrayBuffer) ? [valuesSegment] : [valuesSegment.buffer];
+                worker.postMessage(msgData, transfer);
 
 
                 zAxisOffset += size;

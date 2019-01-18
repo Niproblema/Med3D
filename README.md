@@ -19,8 +19,8 @@ $ cd ../../..
 $ # Setup database (do not forget to add path to MongoDB binaries to your PATH variable).
 $ mkdir database
 $ mongod --dbpath ./database
-$ # Start server application.
-$ node src_server/index.js
+$ # Start server application with 8gb memory available. 8gb for large json heap for server volume files.
+$ node --max-old-space-size=8192 src_server/index.js
 $ # Web application should be hosted on: <YOUR IP>:8080/web
 ```
 

@@ -130,7 +130,7 @@ M3D.MHDReader = class {
             }
             self._mhdMeta.bitSize = bitSize;
             // Return the result and toggle the loading flag.   //TODO retun data instead of this.result?
-            self._onLoad({ meta: self._mhdMeta, data: this.result, status: status, warnings: self._warnings });
+            self._onLoad({ meta: self._mhdMeta, data: data, status: status, warnings: self._warnings });
         };
 
         var mhdParser = function (event) {
