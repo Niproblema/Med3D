@@ -504,8 +504,7 @@ body {
 
 .med3d-annotation-list-item {
     height: 40px;
-    margin: 5px 0px 10px 10px;
-!important;
+    margin: 5px 0px 10px 10px !important;
     padding: 0px;
     border-radius: 5px 8px 8px 5px !important;
     background-color: #C8C8C8;
@@ -574,8 +573,7 @@ body {
 
 .med3d-layer-list-item {
     height: 30px;
-    margin: 5px 0px 5px 0px;
-!important;
+    margin: 5px 0px 5px 0px !important;
     padding: 0px;
     border-radius: 5px 8px 8px 5px !important;
     background-color: #C8C8C8;
@@ -908,4 +906,65 @@ body {
 
 #drawing-undo-button:active {
     background-color: #aa2224;
+}
+
+/* Accordion settings */
+
+
+ .vpt-settings a:hover,a:focus{
+     text-decoration: none;
+     outline: none;
+ }
+
+ #accordion .panel{
+    border: none;
+    border-radius: 5px;
+    box-shadow: none;
+    margin-bottom: 10px;
+    background: transparent;
+}
+#accordion .panel-heading{
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    position: relative;
+}
+#accordion .panel-title a{    
+    display: block; /*New line ugly*/
+    padding: 10px 15px;
+    margin: 0;
+    background: #49b2b2;
+    color: #fff;
+    border: none;
+    /*  border-radius: 5px; todo: Maybe reenable later to match med3d style */
+    position: relative;
+}
+#accordion .panel-title a.collapsed{ 
+    border: none;
+    background: #647296;
+}
+#accordion .panel-title a:after,
+#accordion .panel-title a.collapsed:after{
+    content: "\e080";
+    font-family: "Glyphicons Halflings";
+    text-align: center;
+    font-weight: 200;
+    color: white;
+    float: right;
+    transform: rotate(90deg);
+    transition: all .4s cubic-bezier(0.080, 1.090, 0.320, 1.275);
+}
+#accordion .panel-title a.collapsed:after{
+    color: rgba(255,255,255,0.5);
+    transform: rotate(0deg);
+}
+#accordion .panel-body{
+    padding: 0px 0px 15px;
+    background: rgba(0,0,0,0.1);
+    color: #fff;
+    line-height: 28px;
+    letter-spacing: 1px;
+    border-top: none;
+    border-radius: 5px;
 }

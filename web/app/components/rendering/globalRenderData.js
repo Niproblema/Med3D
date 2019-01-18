@@ -29,7 +29,7 @@ app.factory('PublicRenderData', function () {
             resetBuffers : false,
             eam: {
                 steps: 10,
-                alphaCorrection: 1,
+                alphaCorrection: 5,
                 tf: null
             },
             iso: {
@@ -42,8 +42,8 @@ app.factory('PublicRenderData', function () {
                 }  
             },
             mcs: {
-                sigma: 10,
-                alphaCorrection: 1,
+                sigma: 30,
+                alphaCorrection: 30,
                 tf: null    
             },
             mip: {
@@ -58,7 +58,7 @@ app.factory('PublicRenderData', function () {
             },
 
 
-            //Volume object collection. Used for MarchingCubes geometry updating, garbage collection
+            //Volume object collection. Used for MarchingCubes geometry updating and garbage collection.
             objects: []
         }
     };

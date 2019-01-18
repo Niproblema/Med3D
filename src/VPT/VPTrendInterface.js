@@ -31,7 +31,8 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS = new V_MCSRenderer(this._gl);
         this._renderer_MIP = new V_MIPRenderer(this._gl);
         this._renderers = [null, this._renderer_EAM, this._renderer_ISO, this._renderer_MCS, this._renderer_MIP]
-        this._toneMapper = new ReinhardToneMapper(this._gl, null);
+        this._RHToneMapper = new ReinhardToneMapper(this._gl, null);
+        this._RaToneMapper = new RangeToneMapper(this._gl, null);
     }
 
     /**
@@ -54,7 +55,8 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS = null;
         this._renderer_MIP = null;
         this._renderers = null;
-        this._toneMapper = null;
+        this._RHToneMapper = null;
+        this._RaToneMapper = null;
         this._transferFunction = null;  //TODO - This should be set for each object individually
         this._program = null;
         this._clipQuad = null;
@@ -101,7 +103,9 @@ M3D.VPTrendInterface = class {
 
             }
 
-            this._toneMapper.setTexture(object.renderBuffer.getTexture());
+            //Link object's render FB texture to tonemapper(s)
+            this._RHToneMapper.setTexture(object.renderBuffer.getTexture());
+            this._RaToneMapper.setTexture(this._RHToneMapper.getTexture());
 
 
             //set  matrix
@@ -134,11 +138,13 @@ M3D.VPTrendInterface = class {
                 object._isDirty = false;
                 this._softReset = false;
             }
+
             //Bind object references
             this._linkObjectReferencedToRenderer(renderer, object);
             renderer.render();
             this._unlinkObjectFromRenderer(renderer);
-            this._toneMapper.render();
+            this._RHToneMapper.render();
+            this._RaToneMapper.render();
 
 
             var program = this._program;
@@ -149,7 +155,7 @@ M3D.VPTrendInterface = class {
             gl.enableVertexAttribArray(aPosition);
             gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
             gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this._toneMapper.getTexture());
+            gl.bindTexture(gl.TEXTURE_2D, this._RaToneMapper.getTexture());
             gl.uniform1i(program.uniforms.uTexture, 0);
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
@@ -163,16 +169,6 @@ M3D.VPTrendInterface = class {
         }
         this._restoreGLstate(gl, savedState);
     }
-
-
-    getRenderer() {
-        return this._renderer;
-    }
-
-    getToneMapper() {
-        return this._toneMapper;
-    }
-
 
     // ============================ INSTANCE METHODS ============================ //
 
@@ -318,10 +314,10 @@ M3D.VPTrendInterface = class {
 
         this._renderer_MIP._stepSize = 1 / settings.mip.steps;
 
-        this._toneMapper._exposure = settings.reinhard.exposure;
+        this._RHToneMapper._exposure = settings.reinhard.exposure;
         //todo: rangeToneMapper is not enabled.
-        //this._toneMapper._min  = settings.range.rangeLower;
-        //this._toneMapper._max  = settings.range.rangeHigher;
+        this._RaToneMapper._min  = 1-settings.range.rangeHigher;
+        this._RaToneMapper._max  = 1-settings.range.rangeLower;
     }
 
 
