@@ -21,10 +21,9 @@ app.factory('PublicRenderData', function () {
         setActiveCamera: null,
 
         // == UI interface to VPTrendInterface, also default values== //
-        //VPT renderers - 0=Abstract, 1=EAM, 2=ISO, 3=MCS, 4=MIP
+        //VPT renderers - 0=Error, 1=EAM, 2=ISO, 3=MCS, 4=MIP, 5=Disabled=Use mesh with diffuse
         vptBundle: {
-            rendererChoiceID: 3,
-            rendererName: "MCS",
+            rendererChoiceID: 5,
             resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
             resetBuffers : false,
             eam: {
@@ -59,7 +58,11 @@ app.factory('PublicRenderData', function () {
 
 
             //Volume object collection. Used for MarchingCubes geometry updating and garbage collection.
-            objects: []
+            objects: [],
+
+            //Marching cubes 
+            useMCC : false,
+            mccStatus : false  //Marching cubes ready for current objects
         }
     };
 });

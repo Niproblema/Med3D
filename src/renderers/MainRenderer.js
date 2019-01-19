@@ -66,7 +66,7 @@ M3D.MainRenderer = class extends M3D.Renderer {
         }
 
         // Render volume objects with VPT
-        if(this._vptObjects.length > 0 && this._vptInterface){
+        if (this._vptObjects.length > 0 && this._vptInterface) {
             this._vptInterface.renderObjects(this._vptObjects, camera, this._glManager); //todo: better way  
         }
 
@@ -369,7 +369,7 @@ M3D.MainRenderer = class extends M3D.Renderer {
         }
         // If the object is mesh and it's visible. Update it's attributes.
         else if (object instanceof M3D.Mesh) {
-            
+
             // VPT object are rendered twice, as volume and as mesh. Add to volume queue.
             if (object instanceof M3D.VPTVolume) {
                 this._vptObjects.push(object);
@@ -379,20 +379,24 @@ M3D.MainRenderer = class extends M3D.Renderer {
             // Frustum culling
             if (object.frustumCulled === false || this._isObjectVisible(object)) {
 
-                // Adds required program to the array of required programs if it's not present in it already
-                let requiredProgram = object.material.requiredProgram();
-                let found = false;
+                // Adds required program to the array of required programs if it's not present in it already. Added extra rule for VPT type object, todo refactor later into different render pass or make a queue of materials on object to avoid making exceptions.
+                let requiredPrograms = (object instanceof M3D.VPTVolume) ? [object._vptMaterial.requiredProgram(), object._phongMaterial.requiredProgram()] : [object.material.requiredProgram()];
 
-                for (let i = 0; i < this._requiredPrograms; i++) {
-                    if (requiredProgram.compare(this._requiredPrograms[i])) {
-                        found = true;
-                        break;
+                for (let rp = 0; rp < requiredPrograms.length; rp++) {
+                    let requiredProgram = requiredPrograms[rp];
+                    let found = false;
+
+                    for (let i = 0; i < this._requiredPrograms; i++) {
+                        if (requiredProgram.compare(this._requiredPrograms[i])) {
+                            found = true;
+                            break;
+                        }
                     }
-                }
 
-                // If the program was not found add it to required programs array
-                if (!found) {
-                    this._requiredPrograms.push(requiredProgram)
+                    // If the program was not found add it to required programs array
+                    if (!found) {
+                        this._requiredPrograms.push(requiredProgram)
+                    }
                 }
 
                 if (object.visible === true) {
@@ -518,9 +522,9 @@ M3D.MainRenderer = class extends M3D.Renderer {
 
     //// VPT extensionm ////
 
-    reset(){
+    reset() {
         super.reset();
-        if(this._vptInterface){
+        if (this._vptInterface) {
             this._vptInterface.reset(this._glManager);
         }
     }

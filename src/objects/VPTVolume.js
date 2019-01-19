@@ -60,14 +60,6 @@ M3D.VPTVolume = class extends M3D.Mesh {
             -0.5, 0.5, -0.5
         ], 3);
 
-/*         geometry.uv = M3D.Float32Attribute(
-            [
-                0, 0,
-                1, 1,
-                0, 1,
-                1, 0
-            ], 2
-        ); */
 
         geometry.indices = M3D.Uint32Attribute([
             0, 1, 2, 0, 2, 3,    // Front face
@@ -78,17 +70,18 @@ M3D.VPTVolume = class extends M3D.Mesh {
             20, 21, 22, 20, 22, 23  // Left face
         ], 1);
 
-        geometry.computeVertexNormals();  //don't need
+        geometry.computeVertexNormals(); 
 
-        // Super M3D.Mesh
         super(geometry, material);
+
+        //  ==== VPT specific data ==== //
         this.type = "Volume";
         this._meta = meta;
         this._width = this._meta.dimensions[0];
         this._height = this._meta.dimensions[1];
         this._depth = this._meta.dimensions[2];
         this._bitdepth = this._meta.bitSize;
-
+        this._rawData = data;   //Used for marching cubes data cloning
         if (this._bitdepth === 8) {
             this._data = new Float32Array(new Uint8Array(data)).map(function (x) { return x / (1 << 8); });
         } else if (this._bitdepth === 16) {
@@ -107,12 +100,25 @@ M3D.VPTVolume = class extends M3D.Mesh {
 
         //When using new renderer type, accumulationBuffer should be reset.
         this._lastRendererTypeID = 0;
+
+
+
+        // ==== General render data ==== //
+        this._vptMaterial = material;
+        var phongAltenative = new M3D.MeshPhongMaterial();
+        phongAltenative.specular = new THREE.Color("#444444");
+        phongAltenative.color = new THREE.Color("#49b2b2");
+        phongAltenative.shininess = 8;
+        this._phongMaterial = phongAltenative;
+        this._cubeGeometry = geometry;
+        this._mccGeometry = null;
     }
 
 
     //========== Setters and Getters ==============//
 
     get data() { return this._data; }
+    get rawDataCopy() { return this._rawData.slice(); }
     get meta() { return this._meta; }
     get dimensions() { return this._meta.dimensions; }
     set data(newD) { this._data = newD; }
@@ -144,4 +150,34 @@ M3D.VPTVolume = class extends M3D.Mesh {
         this._renderBuffer.destroy();
         this._outputBuffer.destroy();
     }
+
+    /** Switches render modes */
+    switchRenderModes(useVPTtex, useMCCgeo){
+        this._material = useVPTtex ? this._vptMaterial : this._phongMaterial;
+        this._geometry = (useMCCgeo && this._mccGeometry) ? this._mccGeometry : this._cubeGeometry;
+    }
+
+
+    //TODO!
+/*     toJson() {
+		var obj = super.toJson();
+
+		// Add reference to geometry and material
+		obj.geometryUuid = this._geometry._uuid;
+		obj.materialUuid = this._material._uuid;
+
+		return obj;
+	}
+
+	static fromJson(data, geometry, material, object) {
+		// Create mesh object
+		if (!object) {
+			var object = new M3D.Mesh(geometry, material);
+		}
+
+		// Import Object3D parameters
+		object = super.fromJson(data, object);
+
+		return object;
+	} */
 };

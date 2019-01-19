@@ -91,6 +91,56 @@ app.directive("vptSidebar", function () {
                     callTop: 'setHue'
                 }
             };
+
+            //  ==== Marching cubes tab ==== //
+
+            scope.isComputingMCC = false;
+
+            let mccRadioOff = $("#march-off");
+            let mccRadioOn = $("march-on");
+            scope.setMarching= function(bool){
+                if(bool){   //Turn on MCC geometry
+                    if(!scope.publicRenderData.vptBundle.mccStatus || scope.isComputingMCC){    //Availability condition - false
+                        mccRadioOff.checked= true;
+                        mccRadioOn.checked = false;
+                        console.log("Cannot turn on")
+                    }else{      //Availability condition - true
+                      
+                    }
+
+
+                }else{      //Turn off MCC geometry
+
+                }
+            };
+
+
+            let cpuHandle = element.find('#cpuHandle');
+            element.find('#cpuSlider').slider({
+                value: Math.ceil(window.navigator.hardwareConcurrency / 2),
+                min: 1,
+                max: window.navigator.hardwareConcurrency,
+                step: 1,
+                create: function () {
+                    cpuHandle.text($(this).slider("value"));
+                },
+                slide: function (event, ui) {
+                    cpuHandle.text(ui.value);
+                }
+            });
+
+            let computeMCCButton = $("#calculateMRC");
+
+            scope.calculateMRC = function(){
+                //TODO: calc stuff;
+                scope.isComputingMCC = true;
+                console.log("Computing JAJAJA");
+            };
+            
+            
+
+
+
         },
         templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/vptSidebar.html';

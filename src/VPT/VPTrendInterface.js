@@ -30,7 +30,7 @@ M3D.VPTrendInterface = class {
         this._renderer_ISO = new V_ISORenderer(this._gl);
         this._renderer_MCS = new V_MCSRenderer(this._gl);
         this._renderer_MIP = new V_MIPRenderer(this._gl);
-        this._renderers = [null, this._renderer_EAM, this._renderer_ISO, this._renderer_MCS, this._renderer_MIP]
+        this._renderers = [null, this._renderer_EAM, this._renderer_ISO, this._renderer_MCS, this._renderer_MIP, null]
         this._RHToneMapper = new ReinhardToneMapper(this._gl, null);
         this._RaToneMapper = new RangeToneMapper(this._gl, null);
     }
@@ -38,10 +38,11 @@ M3D.VPTrendInterface = class {
     /**
      * Cleans up assets for new scene.
      */
-    reset(glManager){
+    reset(glManager) {
         var objects = this._publicRenderData.vptBundle.objects;
-        while(objects.length !== 0){
+        while (objects.length !== 0) {
             var object = objects.pop();
+            object.switchRenderModes(true, false);
             var tex = object.material.maps[0];
             glManager._textureManager.clearTexture(tex);
         }
@@ -70,11 +71,6 @@ M3D.VPTrendInterface = class {
         if (camera instanceof M3D.OrthographicCamera)
             return;
 
-        if (this._publicRenderData.vptRendererChoice == 0) {
-            console.error("Volume renderer not selected by the UI, cannot render.");
-            return;
-        }
-
         // == Camera updates setup == //
         if (this._lastCamera != camera) {
             //Unsubscribe from last camera
@@ -87,20 +83,23 @@ M3D.VPTrendInterface = class {
         }
         //
         var gl = this._gl;
+
+        this._parseSettings();
+
         var renderer = this._renderers[this._publicRenderData.vptBundle.rendererChoiceID];
 
         var savedState = this._saveGLstate(gl);
 
-        this._parseSettings();
-
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
+
+            object.switchRenderModes(renderer != null, this._publicRenderData.vptBundle.useMCC && this._publicRenderData.vptBundle.mccStatus );
+            if(!renderer) continue;
+
 
             //Different renderer than last time - hardResetBuffers
             if (this._publicRenderData.vptBundle.resetBuffers || this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID) {
                 this._hardResetBuffers(renderer, object);
-
-
             }
 
             //Link object's render FB texture to tonemapper(s)
@@ -316,8 +315,8 @@ M3D.VPTrendInterface = class {
 
         this._RHToneMapper._exposure = settings.reinhard.exposure;
         //todo: rangeToneMapper is not enabled.
-        this._RaToneMapper._min  = 1-settings.range.rangeHigher;
-        this._RaToneMapper._max  = 1-settings.range.rangeLower;
+        this._RaToneMapper._min = 1 - settings.range.rangeHigher;
+        this._RaToneMapper._max = 1 - settings.range.rangeLower;
     }
 
 

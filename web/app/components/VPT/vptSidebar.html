@@ -10,7 +10,7 @@
 
         <div class="panel-body">
             <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-primary" ng-click="setRenderer(5)" href="#settingsMIP" data-toggle="tab">
+                <label class="btn btn-primary active" ng-click="setRenderer(5)" href="#settingsOFF" data-toggle="tab">
                     <input type="radio" name="rend-selection" id="renderer5" autocomplete="off"> OFF
                 </label>
                 <label class="btn btn-primary" ng-click="setRenderer(4)" href="#settingsMIP" data-toggle="tab">
@@ -22,7 +22,7 @@
                 <label class="btn btn-primary" ng-click="setRenderer(1)" href="#settingsEAM" data-toggle="tab">
                     <input type="radio" name="rend-selection" id="renderer3" autocomplete="off"> EAM
                 </label>
-                <label class="btn btn-primary active" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
+                <label class="btn btn-primary" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
                     <input type="radio" name="rend-selection" id="renderer4" autocomplete="off" checked> MCS
                 </label>
             </div>
@@ -47,6 +47,11 @@
                                 <!-- Renderer settings tabs -->
                                 <div class="sidebar-sub-content-title">
                                     <div class="tab-content">
+                                        <div class="tab-pane fade active in" id="settingsOFF">
+                                            <div class="sidebar-sub-content-title" style="padding-right: 15px; text-align: center;">
+                                                <b style="color: white; font-size: 14px; font-weight: 500;"></b>Volumetric objects are displayed as regular mesh objects.</b>                                           
+                                            </div>
+                                        </div>
                                         <div class="tab-pane fade" id="settingsMIP">
                                             <mip-settings ng-controller="MIPSettingsController"></mip-settings>
                                         </div>
@@ -56,7 +61,7 @@
                                         <div class="tab-pane fade" id="settingsEAM">
                                             <eam-settings ng-controller="EAMSettingsController"></eam-settings>
                                         </div>
-                                        <div class="tab-pane fade active in" id="settingsMCS">
+                                        <div class="tab-pane fade" id="settingsMCS">
                                             <mcs-settings ng-controller="MCSSettingsController"></mcs-settings>
                                         </div>
                                     </div>
@@ -68,7 +73,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" >
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
                                     Tone Mapping Settings
                                 </a>
                             </h4>
@@ -105,45 +110,57 @@
                         <div id="collapseThree" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <div class="sidebar-sub-content-title">
-                                    <b style="color: white; font-size: 14px; font-weight: 500;">Test text</b>
+                                    <div class="button-box" style="width: 100%">
+                                        <b style="color: white; font-size: 14px; font-weight: 500;">Use MCC geometry</b>
+                                        <div class="btn-group" data-toggle="buttons" style="display: table; margin: 0 auto;">
+
+                                            <label class="btn btn-primary active" ng-click="setMarching(false)">
+                                                <!--href="#settingsMIP" data-toggle="tab"-->
+                                                <input type="radio" name="marching-selection" id="march-off" autocomplete="off"> OFF
+                                            </label>
+                                            <label class="btn btn-primary" ng-click="setMarching(true)">
+                                                <!--href="#settingsMIP" data-toggle="tab"-->
+                                                <input type="radio" name="marching-selection" id="march-on" autocomplete="off"> ON
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="sidebar-sub-content-title">
+                                    <b style="color: white; font-size: 14px; font-weight: 500;">Logical core use</b>
+                                </div>
+                                <div id="cpuSlider" class="med3d-slider" style="margin-left: 20px">
+                                    <div id="cpuHandle" class="ui-slider-handle med3d-slider-handle"></div>
+                                </div>
+                                <div class="sidebar-sub-content-title">
+                                    <b style="color: white; font-size: 14px; font-weight: 500;">ISO value</b>
+                                    <input id="isoMRC" name="inISO-MRC" type="number" value="0.25" min="0.01" step="0.01" class="form-control volume-loader-iso-input"
+                                        style="width: 50%; height: 30px" required>
+                                </div>
+
+                                <div class="sidebar-sub-content-title">
+                                    <div class="input-group" style="overflow: hidden; padding-bottom: 10px; padding-left: 5px; padding-top: 5px;">
+                                        <button id="calculateMRC" type="button" class="btn med3d-btn-primary" style="font-size: 12px; line-height: 30px; padding: 0 9px; height: 30px; border-radius: 5px 5px 5px 5px"
+                                            ng-click="calculateMRC()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Compute</button>
+                                    </div>
+                                </div>
+
+                                <div class="sidebar-sub-content-title" id="loading-div" ng-show="isComputingMCC" style="padding-right : 25px">
+                                    <b style="color: white; font-size: 14px; font-weight: 500;">Loading:</b>
+
+                                    <div class="progress med3d-progress">
+                                        <div class="progress-bar med3d-progress-bar" role="progressbar" aria-valuenow="{{currentTask.progress || 100}}" aria-valuemin="0"
+                                            aria-valuemax="100" ng-style="{ width: (currentTask.progress | percentage:0)}">
+                                            <span style=" text-shadow: 0px 0px 2px #000;">{{(currentTask.progress | percentage:0)}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!--
-        <div style="position: fixed; bottom: 10px; width: 300px">
-            <hr class="med3d-sidebar-hr" style="margin-left: 16px; margin-top: 10px">
-
-            <div class="sidebar-sub-content-title">
-                Tone Mapping Settings
-            </div>
-
-            <div class="sidebar-sub-content-title">
-                <b style="color: white; font-size: 14px; font-weight: 500;"></b>Reinhard Tone Mapper: Exposure</b>
-                <div id="exposureSlider" class="med3d-slider">
-                    <div id="exposureHandle" class="ui-slider-handle med3d-slider-handle"></div>
-                </div>
-            </div>
-
-            <div class="sidebar-sub-content-title">
-                <b style="color: white; font-size: 14px; font-weight: 500;"></b>Range Tone Mapper: Range</b>
-                <div id="rangeSlider" class="med3d-slider">
-                    <div id="rangeHandle1" class="ui-slider-handle med3d-slider-handle"></div>
-                    <div id="rangeHandle2" class="ui-slider-handle med3d-slider-handle"></div>
-                </div>
-            </div>
-        </div>
--->
-
-
-
-
-
-
-
 
     </div>
 </span>

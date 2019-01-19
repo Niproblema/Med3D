@@ -69,13 +69,13 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Add new render content
         for (let i = 0; i < objects.length; i++) {
             var o = new M3D.VPTVolume(objects[i].data, objects[i].meta);
-            var dim = objects[i].meta.dimensions;
+/*             var dim = objects[i].meta.dimensions;
             var voxelDim = objects[i].meta.elementSpacing;
             self.MC.extractMesh({dimensions: {x: dim[0], y: dim[1], z: dim[2]}, voxelDimensions: {x: voxelDim[0], y: voxelDim[1], z: voxelDim[2]}, bitSize: objects[i].meta.bitSize, elementType : objects[i].meta.elementType , isoLevel: 0.1}, objects[i].data, Math.ceil(window.navigator.hardwareConcurrency / 2),
                 function (data) { console.log("Loaded"); },
                 function (val) { console.log("Progress " + val + ". "); },
                 function () { console.log("Error"); });
-
+ */
 
             //Setup listener onChangeListener - Used by VPT interface to determine when to reset accumulationBuffer
             o._isDirty = true;
