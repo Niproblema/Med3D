@@ -25,13 +25,15 @@ app.factory('PublicRenderData', function () {
         vptBundle: {
             rendererChoiceID: 5,
             resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
-            resetBuffers : false,
+            resetBuffers : false,   //Remakes object's framebuffers. Used when switching renderers.
             eam: {
+                background: true,
                 steps: 10,
                 alphaCorrection: 5,
                 tf: null
             },
             iso: {
+                background: true,
                 steps: 10,
                 isoVal: 0.3,
                 color: {
@@ -41,11 +43,13 @@ app.factory('PublicRenderData', function () {
                 }  
             },
             mcs: {
+                background: true,
                 sigma: 30,
                 alphaCorrection: 30,
                 tf: null    
             },
             mip: {
+                background: true,
                 steps: 10
             },
             reinhard: {

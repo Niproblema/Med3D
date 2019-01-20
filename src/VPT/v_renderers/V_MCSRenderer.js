@@ -22,9 +22,6 @@ function V_MCSRenderer(gl, options) {
 };
 
 Class.defaults = {
-    _lightPosition   : [2, 2, 2],
-    _lightColor      : [1, 1, 1],
-    _lightSize       : 2,
     _sigmaMax        : 1,
     _alphaCorrection : 1,
 };
@@ -132,7 +129,7 @@ _._generateFrame = function() {
     y /= length;
     z /= length;
     gl.uniform3f(program.uniforms.uScatteringDirection, x, y, z);
-
+    gl.uniform1i(program.uniforms.uBackground, this._background);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 };
 

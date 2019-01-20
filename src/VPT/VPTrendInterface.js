@@ -94,8 +94,8 @@ M3D.VPTrendInterface = class {
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
 
-            object.switchRenderModes(renderer != null, this._publicRenderData.vptBundle.useMCC && this._publicRenderData.vptBundle.mccStatus );
-            if(!renderer) continue;
+            object.switchRenderModes(renderer != null, this._publicRenderData.vptBundle.useMCC && this._publicRenderData.vptBundle.mccStatus);
+            if (!renderer) continue;
 
 
             //Different renderer than last time - hardResetBuffers
@@ -296,22 +296,28 @@ M3D.VPTrendInterface = class {
         this._softReset = settings.resetMVP;
         this._publicRenderData.vptBundle.resetMVP = false;
 
+        this._renderer_EAM._background = settings.eam.background;
         this._renderer_EAM._stepSize = 1 / settings.eam.steps;
         this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
         if (settings.eam.tf)
             this._renderer_EAM.setTransferFunction(settings.eam.tf);
 
+        this._renderer_ISO._background = settings.iso.background;
         this._renderer_ISO._stepSize = 1 / settings.iso.steps
         this._renderer_ISO._isovalue = settings.iso.isoVal;
         this._renderer_ISO._diffuse[0] = settings.iso.color.r;
         this._renderer_ISO._diffuse[1] = settings.iso.color.g;
         this._renderer_ISO._diffuse[2] = settings.iso.color.b;
 
+        if (this._renderer_MCS._background != settings.mcs.background)
+            this._softReset = true;
+        this._renderer_MCS._background = settings.mcs.background;
         this._renderer_MCS._sigmaMax = settings.mcs.sigma
         this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
         if (settings.mcs.tf)
             this._renderer_MCS.setTransferFunction = settings.mcs.tf;
 
+        this._renderer_MIP._background = settings.mip.background;
         this._renderer_MIP._stepSize = 1 / settings.mip.steps;
 
         this._RHToneMapper._exposure = settings.reinhard.exposure;

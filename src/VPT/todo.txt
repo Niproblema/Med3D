@@ -1,9 +1,9 @@
 VPT issue - BostonTeapot at twice the width
-VPT update
+
 Move vptInterface into it's own render pass?
 VTP render res UI setting
 vpt frame background settings
-VPT geometry switch causes GL drawArrays error in first draw.
+
 volume sharing session.
 parse scene cameras and replicate to VPT for 
 UI accordion, fix css defualt pick
@@ -16,6 +16,7 @@ Maybe:
  	-MCS crash graphic driver(nvidia)
         -Artifacting with ISO, MIP in chrome, but not mozilla - maybe due to TriangleFans deprecated in dx10+
  -update bootstrap + alpha v colorpickerju
+ -VPT geometry switch causes GL drawArrays error in first draw.
 
 Rethink:
  -MCS 
