@@ -57,7 +57,6 @@ app.directive("vptSidebar", function () {
             let rangeHandle1 = element.find('#rangeHandle1');
             let rangeHandle2 = element.find('#rangeHandle2');
             element.find('#rangeSlider').slider({
-
                 range: true,
                 min: 0,
                 max: 1,
@@ -94,24 +93,14 @@ app.directive("vptSidebar", function () {
 
             //  ==== Marching cubes tab ==== //
 
+            let MC = new M3D.MarchingCubes();
+
             scope.isComputingMCC = false;
 
             let mccRadioOff = $("#march-off");
             let mccRadioOn = $("march-on");
             scope.setMarching= function(bool){
-                if(bool){   //Turn on MCC geometry
-                    if(!scope.publicRenderData.vptBundle.mccStatus || scope.isComputingMCC){    //Availability condition - false
-                        mccRadioOff.checked= true;
-                        mccRadioOn.checked = false;
-                        console.log("Cannot turn on")
-                    }else{      //Availability condition - true
-                      
-                    }
-
-
-                }else{      //Turn off MCC geometry
-
-                }
+                scope.publicRenderData.vptBundle.useMCC = bool;
             };
 
 
@@ -126,21 +115,31 @@ app.directive("vptSidebar", function () {
                 },
                 slide: function (event, ui) {
                     cpuHandle.text(ui.value);
+                    scope.cpuCount = ui.value;
                 }
             });
 
-            let computeMCCButton = $("#calculateMRC");
+            let inMccISO = element.find('[name="inISO-MRC"]');
+            inMccISO.change(function () {
+                value = Math.max(0.01, inMccISO.val()) || 1.0;
+                scope.isoSetting = value; 
+                inMccISO.val(value);
+            }.bind(this));
 
+            scope.cpuCount  = Math.ceil(window.navigator.hardwareConcurrency / 2);
+            scope.isoSetting = Math.max(0.01, inMccISO.val()) || 1.0;
+            scope.objectsToMCC = 0;
             scope.calculateMRC = function(){
-                //TODO: calc stuff;
+                if(scope.isComputingMCC)
+                    return;
+
                 scope.isComputingMCC = true;
-                console.log("Computing JAJAJA");
+                scope.objectsToMCC = scope.publicRenderData.vptBundle.objects.length;
+                for(let k = 0; k < scope.publicRenderData.vptBundle.objects.length; k++){
+                    scope.runMMC(scope.cpuCount, scope.isoSetting, scope.publicRenderData.vptBundle.objects[k]);
+                }       
             };
             
-            
-
-
-
         },
         templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/vptSidebar.html';

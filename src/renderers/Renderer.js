@@ -8,9 +8,9 @@
  * @class Renderer
  */
 M3D.Renderer = class {
-	// Subclasses perform WebGL initialization, texture allocation, etc.
-	// Renderers can be run offline, without WebGL.
-	constructor(canvas, gl_version) {
+    // Subclasses perform WebGL initialization, texture allocation, etc.
+    // Renderers can be run offline, without WebGL.
+    constructor(canvas, gl_version) {
         // Create new gl manager with appropriate version
         this._glManager = new M3D.GLManager(canvas, gl_version);
         this._canvas = canvas;
@@ -19,8 +19,8 @@ M3D.Renderer = class {
         this._gl = this._glManager.context;
 
         // Throw error if the gl context could not be retrieved
-		// TODO: Put this in GLManager
-		if (!this._gl) {
+        // TODO: Put this in GLManager
+        if (!this._gl) {
             throw 'Something went wrong while initializing WebGL context.'
         }
 
@@ -39,10 +39,10 @@ M3D.Renderer = class {
         this._autoClear = true;
         //endregion
 
-		this._selectedRenderer = null;
-	}
+        this._selectedRenderer = null;
+    }
 
-	render(scene, camera, renderTarget) {
+    render(scene, camera, renderTarget) {
         // Check if correct object instance was passed as camera
         if (camera instanceof M3D.Camera === false) {
             console.error(LOGTAG + "Given camera is not an instance of M3D.Camera");
@@ -70,16 +70,16 @@ M3D.Renderer = class {
         }
 
         // Calls selected renderer function which should be overrided in the extending class
-		this._selectedRenderer(scene, camera);
+        this._selectedRenderer(scene, camera);
 
         // If RTT cleanup viewport and frame-buffer
         if (this._currentRenderTarget) {
             this._cleanupRenderTarget();
             this._currentRenderTarget = null;
         }
-	}
+    }
 
-	// region PROGRAM MANAGEMENT
+    // region PROGRAM MANAGEMENT
     _downloadProgram(programName) {
         let scope = this;
 
@@ -121,10 +121,10 @@ M3D.Renderer = class {
                 this._downloadProgram(programName);
             }
             else {
-            	// TODO: Put this somewhere else?
+                // TODO: Put this somewhere else?
                 // Build program for specific number of lights (is disregarded if the shader is not using lights)
-				let numLights = 0;
-				if (this._lightsCombined) {
+                let numLights = 0;
+                if (this._lightsCombined) {
                     numLights = this._lightsCombined.directional.length + this._lightsCombined.point.length;
                 }
 
@@ -146,9 +146,9 @@ M3D.Renderer = class {
             }
         }
     }
-	// endregion
+    // endregion
 
-	// region RENDER TARGET
+    // region RENDER TARGET
     _initRenderTarget(renderTarget) {
         // Check if the render target is specified
         this._currentRenderTarget = renderTarget;
@@ -166,7 +166,7 @@ M3D.Renderer = class {
 
         this._glManager.cleanupRenderTarget();
     }
-	// endregion
+    // endregion
 
     /**
 	 * Clears cached attributes such as position arrays, indices and uv coordinates as well as cached textures.
@@ -178,7 +178,7 @@ M3D.Renderer = class {
     /**
      * Prepares for new scene
      */
-    reset(){
+    reset() {
         //todo: CHECK IF IT's RUNNING - don't
         this._glManager.clearAttributeBuffers();
     }
@@ -187,7 +187,7 @@ M3D.Renderer = class {
      * Sets the url to shader server & directory from which the shaders source is loaded.
      * @param url Full url to the shader server directory
      */
-    addShaderLoaderUrls (...urls) { this._shaderLoader.addUrls(urls); }
+    addShaderLoaderUrls(...urls) { this._shaderLoader.addUrls(urls); }
 
     // region SETTERS / GETTERS
     /**
@@ -213,7 +213,7 @@ M3D.Renderer = class {
     }
 
     getViewport() {
-        return {width: this._canvas.width, height: this._canvas.height};
+        return { width: this._canvas.width, height: this._canvas.height };
     }
     // endregion
 };

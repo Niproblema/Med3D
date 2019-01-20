@@ -49,7 +49,7 @@
                                     <div class="tab-content">
                                         <div class="tab-pane fade active in" id="settingsOFF">
                                             <div class="sidebar-sub-content-title" style="padding-right: 15px; text-align: center;">
-                                                <b style="color: white; font-size: 14px; font-weight: 500;"></b>Volumetric objects are displayed as regular mesh objects.</b>                                           
+                                                <b style="color: white; font-size: 14px; font-weight: 500;">Volumetric objects are displayed as regular mesh objects.</b>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="settingsMIP">
@@ -113,18 +113,20 @@
                                     <div class="button-box" style="width: 100%">
                                         <b style="color: white; font-size: 14px; font-weight: 500;">Use MCC geometry</b>
                                         <div class="btn-group" data-toggle="buttons" style="display: table; margin: 0 auto;">
-
                                             <label class="btn btn-primary active" ng-click="setMarching(false)">
-                                                <!--href="#settingsMIP" data-toggle="tab"-->
                                                 <input type="radio" name="marching-selection" id="march-off" autocomplete="off"> OFF
                                             </label>
                                             <label class="btn btn-primary" ng-click="setMarching(true)">
-                                                <!--href="#settingsMIP" data-toggle="tab"-->
                                                 <input type="radio" name="marching-selection" id="march-on" autocomplete="off"> ON
                                             </label>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="sidebar-sub-content-title" ng-show="publicRenderData.vptBundle.useMCC && !publicRenderData.vptBundle.mccStatus" style="padding-right: 15px; text-align: center;">
+                                    <b style="color: white; font-size: 12px; font-weight: 400;">Geometry must be computed before it's shown.</b>
+                                </div>
+
                                 <div class="sidebar-sub-content-title">
                                     <b style="color: white; font-size: 14px; font-weight: 500;">Logical core use</b>
                                 </div>
@@ -143,18 +145,6 @@
                                             ng-click="calculateMRC()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Compute</button>
                                     </div>
                                 </div>
-
-                                <div class="sidebar-sub-content-title" id="loading-div" ng-show="isComputingMCC" style="padding-right : 25px">
-                                    <b style="color: white; font-size: 14px; font-weight: 500;">Loading:</b>
-
-                                    <div class="progress med3d-progress">
-                                        <div class="progress-bar med3d-progress-bar" role="progressbar" aria-valuenow="{{currentTask.progress || 100}}" aria-valuemin="0"
-                                            aria-valuemax="100" ng-style="{ width: (currentTask.progress | percentage:0)}">
-                                            <span style=" text-shadow: 0px 0px 2px #000;">{{(currentTask.progress | percentage:0)}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>

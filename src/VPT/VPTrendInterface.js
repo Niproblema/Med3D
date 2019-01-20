@@ -46,6 +46,7 @@ M3D.VPTrendInterface = class {
             var tex = object.material.maps[0];
             glManager._textureManager.clearTexture(tex);
         }
+        this._publicRenderData.vptBundle.mccStatus = false;
     }
 
     _setupVars() {

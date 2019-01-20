@@ -1,10 +1,11 @@
-Marching cubes,
+VPT issue - BostonTeapot at twice the width
+VPT update
 Move vptInterface into it's own render pass?
-marching cubes UI setting,
 VTP render res UI setting
 vpt frame background settings
+VPT geometry switch causes GL drawArrays error in first draw.
 volume sharing session.
-parse scene cameras and replicate to VPT
+parse scene cameras and replicate to VPT for 
 UI accordion, fix css defualt pick
 
 
@@ -17,8 +18,7 @@ Maybe:
  -update bootstrap + alpha v colorpickerju
 
 Rethink:
- -Depth		  ? export from VPT ! back culling disabled, near 0.0 for inside view =o
- -unlimited zoom  - scale cube? fov change? cut volume cube data to show layers !back culling disabled, near 0.0 for inside view =o
+ -MCS 
  -offscreeen canvas - advantage: non shared GL settings
  -Reinhard tonemapper
  -Range tonemapper
@@ -26,4 +26,3 @@ Rethink:
 
 Consult :
  -primož, èemu background color  v vseh shaderjeeh, a lah izklopim. Tone mapper ?  Range mapper ? 
- 
