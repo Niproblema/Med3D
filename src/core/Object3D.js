@@ -563,6 +563,11 @@ M3D.Object3D = class {
                     break;
             }
         }
+
+        if (!this._updateListenerManager.isEmpty()) {
+            var update = { uuid: this._uuid, changes:  data};
+            this._updateListenerManager.externalUpdate(update)
+        }
     }
     //endregion
 };

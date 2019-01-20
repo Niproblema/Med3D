@@ -346,7 +346,7 @@ onmessage = function (msg) {
         return;
     }
     else if (msgCount === 1) {
-        if (valuesType != "ArrayBuffer") {
+        if (valuesType != "ArrayBuffer" && valuesType != "Array") {
             values = eval("new " + valuesType + "(msg.data);");
         } else {
             switch (rawDataType) {

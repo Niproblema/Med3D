@@ -7,7 +7,7 @@
 M3D.VPTVolume = class extends M3D.Mesh {
     constructor(data, meta) {
 
-        
+
         var material = new M3D.CustomShaderMaterial("volumeProject");
         material.lights = false;
         material.transparent = true;
@@ -16,10 +16,10 @@ M3D.VPTVolume = class extends M3D.Mesh {
         textur._dirty = false;
         textur._glTex = null;
         material.addMap(textur);  //Can't set tex later, or template gets set wrong
-        
+
 
         //Geometry setup - Base geometry, replaced by Marching cubes asynchronously (todo)
-        var geometry = new M3D.Geometry();      
+        var geometry = new M3D.Geometry();
 
         // Quad vertices
         geometry.vertices = M3D.Float32Attribute([
@@ -70,12 +70,12 @@ M3D.VPTVolume = class extends M3D.Mesh {
             20, 21, 22, 20, 22, 23  // Left face
         ], 1);
 
-        geometry.computeVertexNormals(); 
+        geometry.computeVertexNormals();
 
         super(geometry, material);
 
         //  ==== VPT specific data ==== //
-        this.type = "Volume";
+        this.type = "VPTVolume";
         this._meta = meta;
         this._width = this._meta.dimensions[0];
         this._height = this._meta.dimensions[1];
@@ -132,8 +132,8 @@ M3D.VPTVolume = class extends M3D.Mesh {
     get frameBuffer() { return this._frameBuffer; }
     get accumulationBuffer() { return this._accumulationBuffer; }
     get renderBuffer() { return this._renderBuffer; }
-    get volumeTexture() {return this._volumeTexture; }
-    get environmentTexture() {return this._environmentTexture;}
+    get volumeTexture() { return this._volumeTexture; }
+    get environmentTexture() { return this._environmentTexture; }
     get lastMVPMatrix() { return this._lastMVPMatrix; }
     set lastMVPMatrix(newP) { this._lastMVPMatrix = newP; }
 
@@ -143,7 +143,7 @@ M3D.VPTVolume = class extends M3D.Mesh {
     /**
      *Extended clear to gc buffers
      */
-    clear(){
+    clear() {
         super.clear();
         this._frameBuffer.destroy();
         this._accumulationBuffer.destroy();
@@ -152,32 +152,31 @@ M3D.VPTVolume = class extends M3D.Mesh {
     }
 
     /** Switches render modes */
-    switchRenderModes(useVPTtex, useMCCgeo){
+    switchRenderModes(useVPTtex, useMCCgeo) {
         this._material = useVPTtex ? this._vptMaterial : this._phongMaterial;
         this._geometry = (useMCCgeo && this._mccGeometry) ? this._mccGeometry : this._cubeGeometry;
     }
 
 
-    //TODO!
-/*     toJson() {
-		var obj = super.toJson();
+    toJson() {
+        var obj = super.toJson();
 
-		// Add reference to geometry and material
-		obj.geometryUuid = this._geometry._uuid;
-		obj.materialUuid = this._material._uuid;
+        // Add reference to geometry and material
+        obj.vData = Array.from(this._rawData);
+        obj.vMeta = this.meta;
 
-		return obj;
-	}
+        return obj;
+    }
 
-	static fromJson(data, geometry, material, object) {
-		// Create mesh object
-		if (!object) {
-			var object = new M3D.Mesh(geometry, material);
-		}
+    static fromJson(data, object) {
+        // Create mesh object
+        if (!object) {
+            var object = new M3D.VPTVolume(data.vData, data.vMeta);
+        }
 
-		// Import Object3D parameters
-		object = super.fromJson(data, object);
+        // Import Object3D parameters
+        object = super.fromJson(data, null, null, object);
 
-		return object;
-	} */
+        return object;
+    }
 };

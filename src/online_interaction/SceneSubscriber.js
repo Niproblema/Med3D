@@ -99,7 +99,7 @@ M3D.SceneSubscriber = class {
                     self._rootObjects[i].traverse(function (object) {
                         self._objects[object._uuid] = object;
 
-                        if (object instanceof M3D.Mesh) {
+                        if (object.type === "Mesh") {
                             // Meshes also own geometry and material
                             self._geometries[object.geometry._uuid] = object.geometry;
                             self._materials[object.material._uuid] = object.material;

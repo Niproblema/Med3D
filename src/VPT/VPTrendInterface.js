@@ -51,7 +51,7 @@ M3D.VPTrendInterface = class {
 
     _setupVars() {
         this._lastCamera = null;
-        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; });
+        this._cameraListener = new M3D.UpdateListener(function (update) { this._isDirty = true; }, null, null, null, function (update) { this._isDirty = true; });
         this._renderer_EAM = null;
         this._renderer_ISO = null;
         this._renderer_MCS = null;
@@ -84,7 +84,10 @@ M3D.VPTrendInterface = class {
         }
         //
         var gl = this._gl;
-
+        
+        //Parses VPT's objects - In collaboration, objects might change...
+        this._parseObjects(objects);
+        //Parse UI settings - Set renderer according to UI settings.
         this._parseSettings();
 
         var renderer = this._renderers[this._publicRenderData.vptBundle.rendererChoiceID];
@@ -136,7 +139,6 @@ M3D.VPTrendInterface = class {
 
                 camera._isDirty = false;
                 object._isDirty = false;
-                this._softReset = false;
             }
 
             //Bind object references
@@ -167,6 +169,8 @@ M3D.VPTrendInterface = class {
             //Update object's texture.
             this._setObjectMaterialTexture(object, glManager);
         }
+        this._publicRenderData.vptBundle.resetBuffers = false;  
+        this._softReset = false;
         this._restoreGLstate(gl, savedState);
     }
 
@@ -269,7 +273,6 @@ M3D.VPTrendInterface = class {
         this.__setupBuffers(renderer, object);
         this.__setupVolumeTexture(object);
         object._lastRendererTypeID = renderer._type_id;
-        this._publicRenderData.vptBundle.resetBuffers = false;
         this._publicRenderData.vptBundle.resetMVP = true;
     }
 
@@ -285,6 +288,21 @@ M3D.VPTrendInterface = class {
     _restoreGLstate(gl, state) {
         gl.viewport(state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3]);
         gl.bindFramebuffer(gl.FRAMEBUFFER, state.framebuffer);
+    }
+
+    /**
+     * Checks for object changes
+     * @param {VPT} objects 
+     */
+    _parseObjects(objects){
+         this._publicRenderData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
+       
+/*         for(let i = 0; i < objects.length; i++){                             //Same issue, Todo later
+            if(!this._publicRenderData.vptBundle.objects.includes(objects[i])){
+                this._publicRenderData.vptBundle.objects.push(objects[i]);
+            }
+        } */
+
     }
 
     /**

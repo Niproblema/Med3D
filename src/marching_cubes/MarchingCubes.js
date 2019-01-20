@@ -125,9 +125,9 @@ M3D.MarchingCubes = class {
             // Pass meta data
             worker.postMessage({dimensions: meta.dimensions, voxelDimensions: meta.voxelDimensions, isoLevel: meta.isoLevel, bitSize: meta.bitSize, rawDataType : meta.elementType,  valuesType: this._jobQueue[0].values.constructor.name});
             // Pass data
-            var msgData = (this._jobQueue[0].values instanceof ArrayBuffer) ? this._jobQueue[0].values : this._jobQueue[0].values.buffer;
-            var transfer = (this._jobQueue[0].values instanceof ArrayBuffer) ? [this._jobQueue[0].values] : [this._jobQueue[0].values.buffer];
-            worker.postMessage(msgData, transfer);
+            var valuesSegment = this._jobQueue[0].values;
+            var msgData = (valuesSegment instanceof ArrayBuffer) ? valuesSegment : (valuesSegment.constructor === Array ? this.arrayToTypedArray(valuesSegment, meta.elementType).buffer : valuesSegment.buffer);
+            worker.postMessage(msgData, [msgData]);
 
             // Clear the values once passed to the worker
             this._jobQueue[0].values = null;
@@ -270,9 +270,9 @@ M3D.MarchingCubes = class {
                             
 
                 // Pass data
-                var msgData = (valuesSegment instanceof ArrayBuffer) ? valuesSegment : valuesSegment.buffer;
-                var transfer = (valuesSegment instanceof ArrayBuffer) ? [valuesSegment] : [valuesSegment.buffer];
-                worker.postMessage(msgData, transfer);
+
+                var msgData = (valuesSegment instanceof ArrayBuffer) ? valuesSegment : (valuesSegment.constructor === Array ? this.arrayToTypedArray(valuesSegment, meta.elementType).buffer : valuesSegment.buffer);
+                worker.postMessage(msgData, [msgData]);
 
 
                 zAxisOffset += size;
@@ -281,5 +281,37 @@ M3D.MarchingCubes = class {
             // Destroy the given array to gain extra memory
             this._jobQueue[0].values = null;
         }
+    }
+
+    arrayToTypedArray(array, dataType){
+        var values;
+        switch (dataType) {
+            case "MET_BYTE":
+            case "MET_CHAR":
+                values = new Int8Array(array);
+                break;
+            case "MET_UCHAR":
+                values = new Uint8Array(array);
+                break;
+            case "MET_SHORT":
+                values = new Int16Array(array);
+                break;
+            case "MET_USHORT":
+                values = new Uint16Array(array);
+                break;
+            case "MET_INT":
+                values = new Int32Array(array);
+                break;
+            case "MET_UINT":
+                values = new Uint32Array(array);
+                break;
+            case "MET_FLOAT":
+                values = new Float32Array(array);
+                break;
+            case "MET_DOUBLE":  //Might not work
+                values = new Float64Array(array);  
+                break;
+        }
+        return values;
     }
 };

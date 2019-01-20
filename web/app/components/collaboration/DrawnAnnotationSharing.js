@@ -83,10 +83,10 @@ DrawnAnnotationSharing = class {
 
     stopSharing() {
         if (this._host) {
-            this.socketSubscriber.emit("sessionDrawnAnnotations", {type: "clear"});
+            this.socketManager.emit("sessionDrawnAnnotations", {type: "clear"});
         }
         else {
-            this.socketSubscriber.emit("sessionDrawnAnnotations", {type: "rm"});
+            this.socketManager.emit("sessionDrawnAnnotations", {type: "rm"});
         }
 
         // Clear the annotations and disown other user layers

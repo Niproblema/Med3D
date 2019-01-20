@@ -275,7 +275,7 @@ M3D.ScenePublisher = class {
                         self._synchronizedObjects.delete(child._uuid);
 
                         // If the object is instance of mesh also delete its material or geometry
-                        if (child instanceof M3D.Mesh) {
+                        if (child.type === "Mesh") {
                             let syncGeometry = self._synchronizedObjects.get(child.geometry._uuid);
                             if (--syncGeometry.usages <= 0) {
                                 self._scheduledGeometriesUpdates[child.geometry._uuid] = { remove: true };

@@ -12,24 +12,24 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
             var privateOnLoad = function (data) {
                 let vertArr = null;
 
-                if(data[0].length){
+                if (data[0].length) {
                     var concatArrLength = 0;
-                    for(var i = 0; i < data.length; i++){
+                    for (var i = 0; i < data.length; i++) {
                         concatArrLength += data[i].length;
                     }
                     vertArr = new Float32Array(concatArrLength);
                     vertArr.set(data[0]);
                     concatArrLength = data[0].length;
-                    for(var i = 1; i < data.length; i++){
+                    for (var i = 1; i < data.length; i++) {
                         vertArr.set(data[i], concatArrLength);
                         concatArrLength += data[i].length;
                     }
-                }else{
+                } else {
                     vertArr = data[0];
                 }
 
                 var geometry = new M3D.Geometry();
-                geometry.vertices = new M3D.BufferAttribute(vertArr,  3);
+                geometry.vertices = new M3D.BufferAttribute(vertArr, 3);
                 geometry.computeVertexNormals();
                 geometry.computeBoundingSphere();
 
@@ -47,7 +47,9 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
                 dimensions: { x: dim[0], y: dim[1], z: dim[2] }, voxelDimensions: {
                     x: voxelDim[0], y: voxelDim[1],
                     z: voxelDim[2]
-                }, isoLevel: iso
+                }, isoLevel: iso,
+                bitSize: object.meta.bitSize,
+                elementType: object.meta.elementType
             },
                 object.rawDataCopy,
                 cores,

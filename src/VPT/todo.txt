@@ -1,17 +1,12 @@
 VPT issue - BostonTeapot at twice the width
-
 Move vptInterface into it's own render pass?
 VTP render res UI setting
-vpt frame background settings
-
-volume sharing session.
 parse scene cameras and replicate to VPT for 
 UI accordion, fix css defualt pick
+MCC Compute btn ng-disable does not enable itself when object loaded with collaboration.
 
 
 Maybe:
- -Reuse VPT renderers instead of copies in /src/VPT/v_renderers.	-Maybe extend?
- -File loading menu, server files don't work
  -Angle issues - VPT shaders can't compile - undefined loop (at compile) in EAM render.frag
  	-MCS crash graphic driver(nvidia)
         -Artifacting with ISO, MIP in chrome, but not mozilla - maybe due to TriangleFans deprecated in dx10+
@@ -19,11 +14,6 @@ Maybe:
  -VPT geometry switch causes GL drawArrays error in first draw.
 
 Rethink:
- -MCS 
  -offscreeen canvas - advantage: non shared GL settings
- -Reinhard tonemapper
- -Range tonemapper
-
-
-Consult :
- -primož, èemu background color  v vseh shaderjeeh, a lah izklopim. Tone mapper ?  Range mapper ? 
+ -Reinhard tonemapper + Range tonemapper
+ -VPT gc in shared session

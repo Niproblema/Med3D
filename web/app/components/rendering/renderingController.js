@@ -69,7 +69,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
             //Setup listener onChangeListener - Used by VPT interface to determine when to reset accumulationBuffer
             o._isDirty = true;
-            o.addOnChangeListener(new M3D.UpdateListener(function (update) { this._isDirty = true; }));
+            o.addOnChangeListener(new M3D.UpdateListener(function (update) { this._isDirty = true; }, null, null, null, function (update) { this._isDirty = true; }));
 
             PublicRenderData.contentRenderGroup.add(o);
             PublicRenderData.vptBundle.objects.push(o);
