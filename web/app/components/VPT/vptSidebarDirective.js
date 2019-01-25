@@ -12,10 +12,14 @@ app.directive("vptSidebar", function () {
             scope.getKeys = Object.keys;
 
             // Fetch the id used for sidebar content toggling
-            element.attr("id", attributes.toggleId);            
+            element.attr("id", attributes.toggleId);
 
             // Configure scroll bar
             element.find('.mCustomScrollbar').mCustomScrollbar({ alwaysShowScrollbar: 0, updateOnContentResize: true });
+
+            scope.publicRenderData.vptBundle.refreshUI = function () {
+                scope.$apply();
+            };
 
             //VPT renderer switcher
             scope.allRenderers = ["ERROR", "EAM", "ISO", "MCS", "MIP"];
@@ -28,13 +32,13 @@ app.directive("vptSidebar", function () {
 
                     //Call VPTController
                     scope.publicRenderData.vptBundle.rendererChoiceID = i;
-                    
+
                     //Call for Directive-Needed for tranform function application
-                    scope.$broadcast('start'+scope.allRenderers[scope.renderer]);
+                    scope.$broadcast('start' + scope.allRenderers[scope.renderer]);
                 }
             };
             //Apply default!
-            scope.$broadcast('start'+scope.allRenderers[scope.renderer]);
+            scope.$broadcast('start' + scope.allRenderers[scope.renderer]);
 
 
 
@@ -99,7 +103,7 @@ app.directive("vptSidebar", function () {
 
             let mccRadioOff = $("#march-off");
             let mccRadioOn = $("march-on");
-            scope.setMarching= function(bool){
+            scope.setMarching = function (bool) {
                 scope.publicRenderData.vptBundle.useMCC = bool;
             };
 
@@ -122,24 +126,51 @@ app.directive("vptSidebar", function () {
             let inMccISO = element.find('[name="inISO-MRC"]');
             inMccISO.change(function () {
                 value = Math.max(0.01, inMccISO.val()) || 1.0;
-                scope.isoSetting = value; 
+                scope.isoSetting = value;
                 inMccISO.val(value);
             }.bind(this));
 
-            scope.cpuCount  = Math.ceil(window.navigator.hardwareConcurrency / 2);
+            scope.cpuCount = Math.ceil(window.navigator.hardwareConcurrency / 2);
             scope.isoSetting = Math.max(0.01, inMccISO.val()) || 1.0;
             scope.objectsToMCC = 0;
-            scope.calculateMRC = function(){
-                if(scope.isComputingMCC)
+            scope.calculateMRC = function () {
+                if (scope.isComputingMCC)
                     return;
 
                 scope.isComputingMCC = true;
                 scope.objectsToMCC = scope.publicRenderData.vptBundle.objects.length;
-                for(let k = 0; k < scope.publicRenderData.vptBundle.objects.length; k++){
+                for (let k = 0; k < scope.publicRenderData.vptBundle.objects.length; k++) {
                     scope.runMMC(scope.cpuCount, scope.isoSetting, scope.publicRenderData.vptBundle.objects[k]);
-                }       
+                }
             };
-            
+
+
+            //On file selected for Import button
+            document.getElementById('import_input').addEventListener('change', function (event) {
+                var file = event.target.files[0];
+                if (file) {
+                    scope.publicRenderData.vptBundle.mccStatus = false; 	//signals mcc geo isn't ready, don't use it until ready.
+                    scope.runImportMCC(scope.publicRenderData.vptBundle.objects[0], file);    //Todo: scene object selector.
+                }
+                document.getElementById('import_input').value = "";
+            }, false);
+            //M3D button that calls file input for selection.
+            scope.importOBJ = function () {
+                if (scope.publicRenderData.vptBundle.objects.length == 0) {
+                    console.log("No volume objects in scene, cannot import.");
+                    return;
+                }
+                document.getElementById('import_input').click();
+            };
+
+            scope.exportOBJ = function () {
+                if (scope.publicRenderData.vptBundle.objects.length == 0) {
+                    console.log("No volume objects in scene, cannot export.");
+                    return;
+                }
+                scope.runExportMCC(scope.publicRenderData.vptBundle.objects[0]);   //Todo: scene object selector.
+            };
+
         },
         templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/vptSidebar.html';

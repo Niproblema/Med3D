@@ -239,6 +239,7 @@ app.directive("eamSettings", function () {
                     } else {
                         tfBumps[i].size.x *= scale;
                     }
+                    e.stopPropagation();
                     render();
                     onChange();
                 }.bind(this));

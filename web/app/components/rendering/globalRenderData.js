@@ -66,7 +66,9 @@ app.factory('PublicRenderData', function () {
 
             //Marching cubes 
             useMCC : false,
-            mccStatus : false  //Marching cubes ready for current objects
+            mccStatus : false,  //Marching cubes ready for current objects
+
+            refreshUI : function(){}    //Function for refreshing VPT UI outside sidebar scope.
         }
     };
 });

@@ -15,7 +15,7 @@ M3D.Mesh = class extends M3D.Object3D {
 
 		// Each mesh defines geometry and its material
 		this._geometry = geometry !== undefined ? geometry : new M3D.Geometry();
-		this._material = material !== undefined ? material : new M3D.MeshBasicMaterial( { color: Math.random() * 0xffffff } );
+		this._material = material !== undefined ? material : new M3D.MeshBasicMaterial({ color: Math.random() * 0xffffff });
 
 		this.raycast = _raycast;
 	}
@@ -38,8 +38,8 @@ M3D.Mesh = class extends M3D.Object3D {
 	set normalMatrix(normMat) { this._normalMatrix = normMat; }
 
 	// TODO (Primoz): Figure out what to do when material or geometry is changed
-    set material(mat) { this._material = mat; }
-    set geometry(geom) { this._geometry = geom; }
+	set material(mat) { this._material = mat; }
+	set geometry(geom) { this._geometry = geom; }
 	// endregion
 
 
@@ -65,33 +65,105 @@ M3D.Mesh = class extends M3D.Object3D {
 
 		return object;
 	}
+
+	exportOBJ() {
+		var output = 'o M3D_mesh\n';
+		if (this._geometry) {
+			var i, j, k, l, x, y, z;
+
+			var vertices = this.geometry.vertices ? this.geometry.vertices.array : null;
+			var normals = this.geometry.normals ? this.geometry.normals.array : null;
+			var uvs = this.geometry.uv ? this.geometry.uv.array : null;
+			var indices = this.geometry.indices ? this.geometry.indices.array : null;
+
+			//vertices
+			if (vertices !== undefined && vertices && vertices.length >= 3) {
+				for (i = 0; i < vertices.length; i += 3) {
+					x = vertices[i];
+					y = vertices[i + 1];
+					z = vertices[i + 2];
+
+					output += 'v ' + x + ' ' + y + ' ' + z + '\n';
+				}
+			}
+
+			//uvs
+			if (uvs !== undefined && uvs && uvs.length >= 2) {
+				for (i = 0; i < uvs.length; i += 2) {
+					x = uvs[i];
+					y = uvs[i + 1];
+
+					output += 'vt ' + x + ' ' + y + '\n';
+				}
+			}
+
+			//normals
+/* 			if (normals !== undefined && normals && normals.length >= 3) {
+				for (i = 0; i < normals.length; i += 3) {
+					x = normals[i];
+					y = normals[i + 1];
+					z = normals[i + 2];
+
+					output += 'vn ' + x + ' ' + y + ' ' + z + '\n';
+				}
+			} */
+
+			//faces
+/* 			if (indices !== undefined && indices && indices.length >= 3) {
+				for (i = 0; i < indices.length; i += 3) {
+					j = indices[i] + 1;
+					k = indices[i + 1] + 1;
+					l = indices[i + 2] + 1;
+
+					if (!uvs)
+						output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
+					else
+						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n';
+				}
+			} else if (vertices !== undefined && vertices && vertices.length >= 3) {
+				for (i = 0; i < vertices.length; i += 3) {
+					j = i + 1;
+					k = i + 2;
+					l = i + 3;
+
+					if (!uvs)
+						output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
+					else
+						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n';
+				}
+			} */
+		}
+		return output;
+	}
 	// endregion
 };
 
 
+
+
 let _raycast = (function () {
 
-    let vA = new THREE.Vector3();
-    let vB = new THREE.Vector3();
-    let vC = new THREE.Vector3();
+	let vA = new THREE.Vector3();
+	let vB = new THREE.Vector3();
+	let vC = new THREE.Vector3();
 
-    let inverseMatrix = new THREE.Matrix4();
-    let ray = new THREE.Ray();
-    let sphere = new THREE.Sphere();
+	let inverseMatrix = new THREE.Matrix4();
+	let ray = new THREE.Ray();
+	let sphere = new THREE.Sphere();
 
 	// Intersection points
-    let intersectionPoint = new THREE.Vector3();
-    let intersectionPointWorld = new THREE.Vector3();
+	let intersectionPoint = new THREE.Vector3();
+	let intersectionPointWorld = new THREE.Vector3();
 
-	function checkTriangleIntersection( object, raycaster, ray, vertices, a, b, c ) {
+	function checkTriangleIntersection(object, raycaster, ray, vertices, a, b, c) {
 
 		// Fetch triangle vertices
 		vA.fromArray(vertices.array, a * 3);
 		vB.fromArray(vertices.array, b * 3);
 		vC.fromArray(vertices.array, c * 3);
 
-        let intersect;
-        let material = object.material;
+		let intersect;
+		let material = object.material;
 
 		// Check triangle intersection
 		if (material.side === M3D.BackSide) {
@@ -110,7 +182,7 @@ let _raycast = (function () {
 		intersectionPointWorld.applyMatrix4(object.matrixWorld);
 
 		// Get distance to intersection point
-        let distance = raycaster.ray.origin.distanceTo(intersectionPointWorld);
+		let distance = raycaster.ray.origin.distanceTo(intersectionPointWorld);
 
 		// Check if the distance is out of bounds
 		if (distance < raycaster.near || distance > raycaster.far)
@@ -126,9 +198,9 @@ let _raycast = (function () {
 	}
 
 	return function raycast(raycaster, intersects) {
-        let geometry = this.geometry;
-        let material = this.material;
-        let matrixWorld = this.matrixWorld;
+		let geometry = this.geometry;
+		let material = this.material;
+		let matrixWorld = this.matrixWorld;
 
 		// Check if object has material
 		if (material === undefined || geometry === undefined)
@@ -155,10 +227,10 @@ let _raycast = (function () {
 		}
 
 
-        let intersection;
-        let a, b, c;
-        let indices = geometry.indices;
-        let vertices = geometry.vertices;
+		let intersection;
+		let a, b, c;
+		let indices = geometry.indices;
+		let vertices = geometry.vertices;
 
 		// Geometry is indexed
 		if (indices !== null) {

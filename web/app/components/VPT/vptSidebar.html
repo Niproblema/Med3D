@@ -123,7 +123,8 @@
                                     </div>
                                 </div>
 
-                                <div class="sidebar-sub-content-title" ng-show="publicRenderData.vptBundle.useMCC && !publicRenderData.vptBundle.mccStatus" style="padding-right: 15px; text-align: center;">
+                                <div class="sidebar-sub-content-title" ng-show="publicRenderData.vptBundle.useMCC && !publicRenderData.vptBundle.mccStatus"
+                                    style="padding-right: 15px; text-align: center;">
                                     <b style="color: white; font-size: 12px; font-weight: 400;">Geometry must be computed before it's shown.</b>
                                 </div>
 
@@ -140,10 +141,18 @@
                                 </div>
 
                                 <div class="sidebar-sub-content-title">
-                                    <div class="input-group" style="overflow: hidden; padding-bottom: 10px; padding-left: 5px; padding-top: 5px;">
-                                        <button id="calculateMRC" type="button" class="btn med3d-btn-primary" style="font-size: 12px; line-height: 30px; padding: 0 9px; height: 30px; border-radius: 5px 5px 5px 5px"
+                                    <div class="input-group" style="overflow: hidden; padding-bottom: 10px; padding-right: 30px; padding-top: 15px; width:100%; display:flex; flex-direction:row;">
+                                        <button id="calculateMRC" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
                                             ng-click="calculateMRC()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Compute</button>
+                                        <button id="import" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
+                                            ng-click="importOBJ()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Import</button>
+                                        <button id="export" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
+                                            ng-click="exportOBJ()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Export</button>
                                     </div>
+                                </div>
+                                <!--Inputs-->
+                                <div style="display: none" id="custom_file_input">
+                                    <input type="file" id="import_input">
                                 </div>
                             </div>
                         </div>

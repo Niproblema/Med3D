@@ -84,7 +84,7 @@ M3D.VPTrendInterface = class {
         }
         //
         var gl = this._gl;
-        
+
         //Parses VPT's objects - In collaboration, objects might change...
         this._parseObjects(objects);
         //Parse UI settings - Set renderer according to UI settings.
@@ -169,7 +169,7 @@ M3D.VPTrendInterface = class {
             //Update object's texture.
             this._setObjectMaterialTexture(object, glManager);
         }
-        this._publicRenderData.vptBundle.resetBuffers = false;  
+        this._publicRenderData.vptBundle.resetBuffers = false;
         this._softReset = false;
         this._restoreGLstate(gl, savedState);
     }
@@ -294,14 +294,12 @@ M3D.VPTrendInterface = class {
      * Checks for object changes
      * @param {VPT} objects 
      */
-    _parseObjects(objects){
-         this._publicRenderData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
-       
-/*         for(let i = 0; i < objects.length; i++){                             //Same issue, Todo later
-            if(!this._publicRenderData.vptBundle.objects.includes(objects[i])){
-                this._publicRenderData.vptBundle.objects.push(objects[i]);
-            }
-        } */
+    _parseObjects(objects) { //TODO
+        if (objects.length !== this._publicRenderData.vptBundle.objects.length) {   //Maybe not a good method
+
+            this._publicRenderData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
+            this._publicRenderData.vptBundle.refreshUI();
+        }
 
     }
 

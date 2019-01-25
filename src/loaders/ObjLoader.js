@@ -10,7 +10,7 @@ M3D.ObjLoader = class {
      * @constructor     Creates new OBJLoader object. If the manager is undefined the default LoadingManager will be used.
      * @name OBJLoader
      */
-    constructor (manager = new M3D.LoadingManager()) {
+    constructor(manager = new M3D.LoadingManager()) {
         this.manager = (manager !== undefined) ? manager : new M3D.LoadingManager();
     }
 
@@ -20,16 +20,15 @@ M3D.ObjLoader = class {
      * @param {function} onLoad Will be called when the .obj file finishes loading. Function will be called with parsed objects as parameters
      * @param {function} onProgress Will forward the progress calls of XHRLoader
      * @param {function} onError Will forward the error calls of XHRLoader
+     * @param {bool} return M3D objects. default = true;
      */
-    load (url, onLoad, onProgress, onError) {
+    load(url, onLoad, onProgress, onError, parseM3D) {
         var scope = this;
 
         var loader = new M3D.XHRLoader(scope.manager);
         loader.setPath(this.path);
         loader.load(url, function (text) {
-
-            onLoad(scope.parse(text));
-
+            onLoad(scope.parse(text, parseM3D));
         }, onProgress, onError);
     }
 
@@ -39,15 +38,16 @@ M3D.ObjLoader = class {
      * @param {function} onLoad Will be called when the .obj file finishes loading. Function will be called with parsed objects as parameters
      * @param {function} onProgress Will forward the progress calls of XHRLoader
      * @param {function} onError Will forward the error calls of XHRLoader
+     * @param {bool} return M3D objects. default = true;
      */
-    loadFile(file, onLoad, onProgress, onError) {
+    loadFile(file, onLoad, onProgress, onError, parseM3D) {
         var scope = this;
         var fileReader = new FileReader();
 
         fileReader.onerror = onError;
         fileReader.onprogress = onProgress;
         fileReader.onload = function (event) {
-            onLoad(scope.parse(this.result));
+            onLoad(scope.parse(this.result, parseM3D));
         };
 
         fileReader.readAsText(file);
@@ -57,7 +57,7 @@ M3D.ObjLoader = class {
      * This should be called to set the .obj file PATH/URL in advance
      * @param {string} path Request path
      */
-    setPath (path) {
+    setPath(path) {
         this.path = path;
     }
 
@@ -66,9 +66,10 @@ M3D.ObjLoader = class {
      * The geometry property holds the arrays of normals, uvs and vertices. The material property holds the name of the
      * object material and smooth shading flag.
      * @param {string} text Text in Wavefront OBJ geometry format.
+     * @param {bool} parse return into M3D object(s). Default = true
      * @returns {Array} Array of objects parsed from the passed text
      */
-    parse (text) {
+    parse(text, returnM3D) {
         console.time('OBJLoader');
 
         var objects = [];
@@ -102,19 +103,19 @@ M3D.ObjLoader = class {
         function parseVertexIndex(value) {
             var index = parseInt(value);
 
-            return ( index >= 0 ? index - 1 : index + vertices.length / 3 ) * 3;
+            return (index >= 0 ? index - 1 : index + vertices.length / 3) * 3;
         }
 
         function parseNormalIndex(value) {
             var index = parseInt(value);
 
-            return ( index >= 0 ? index - 1 : index + normals.length / 3 ) * 3;
+            return (index >= 0 ? index - 1 : index + normals.length / 3) * 3;
         }
 
         function parseUVIndex(value) {
             var index = parseInt(value);
 
-            return ( index >= 0 ? index - 1 : index + uvs.length / 2 ) * 2;
+            return (index >= 0 ? index - 1 : index + uvs.length / 2) * 2;
         }
 
         function addVertex(a, b, c) {
@@ -227,7 +228,7 @@ M3D.ObjLoader = class {
             if (line.length === 0 || line.charAt(0) === '#') {
                 continue;
             }
-            else if (( result = vertex_pattern.exec(line) ) !== null) {
+            else if ((result = vertex_pattern.exec(line)) !== null) {
                 // ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
                 vertices.push(
                     parseFloat(result[1]),
@@ -235,7 +236,7 @@ M3D.ObjLoader = class {
                     parseFloat(result[3])
                 );
             }
-            else if (( result = normal_pattern.exec(line) ) !== null) {
+            else if ((result = normal_pattern.exec(line)) !== null) {
                 // ["vn 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
                 normals.push(
                     parseFloat(result[1]),
@@ -243,27 +244,27 @@ M3D.ObjLoader = class {
                     parseFloat(result[3])
                 );
             }
-            else if (( result = uv_pattern.exec(line) ) !== null) {
+            else if ((result = uv_pattern.exec(line)) !== null) {
                 // ["vt 0.1 0.2", "0.1", "0.2"]
                 uvs.push(
                     parseFloat(result[1]),
                     parseFloat(result[2])
                 );
             }
-            else if (( result = face_pattern1.exec(line) ) !== null) {
+            else if ((result = face_pattern1.exec(line)) !== null) {
                 // ["f 1 2 3", "1", "2", "3", undefined]
                 addFace(
                     result[1], result[2], result[3], result[4]
                 );
             }
-            else if (( result = face_pattern2.exec(line) ) !== null) {
+            else if ((result = face_pattern2.exec(line)) !== null) {
                 // ["f 1/1 2/2 3/3", " 1/1", "1", "1", " 2/2", "2", "2", " 3/3", "3", "3", undefined, undefined, undefined]
                 addFace(
                     result[2], result[5], result[8], result[11],
                     result[3], result[6], result[9], result[12]
                 );
             }
-            else if (( result = face_pattern3.exec(line) ) !== null) {
+            else if ((result = face_pattern3.exec(line)) !== null) {
                 // ["f 1/1/1 2/2/2 3/3/3", " 1/1/1", "1", "1", "1", " 2/2/2", "2", "2", "2", " 3/3/3", "3", "3", "3", undefined, undefined, undefined, undefined]
                 addFace(
                     result[2], result[6], result[10], result[14],
@@ -271,7 +272,7 @@ M3D.ObjLoader = class {
                     result[4], result[8], result[12], result[16]
                 );
             }
-            else if (( result = face_pattern4.exec(line) ) !== null) {
+            else if ((result = face_pattern4.exec(line)) !== null) {
                 // ["f 1//1 2//2 3//3", " 1//1", "1", "1", " 2//2", "2", "2", " 3//3", "3", "3", undefined, undefined, undefined]
                 addFace(
                     result[2], result[5], result[8], result[11],
@@ -279,7 +280,7 @@ M3D.ObjLoader = class {
                     result[3], result[6], result[9], result[12]
                 );
             }
-            else if (( result = object_pattern.exec(line) ) !== null) {
+            else if ((result = object_pattern.exec(line)) !== null) {
                 // o object_name
                 // or
                 // g group_name
@@ -301,7 +302,7 @@ M3D.ObjLoader = class {
             else if (/^mtllib /.test(line)) {
                 // mtl file
             }
-            else if (( result = smoothing_pattern.exec(line) ) !== null) {
+            else if ((result = smoothing_pattern.exec(line)) !== null) {
                 // smooth shading
                 object.material.smooth = result[1] === "1" || result[1] === "on";
             }
@@ -310,41 +311,46 @@ M3D.ObjLoader = class {
             }
         }
 
-        var meshes = [];
+        if (returnM3D == undefined || returnM3D) {
 
-        for (var i = 0; i < objects.length; i++) {
+            var meshes = [];
 
-            var geometry = objects[i].geometry;
+            for (var i = 0; i < objects.length; i++) {
 
-            // Create new buffer geometry
-            var bufferGeometry = new M3D.Geometry();
+                var geometry = objects[i].geometry;
 
-            // Add position of vertices
-            bufferGeometry.vertices = new M3D.BufferAttribute(new Float32Array(geometry.vertices), 3);
+                // Create new buffer geometry
+                var bufferGeometry = new M3D.Geometry();
 
-            // Check if normals are specified. Otherwise calculate them
-            if ( geometry.normals.length > 0 ) {
-                bufferGeometry.normals = new M3D.BufferAttribute(new Float32Array(geometry.normals), 3);
-            } else {
-                bufferGeometry.computeVertexNormals();
+                // Add position of vertices
+                bufferGeometry.vertices = new M3D.BufferAttribute(new Float32Array(geometry.vertices), 3);
+
+                // Check if normals are specified. Otherwise calculate them
+                if (geometry.normals.length > 0) {
+                    bufferGeometry.normals = new M3D.BufferAttribute(new Float32Array(geometry.normals), 3);
+                } else {
+                    bufferGeometry.computeVertexNormals();
+                }
+
+                // If specified add texture uv-s
+                if (geometry.uvs.length > 0) {
+                    bufferGeometry.uv = new M3D.BufferAttribute(new Float32Array(geometry.uvs), 2);
+                }
+
+                var material = new M3D.MeshBasicMaterial();
+
+                material.shading = objects[i].material.smooth ? M3D.SmoothShading : M3D.FlatShading;
+
+                // Create new mesh
+                var mesh = new M3D.Mesh(bufferGeometry, material);
+                mesh.name = objects[i].name;
+
+                meshes.push(mesh);
             }
 
-            // If specified add texture uv-s
-            if (geometry.uvs.length > 0) {
-                bufferGeometry.uv = new M3D.BufferAttribute(new Float32Array(geometry.uvs), 2);
-            }
-
-            var material = new M3D.MeshBasicMaterial();
-
-            material.shading = objects[i].material.smooth ? M3D.SmoothShading : M3D.FlatShading;
-
-            // Create new mesh
-            var mesh = new M3D.Mesh(bufferGeometry, material);
-            mesh.name = objects[i].name;
-
-            meshes.push(mesh);
+            return meshes;
+        } else{
+            return objects;
         }
-
-        return meshes;
     }
 };

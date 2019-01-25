@@ -6,6 +6,7 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
     $scope.publicRenderData = PublicRenderData;
 
     let MC = new M3D.MarchingCubes();
+    let OL = new M3D.ObjLoader();
 
     $scope.runMMC = function (cores, iso, object) {
         var runnable = function (onLoad, onProgress, onError) {
@@ -25,7 +26,7 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
                         concatArrLength += data[i].length;
                     }
                 } else {
-                    vertArr = data[0];
+                    vertArr = data;
                 }
 
                 var geometry = new M3D.Geometry();
@@ -75,6 +76,92 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
         TaskManagerService.enqueueNewTask(task);
     };
 
+    $scope.runImportMCC = function (object, file) {
+        // Create task
+        let runnable = function (onLoad, onProgress, onError) {
+            let privateOnLoad = function (data) {
+                var concatVertLength = 0;
+                var concatNormLength = 0;
+                for (var i = 0; i < data.length; i++) {
+                    concatVertLength += data[i].geometry.vertices.length;
+                    concatNormLength += data[i].geometry.normals.length;
+                }
+                let vertArr = new Float32Array(concatVertLength);
+                let normArr = new Float32Array(concatNormLength);
+
+                let vertCount = 0;
+                for (var i = 0; i < data.length; i++) {
+                    vertArr.set(data[i].geometry.vertices, vertCount);
+                    if (concatNormLength > 0) {
+                        normArr.set(data[i].geometry.normals, vertCount);
+                    }
+                    vertCount += data[i].geometry.vertices.length;
+                }
+
+                var geometry = new M3D.Geometry();
+                geometry.vertices = new M3D.BufferAttribute(vertArr, 3);
+                if (concatNormLength > 0) 
+                    geometry.normals = new M3D.BufferAttribute(normArr, 3);
+                else
+                    geometry.computeVertexNormals();
+                geometry.computeBoundingSphere();
+
+                onLoad(object, geometry);
+            };
+
+            let privateOnProgress = function (event) {
+                // Calculate finished percentage
+                onProgress(event.loaded / event.total * 100);
+            };
+
+            let privateOnError = function () {
+                onError({ code: 1, msg: "Failed to load .obj file!" })
+            };
+
+            OL.loadFile(file, privateOnLoad, privateOnProgress, privateOnError, false);
+        };
+
+        let task = {
+            uuid: THREE.Math.generateUUID(),
+            meta: {
+                name: "Wavefront OBJ loading",
+                description: "Loading geometry from the specified file.",
+                icon: "no/icon/atm"
+            },
+            synchronous: true,
+            target: "MCC-IMPORT",
+            run: runnable,
+            cancel: function () {/* TODO */ }
+        };
+
+        TaskManagerService.enqueueNewTask(task)
+    }
+
+
+    $scope.runExportMCC = function (object) {
+        // Create task
+        let runnable = function (onLoad, onProgress, onError) {
+            //onLoad('data:text/json;charset=utf-8,' + encodeURIComponent(object.exportOBJ()));
+            onLoad('data:text/json;charset=utf-8,' + object.exportOBJ());
+        };
+
+
+        let task = {
+            uuid: THREE.Math.generateUUID(),
+            meta: {
+                name: "Wavefront OBJ loading",
+                description: "Preparing data for download.",
+                icon: "no/icon/atm"
+            },
+            synchronous: true,
+            target: "MCC-EXPORT",
+            run: runnable,
+            cancel: function () {/* TODO */ }
+        };
+
+        TaskManagerService.enqueueNewTask(task)
+    }
+
     TaskManagerService.addResultCallback("MCC-VPT",
         function (object, geometry) {
             object._mccGeometry = geometry;
@@ -83,8 +170,29 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
                 $scope.isComputingMCC = false;
                 $scope.publicRenderData.vptBundle.mccStatus = true;
             }
-            $scope.$apply()
+            $scope.$apply();
         });
+
+
+    TaskManagerService.addResultCallback("MCC-IMPORT",
+        function (object, geometry) {
+            if (geometry && object) {
+                object._mccGeometry = geometry;
+            }
+            $scope.publicRenderData.vptBundle.mccStatus = true;
+            $scope.$apply();
+        });
+
+    TaskManagerService.addResultCallback("MCC-EXPORT",
+        function (data) {
+            var a = document.createElement('a');
+            a.setAttribute('href', data);
+            a.setAttribute('download', 'M3D_MCC.obj');
+            a.click();
+            a = null;
+        });
+
+
 
 };
 

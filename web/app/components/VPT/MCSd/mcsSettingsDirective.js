@@ -59,7 +59,6 @@ app.directive("mcsSettings", function () {
             };
 
             ///////////////////////
-
             inSigma.change(function(){
                 value = Math.max(0, parseFloat(inSigma.val())) || 1;
                 scope.publicRenderData.vptBundle.mcs.sigma = value;
@@ -240,6 +239,7 @@ app.directive("mcsSettings", function () {
                     } else {
                         tfBumps[i].size.x *= scale;
                     }
+                    e.stopPropagation();
                     render();
                     onChange();
                 }.bind(this));

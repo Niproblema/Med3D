@@ -1,7 +1,18 @@
+Export MCC to .obj and import
+Raytrace annotations,
+Shared session with shared VPT parameters, Marching cubes geometry
+Iso value?
+
+merge phong and VPT with slider
+VPT resolution buffer slider
+Environment map UI option - Za celo sceno, al za VPT only?
+
+
+
 VPT issue - BostonTeapot at twice the width
 Move vptInterface into it's own render pass?
 VTP render res UI setting
-parse scene cameras and replicate to VPT for 
+parse scene lights and replicate to VPT for 
 UI accordion, fix css defualt pick
 MCC Compute btn ng-disable does not enable itself when object loaded with collaboration.
 
@@ -17,3 +28,4 @@ Rethink:
  -offscreeen canvas - advantage: non shared GL settings
  -Reinhard tonemapper + Range tonemapper
  -VPT gc in shared session
+ -M3D group of meshes vs single large mesh.
