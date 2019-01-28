@@ -762,6 +762,22 @@ body {
     border-color: #3b9190;
 }
 
+.med3d-slider label {
+    position: absolute;
+    width: 20px;
+    margin-left: -1em !important;
+    margin-right: 10px;
+    text-align: center;
+    margin-top: 20px;
+    color : #F3F9FE;
+    font-weight: 500;
+    /*color: #49b2b2;*/
+}
+.med3d-slider label.selected {
+    color: #49b2b2;
+    font-weight: 600;
+}
+
 /*Used to make colorpicker bigger*/
 .colorpicker-hue,
 .colorpicker-alpha {

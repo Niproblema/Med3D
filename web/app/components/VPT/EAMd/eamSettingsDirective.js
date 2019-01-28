@@ -14,6 +14,8 @@ app.directive("eamSettings", function () {
 
             //Start notification for restoring UI values
             scope.$on('startEAM', function () {
+                $(blendSlider).slider("value", scope.publicRenderData.vptBundle.eam.blendMeshRatio);
+                changeResolution(scope.publicRenderData.vptBundle.eam.resolution);
                 inSteps.val(scope.publicRenderData.vptBundle.eam.steps);   //Math.round(1 / scope.publicRenderData.getVPTController().getRenderer()._stepSize));
                 inACorr.val(scope.publicRenderData.vptBundle.eam.alphaCorrection);//scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
                 if (tfBumps.length > 0)
@@ -36,8 +38,82 @@ app.directive("eamSettings", function () {
             var color = null;
             var alpha = 1;
 
-            ///////////////////////
+            //Blend mesh ratio
+            let blendHandle = element.find('#blendHandleEAM');
+            let blendSlider = element.find('#blendSliderEAM');
+            blendSlider.slider({
+                value: scope.publicRenderData.vptBundle.eam.blendMeshRatio,
+                min: 0,
+                max: 1,
+                step: 0.01,
+                create: function () {
+                    blendHandle.text($(this).slider("value"));
+                },
+                slide: function (event, ui) {
+                    scope.publicRenderData.vptBundle.eam.blendMeshRatio = parseFloat(ui.value);
+                    blendHandle.text(ui.value);
+                }
+            });
 
+            //Res setting
+
+            let resolutionValues = [256, 512, 1024, 2048];
+            let resolutionHandle = element.find('#resolutionHandleEAM');
+            let resolutionSlider = element.find('#resolutionSliderEAM');
+            let resLabels = [];
+            let lastVal = null;
+            resolutionSlider.slider({
+                min: 0,
+                max: 3,
+                step: 1,
+                value: 1,
+                create: function () {
+                    lastVal = $(this).slider("value");
+                },
+                slide: function (event, ui) {
+                    scope.publicRenderData.vptBundle.eam.resolution = resolutionValues[ui.value];
+                    scope.publicRenderData.vptBundle.resetBuffers = true;
+                    changeResolutionSlider(ui.value, true);
+                }
+            }).each(function () {
+                // Get the number of possible values
+                var vals = resolutionSlider.slider("option", "max") - resolutionSlider.slider("option", "min");
+                // Space out values
+                for (var i = 0; i <= vals; i++) {
+
+                    var el = $('<label>' + resolutionValues[i] + '</label>').css('left', (i / vals * 98) + '%');
+
+                    $(resolutionSlider).append(el);
+                    resLabels[i] = el;
+                    if (i === lastVal)
+                        el.addClass("selected");
+                }
+            });
+
+            //Changes UI to closest selectable value
+            let changeResolution = function (resValue) {
+                var i = 0;
+                while (i < resolutionValues.length && resolutionValues[i] < resValue) {
+                    i++;
+                }
+                var selected = i >= resolutionValues.length ? resolutionValues.length - 1 : (i == 0 ? i : (Math.abs(resValue - resolutionValues[i]) <= Math.abs(resValue - resolutionValues[i - 1]) ? i : i - 1));
+                changeResolutionSlider(selected);
+            }
+
+            //Changes UI to selected index
+            let changeResolutionSlider = function (index, userChanged) {
+                if (lastVal !== index) {
+                    $(resLabels[lastVal]).removeClass("selected");
+                    lastVal = index;
+                    $(resLabels[lastVal]).addClass("selected");
+                    if (userChanged === undefined || !userChanged) {
+                        $(resolutionSlider).slider("value", index)
+                    }
+                }
+            }
+
+
+            //Original vpt settings
             let inSteps = element.find('[name="inSteps"]');
             let inACorr = element.find('[name="inACorr"]');
             let widget = element.find('.widget');
@@ -135,7 +211,7 @@ app.directive("eamSettings", function () {
                 render();
                 onChange();
             };
-            scope.loadTF_EAM = function () {        
+            scope.loadTF_EAM = function () {
                 CommonUtils.readTextFile(function (data) {
                     tfBumps = JSON.parse(data);
                     render();
@@ -277,8 +353,8 @@ app.directive("eamSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.vptBundle.eam.tf = canvas;   
-                scope.publicRenderData.vptBundle.resetMVP = true;             
+                scope.publicRenderData.vptBundle.eam.tf = canvas;
+                scope.publicRenderData.vptBundle.resetMVP = true;
             }
 
             initTF();

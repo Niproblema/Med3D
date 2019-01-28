@@ -25,15 +25,19 @@ app.factory('PublicRenderData', function () {
         vptBundle: {
             rendererChoiceID: 5,
             resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
-            resetBuffers : false,   //Remakes object's framebuffers. Used when switching renderers.
+            resetBuffers : false,   //Remakes object's framebuffers. Used when switching renderers or render buffer sizes (render resolution)
             eam: {
                 background: true,
+                blendMeshRatio: 0.69,    //0-1 share of Mesh render ratio
+                resolution: 512,        //Buffer dimensions
                 steps: 10,
                 alphaCorrection: 5,
                 tf: null
             },
             iso: {
                 background: true,
+                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                resolution: 512,        //Buffer dimensions
                 steps: 10,
                 isoVal: 0.3,
                 color: {
@@ -44,12 +48,16 @@ app.factory('PublicRenderData', function () {
             },
             mcs: {
                 background: true,
+                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                resolution: 512,        //Buffer dimensions
                 sigma: 30,
                 alphaCorrection: 30,
                 tf: null    
             },
             mip: {
                 background: true,
+                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                resolution: 512,        //Buffer dimensions
                 steps: 10
             },
             reinhard: {
@@ -59,7 +67,6 @@ app.factory('PublicRenderData', function () {
                 rangeLower: 0,
                 rangeHigher: 1
             },
-
 
             //Volume object collection. Used for MarchingCubes geometry updating and garbage collection.
             objects: [],

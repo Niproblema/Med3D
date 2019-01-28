@@ -100,7 +100,7 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
 
                 var geometry = new M3D.Geometry();
                 geometry.vertices = new M3D.BufferAttribute(vertArr, 3);
-                if (concatNormLength > 0) 
+                if (concatNormLength > 0)
                     geometry.normals = new M3D.BufferAttribute(normArr, 3);
                 else
                     geometry.computeVertexNormals();
@@ -142,7 +142,8 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
         // Create task
         let runnable = function (onLoad, onProgress, onError) {
             //onLoad('data:text/json;charset=utf-8,' + encodeURIComponent(object.exportOBJ()));
-            onLoad('data:text/json;charset=utf-8,' + object.exportOBJ());
+            //onLoad('data:text/json;charset=utf-8,' + object.exportOBJ());
+            onLoad(object.exportOBJ());
         };
 
 
@@ -185,11 +186,23 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
 
     TaskManagerService.addResultCallback("MCC-EXPORT",
         function (data) {
-            var a = document.createElement('a');
-            a.setAttribute('href', data);
-            a.setAttribute('download', 'M3D_MCC.obj');
-            a.click();
-            a = null;
+
+            var blob = new Blob([data], { type: 'text/obj;charset=utf-8;' });
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = document.createElement("a");
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    var url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", 'M3D_MCC.obj');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
         });
 
 

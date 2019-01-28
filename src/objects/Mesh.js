@@ -98,7 +98,7 @@ M3D.Mesh = class extends M3D.Object3D {
 			}
 
 			//normals
-/* 			if (normals !== undefined && normals && normals.length >= 3) {
+			if (normals !== undefined && normals && normals.length >= 3) {
 				for (i = 0; i < normals.length; i += 3) {
 					x = normals[i];
 					y = normals[i + 1];
@@ -106,19 +106,21 @@ M3D.Mesh = class extends M3D.Object3D {
 
 					output += 'vn ' + x + ' ' + y + ' ' + z + '\n';
 				}
-			} */
+			}
 
 			//faces
-/* 			if (indices !== undefined && indices && indices.length >= 3) {
+			if (indices !== undefined && indices && indices.length >= 3) {
 				for (i = 0; i < indices.length; i += 3) {
 					j = indices[i] + 1;
 					k = indices[i + 1] + 1;
 					l = indices[i + 2] + 1;
 
-					if (!uvs)
+					output += 'f ' + j + ' ' + k + ' ' + l + '\n';
+
+					/* if (!uvs)
 						output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
 					else
-						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n';
+						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
 				}
 			} else if (vertices !== undefined && vertices && vertices.length >= 3) {
 				for (i = 0; i < vertices.length; i += 3) {
@@ -126,12 +128,14 @@ M3D.Mesh = class extends M3D.Object3D {
 					k = i + 2;
 					l = i + 3;
 
-					if (!uvs)
+					output += 'f ' + j + ' ' + k + ' ' + l + '\n';
+
+					/* if (!uvs)
 						output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
 					else
-						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n';
+						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
 				}
-			} */
+			}
 		}
 		return output;
 	}

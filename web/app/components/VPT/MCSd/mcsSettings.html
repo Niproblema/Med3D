@@ -1,8 +1,25 @@
 <span>
     <div class="sidebar-sub-content-title">
-        <input id="mipBackground" class="med3d-checkbox" type="checkbox" ng-model="publicRenderData.vptBundle.mcs.background">
+        <input id="mcsBackground" class="med3d-checkbox" type="checkbox" ng-model="publicRenderData.vptBundle.mcs.background">
         <b style="color: white; font-size: 14px; font-weight: 500;">Use background</b>
     </div>
+
+    <div class="sidebar-sub-content-title">
+        <b style="color: white; font-size: 14px; font-weight: 500;">Blend mesh render</b>
+    </div>
+    <div id="blendSliderMCS" class="med3d-slider">
+        <div id="blendHandleMCS" class="ui-slider-handle med3d-slider-handle"></div>
+    </div>
+
+    <div class="sidebar-sub-content-title">
+        <b style="color: white; font-size: 14px; font-weight: 500;">Volume render resolution</b>
+    </div>
+    <div id="resolutionSliderMCS" class="med3d-slider" style="margin-bottom: 40px">
+        <div id="resolutionHandleMCS" class="ui-slider-handle med3d-slider-handle" style="width: 1em !important; margin-left: -0.5em !important"></div>
+    </div>
+
+    <hr class="med3d-sidebar-hr" style="margin-left: 5px; margin-top: 11px">
+
 
     <div class="sidebar-sub-content-title">
         <b style="color: white; font-size: 14px; font-weight: 500;">Sigma max</b>
