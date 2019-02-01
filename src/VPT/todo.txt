@@ -1,21 +1,20 @@
 Raytrace annotations,
 merge phong and VPT with slider
-VPT resolution buffer slider
-Shared session with shared VPT parameters, Marching cubes geometry
+Shared session with shared VPT parameters, Marching cubes geometry. VPT data to binary blob
 Iso value?
 Environment map UI option - Za celo sceno, al za VPT only?
-
-Move vptInterface into it's own render pass?
-parse scene lights and replicate to VPT for 
 UI accordion, fix css defualt pick
--VPT gc in shared session
+VPT gc in shared session
+remove OFF renderer from selection, remove phong material.
 
 
 Maybe:
- -VPT geometry switch causes GL drawArrays error in first draw.
+ -VPT geometry switch causes GL drawArrays error in first draw. Move vptInterface further up in MainPass
+ -Move vptInterface into it's own render pass?
 
 Rethink:
-
  -M3D group of meshes vs single large mesh.
  -Export to obj - too many vertexes.
  -M3D import obj, duplicate vertexes that share faces.
+ -M3D phong 
+ -Material transparent ? some alpha artifacting : probably issue with multiple objects (without mcc)

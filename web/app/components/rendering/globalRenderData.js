@@ -25,10 +25,11 @@ app.factory('PublicRenderData', function () {
         vptBundle: {
             rendererChoiceID: 5,
             resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
-            resetBuffers : false,   //Remakes object's framebuffers. Used when switching renderers or render buffer sizes (render resolution)
+            resetBuffers: false,   //Remakes object's framebuffers. Used when switching renderers or render buffer sizes (render resolution)
             eam: {
                 background: true,
-                blendMeshRatio: 0.69,    //0-1 share of Mesh render ratio
+                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                meshLight: true,
                 resolution: 512,        //Buffer dimensions
                 steps: 10,
                 alphaCorrection: 5,
@@ -37,26 +38,29 @@ app.factory('PublicRenderData', function () {
             iso: {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                meshLight: true,
                 resolution: 512,        //Buffer dimensions
                 steps: 10,
-                isoVal: 0.3,
+                isoVal: 0.25,
                 color: {
                     r: 1,
                     g: 1,
                     b: 1
-                }  
+                }
             },
             mcs: {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                meshLight: true,
                 resolution: 512,        //Buffer dimensions
                 sigma: 30,
                 alphaCorrection: 30,
-                tf: null    
+                tf: null
             },
             mip: {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                meshLight: true,
                 resolution: 512,        //Buffer dimensions
                 steps: 10
             },
@@ -72,10 +76,10 @@ app.factory('PublicRenderData', function () {
             objects: [],
 
             //Marching cubes 
-            useMCC : false,
-            mccStatus : false,  //Marching cubes ready for current objects
+            useMCC: false,
+            mccStatus: false,  //Marching cubes ready for current objects
 
-            refreshUI : function(){}    //Function for refreshing VPT UI outside sidebar scope.
+            refreshUI: function () { }    //Function for refreshing VPT UI outside sidebar scope.
         }
     };
 });

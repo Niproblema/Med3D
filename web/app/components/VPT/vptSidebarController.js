@@ -143,7 +143,7 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
         let runnable = function (onLoad, onProgress, onError) {
             //onLoad('data:text/json;charset=utf-8,' + encodeURIComponent(object.exportOBJ()));
             //onLoad('data:text/json;charset=utf-8,' + object.exportOBJ());
-            onLoad(object.exportOBJ());
+            onLoad(object.exportGeometry());
         };
 
 

@@ -125,7 +125,7 @@ app.directive("vptSidebar", function () {
 
             let inMccISO = element.find('[name="inISO-MRC"]');
             inMccISO.change(function () {
-                value = Math.max(0.01, inMccISO.val()) || 1.0;
+                value = Math.min(1.0, Math.max(0.01, inMccISO.val()));
                 scope.isoSetting = value;
                 inMccISO.val(value);
             }.bind(this));
@@ -140,7 +140,7 @@ app.directive("vptSidebar", function () {
                 scope.isComputingMCC = true;
                 scope.objectsToMCC = scope.publicRenderData.vptBundle.objects.length;
                 for (let k = 0; k < scope.publicRenderData.vptBundle.objects.length; k++) {
-                    scope.runMMC(scope.cpuCount, scope.isoSetting, scope.publicRenderData.vptBundle.objects[k]);
+                    scope.runMMC(scope.cpuCount, scope.isoSetting*255, scope.publicRenderData.vptBundle.objects[k]);
                 }
             };
 

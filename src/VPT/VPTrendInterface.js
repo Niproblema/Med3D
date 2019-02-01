@@ -100,6 +100,10 @@ M3D.VPTrendInterface = class {
             object.switchRenderModes(renderer != null, this._publicRenderData.vptBundle.useMCC && this._publicRenderData.vptBundle.mccStatus);
             if (!renderer) continue;
 
+            //Set flags for mesh renderer. Skip object if no work in vpt renderer is needed.. ex. blendMeshRatio = 100%
+            if(!this._setMeshRenderFlags(renderer, object)){
+                continue;
+            }
 
             //Different renderer than last time - hardResetBuffers
             if (this._publicRenderData.vptBundle.resetBuffers || this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID) {
@@ -269,9 +273,21 @@ M3D.VPTrendInterface = class {
         this._clipQuad = new WebGLUtils.createClipQuad(this._gl);
     }
 
+    __resizeToneMapperBuffer(toneMapper, newBufferSize) {
+        if (toneMapper._bufferSize !== newBufferSize) {
+            toneMapper._renderBuffer.destroy();
+            toneMapper._bufferSize = newBufferSize;
+            toneMapper._renderBuffer = new SingleBuffer(toneMapper._gl, toneMapper._getRenderBufferOptions());
+        }
+    }
+
     _hardResetBuffers(renderer, object) {
         this.__setupBuffers(renderer, object);
         this.__setupVolumeTexture(object);
+        //Resize toneMappers if needed
+        this.__resizeToneMapperBuffer(this._RHToneMapper, renderer._bufferSize);
+        this.__resizeToneMapperBuffer(this._RaToneMapper, renderer._bufferSize)
+
         object._lastRendererTypeID = renderer._type_id;
         this._publicRenderData.vptBundle.resetMVP = true;
     }
@@ -313,12 +329,18 @@ M3D.VPTrendInterface = class {
         this._publicRenderData.vptBundle.resetMVP = false;
 
         this._renderer_EAM._background = settings.eam.background;
+        this._renderer_EAM._blendMeshRatio = settings.eam.blendMeshRatio;
+        this._renderer_EAM._meshLightning = settings.eam.meshLight;
+        this._renderer_EAM._bufferSize = settings.eam.resolution;
         this._renderer_EAM._stepSize = 1 / settings.eam.steps;
         this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
         if (settings.eam.tf)
             this._renderer_EAM.setTransferFunction(settings.eam.tf);
 
         this._renderer_ISO._background = settings.iso.background;
+        this._renderer_ISO._blendMeshRatio = settings.iso.blendMeshRatio;
+        this._renderer_ISO._meshLightning = settings.iso.meshLight;
+        this._renderer_ISO._bufferSize = settings.iso.resolution;
         this._renderer_ISO._stepSize = 1 / settings.iso.steps
         this._renderer_ISO._isovalue = settings.iso.isoVal;
         this._renderer_ISO._diffuse[0] = settings.iso.color.r;
@@ -328,18 +350,35 @@ M3D.VPTrendInterface = class {
         if (this._renderer_MCS._background != settings.mcs.background)
             this._softReset = true;
         this._renderer_MCS._background = settings.mcs.background;
+        this._renderer_MCS._blendMeshRatio = settings.mcs.blendMeshRatio;
+        this._renderer_MCS._meshLightning = settings.mcs.meshLight;
+        this._renderer_MCS._bufferSize = settings.mcs.resolution;
         this._renderer_MCS._sigmaMax = settings.mcs.sigma
         this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
         if (settings.mcs.tf)
             this._renderer_MCS.setTransferFunction = settings.mcs.tf;
 
         this._renderer_MIP._background = settings.mip.background;
+        this._renderer_MIP._blendMeshRatio = settings.mip.blendMeshRatio;
+        this._renderer_MIP._meshLightning = settings.mip.meshLight;
+        this._renderer_MIP._bufferSize = settings.mip.resolution;
         this._renderer_MIP._stepSize = 1 / settings.mip.steps;
 
         this._RHToneMapper._exposure = settings.reinhard.exposure;
         //todo: rangeToneMapper is not enabled.
         this._RaToneMapper._min = 1 - settings.range.rangeHigher;
         this._RaToneMapper._max = 1 - settings.range.rangeLower;
+    }
+
+    /**
+     * Sets flags for mesh renderer, returns false if no further work is needed in renderer. 
+     * @param renderer 
+     * @param  object 
+     */
+    _setMeshRenderFlags(renderer, object){
+        object.material.setUniform("meshBlendRatio", renderer._blendMeshRatio);
+        object.material.setUniform("meshLight", renderer._meshLightning);
+        return renderer._blendMeshRatio < 0.995 ? true : false;
     }
 
 

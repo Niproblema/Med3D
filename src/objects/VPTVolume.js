@@ -10,8 +10,16 @@ M3D.VPTVolume = class extends M3D.Mesh {
 
         var material = new M3D.CustomShaderMaterial("volumeProject");
         material.lights = false;
-        material.transparent = true;
-        material.color = new THREE.Color(0xffffff);
+        material.transparent = false;   //TODO: maybe issue with multiple objects?
+        material.color = new THREE.Color("#49b2b2");
+        material.specular = new THREE.Color("#444444");
+        material.shininess = 8;
+        material.setUniform("meshBlendRatio", 0.0);
+        material.setUniform("material.diffuse", material.color.toArray());
+        material.setUniform("material.specular", material.specular.toArray());
+        material.setUniform("material.shininess", material.shininess);
+
+
         var textur = new M3D.Texture();
         textur._dirty = false;
         textur._glTex = null;
@@ -179,4 +187,8 @@ M3D.VPTVolume = class extends M3D.Mesh {
 
         return object;
     }
+
+    exportGeometry() {
+		return this._geometry.exportOBJ();  //TODO: change to only MCC geometry later.
+	}
 };

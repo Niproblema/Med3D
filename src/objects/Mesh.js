@@ -66,80 +66,9 @@ M3D.Mesh = class extends M3D.Object3D {
 		return object;
 	}
 
-	exportOBJ() {
-		var output = 'o M3D_mesh\n';
-		if (this._geometry) {
-			var i, j, k, l, x, y, z;
-
-			var vertices = this.geometry.vertices ? this.geometry.vertices.array : null;
-			var normals = this.geometry.normals ? this.geometry.normals.array : null;
-			var uvs = this.geometry.uv ? this.geometry.uv.array : null;
-			var indices = this.geometry.indices ? this.geometry.indices.array : null;
-
-			//vertices
-			if (vertices !== undefined && vertices && vertices.length >= 3) {
-				for (i = 0; i < vertices.length; i += 3) {
-					x = vertices[i];
-					y = vertices[i + 1];
-					z = vertices[i + 2];
-
-					output += 'v ' + x + ' ' + y + ' ' + z + '\n';
-				}
-			}
-
-			//uvs
-			if (uvs !== undefined && uvs && uvs.length >= 2) {
-				for (i = 0; i < uvs.length; i += 2) {
-					x = uvs[i];
-					y = uvs[i + 1];
-
-					output += 'vt ' + x + ' ' + y + '\n';
-				}
-			}
-
-			//normals
-			if (normals !== undefined && normals && normals.length >= 3) {
-				for (i = 0; i < normals.length; i += 3) {
-					x = normals[i];
-					y = normals[i + 1];
-					z = normals[i + 2];
-
-					output += 'vn ' + x + ' ' + y + ' ' + z + '\n';
-				}
-			}
-
-			//faces
-			if (indices !== undefined && indices && indices.length >= 3) {
-				for (i = 0; i < indices.length; i += 3) {
-					j = indices[i] + 1;
-					k = indices[i + 1] + 1;
-					l = indices[i + 2] + 1;
-
-					output += 'f ' + j + ' ' + k + ' ' + l + '\n';
-
-					/* if (!uvs)
-						output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
-					else
-						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
-				}
-			} else if (vertices !== undefined && vertices && vertices.length >= 3) {
-				for (i = 0; i < vertices.length; i += 3) {
-					j = i + 1;
-					k = i + 2;
-					l = i + 3;
-
-					output += 'f ' + j + ' ' + k + ' ' + l + '\n';
-
-					/* if (!uvs)
-						output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
-					else
-						output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
-				}
-			}
-		}
-		return output;
+	exportGeometry() {
+		return this._geometry.exportOBJ();
 	}
-	// endregion
 };
 
 

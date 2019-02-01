@@ -1,85 +1,118 @@
 #version 300 es
 precision mediump float;
 
+struct Light {
+    bool directional;
+    vec3 position;
+    vec3 color;
+};
+
 struct Material {
-//    vec3 diffuse;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+
     #if (TEXTURE)
-        #if (TEXTURE)
-            #for I_TEX in 0 to NUM_TEX
-                sampler2D texture##I_TEX;
-            #end
-        #fi
+        #for I_TEX in 0 to NUM_TEX
+            sampler2D texture##I_TEX;
+        #end
     #fi
 };
 
+#if (!NO_LIGHTS)
+uniform Light lights[##NUM_LIGHTS];
+#fi
+
+uniform vec3 ambient;
 uniform Material material;
 
-#if (LIGHTS && !NO_LIGHTS)
+// From vertex shader
+in vec3 fragVNorm;
+in vec3 fragVPos;
 
-    struct Light {
-        bool directional;
-        vec3 position;
-        vec3 color;
-    };
+//VPT customs
+in vec4 texPos;
+uniform float meshBlendRatio;
+uniform bool meshLight;
 
-    uniform Light lights[##NUM_LIGHTS];
-    uniform vec3 ambient;
+out vec4 color[3];
 
-    in vec3 fragVPos;
-#fi
+// Calculates the point light color contribution
+vec3 calcPointLight (Light light, vec3 normal, vec3 viewDir) {
 
-#if (VERTEX_COLORS)
-    in vec3 fragVColor;
-#fi
+    vec3 lightDir = normalize(light.position - fragVPos);
 
-#if (TEXTURE)
-    in vec2 fragUV;
-#fi
+    // Difuse
+    float diffuseF = max(dot(lightDir, normal), 0.0f);
 
-out vec4 color;
+    // Specular
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float specularF = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
 
-in vec4 posT;
+    // Attenuation
+    float distance = length(light.position - fragVPos);
+    float attenuation = 1.0f / (1.0f + 0.01f * distance + 0.0001f * (distance * distance));
 
-/* #if (LIGHTS && !NO_LIGHTS)
-    // Calculates the point light color contribution
-    vec3 calcPointLight(Light light) {
-        // Attenuation
-        float distance = length(light.position - fragVPos);
-        float attenuation = 1.0f / (1.0f + 0.01f * distance + 0.0001f * (distance * distance));
+    // Combine results
+    vec3 diffuse  = light.color * diffuseF  * material.diffuse  * attenuation;
+    vec3 specular = light.color * specularF * material.specular * attenuation;
 
-        // Combine results
-        vec3 diffuse = light.color * material.diffuse * attenuation;
+    return (diffuse + specular);
+}
 
-        return diffuse;
-    }
-#fi
- */
+vec3 calcDirectLight (Light light, vec3 normal, vec3 viewDir) {
+
+    vec3 lightDir = normalize(light.position);
+
+    // Difuse
+    float diffuseF = max(dot(normal, lightDir), 0.0f);
+
+    // Specular
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float specularF = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+
+    // Combine results
+    vec3 diffuse  = light.color  * diffuseF * material.diffuse;
+    vec3 specular = light.color * specularF * material.specular;
+
+    return (diffuse + specular);
+}
 
 void main() {
+    vec3 normal = normalize(fragVNorm);
+    vec3 viewDir = normalize(-fragVPos);
 
-/*     #if (LIGHTS && !NO_LIGHTS)
-        color = vec4(0.0, 0.0, 0.0, 1.0);
+    color[0] = vec4(0);
 
-        #for lightIdx in 0 to NUM_LIGHTS
-            if (!lights[##lightIdx].directional) {
-                color += vec4(calcPointLight(lights[##lightIdx]), 0);
+    if(meshBlendRatio > 0.005){
+    // Calculate combined light contribution
+        vec3 combined = ambient;
+
+        #if (!NO_LIGHTS)
+            if(meshLight){
+                #for lightIdx in 0 to NUM_LIGHTS
+                    if (!lights[##lightIdx].directional) {
+                        combined += calcPointLight(lights[##lightIdx], normal, viewDir);
+                    } else {
+                        combined += calcDirectLight(lights[##lightIdx], normal, viewDir);
+                    }
+                #end
+            }else{
+                combined = material.diffuse.xyz;
             }
-            else {
-                color += vec4(lights[##lightIdx].color * material.diffuse, 0);
-            }
-        #end
-    #else */
-        //color = vec4(material.diffuse, 1.0);
-    //#fi
+        #fi
+        color[0] = vec4(combined, 1.0);
+    }
 
-/*     #if (COLORS)
-        color *= vec4(fragVColor, 1.0);
-    #fi
- */
+
     #if (TEXTURE)
         // Apply all of the textures
         #for I_TEX in 0 to NUM_TEX
-             color = texture(material.texture##I_TEX, vec2(posT.x, posT.y)*0.5+0.5);
+             color[0] = (meshBlendRatio) * color[0] + (1.0-meshBlendRatio) * texture(material.texture##I_TEX, vec2(texPos.x, texPos.y)*0.5+0.5);   //texture(material.texture##I_TEX, fragUV);
         #end
+
     #fi
+
+    color[1] = vec4(normal, 1.0);
+    color[2] = vec4(abs(fragVPos), 1.0);
 }

@@ -374,6 +374,25 @@ a.disabled {
     margin-top: -5px !important;
 }
 
+.med3d-checkbox-custom1-meshLights{
+    display: none;
+}
+
+.med3d-checkbox-custom1-meshLights + label:before{
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f0eb"; 
+    letter-spacing: 0px;
+    color: rgb(114, 114, 114);
+}
+  
+/* Checked */
+.med3d-checkbox-custom1-meshLights:checked + label:before { 
+    content: "\f0eb";
+    letter-spacing: 5px;
+    color: #ffffff;
+} 
+
 .hover-div {
     /*  */
     background-color: #2D2D2D;

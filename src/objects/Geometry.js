@@ -4,7 +4,7 @@
 
 M3D.Geometry = class {
 
-	constructor() {
+    constructor() {
         this._uuid = THREE.Math.generateUUID();
         this.type = "Geometry";
 
@@ -34,13 +34,13 @@ M3D.Geometry = class {
         var indices = [];
         var array = this._vertices.array;
 
-        for ( var i = 0, l = ( array.length / 3 ) - 1; i < l; i += 3 ) {
+        for (var i = 0, l = (array.length / 3) - 1; i < l; i += 3) {
             var a = i;
             var b = i + 1;
             var c = i + 2;
 
-             // A - B - C - A
-            indices.push( a, b, b, c, c, a );
+            // A - B - C - A
+            indices.push(a, b, b, c, c, a);
         }
 
         // Create new buffer geometry for the wireframe
@@ -61,7 +61,7 @@ M3D.Geometry = class {
 
             normals[i] *= n;
             normals[i + 1] *= n;
-            normals[i + 2]  *= n;
+            normals[i + 2] *= n;
         }
     }
 
@@ -77,8 +77,8 @@ M3D.Geometry = class {
                 // reset existing normals to zero
                 var array = this._normals.array;
 
-                for (var i = 0; i < array.length; i ++) {
-                    array[ i ] = 0;
+                for (var i = 0; i < array.length; i++) {
+                    array[i] = 0;
                 }
             }
 
@@ -97,7 +97,7 @@ M3D.Geometry = class {
             if (this._indices) {
                 var indices = this._indices.array;
 
-                for (var i = 0; i < indices.length; i += 3 ) {
+                for (var i = 0; i < indices.length; i += 3) {
                     vA = indices[i] * 3;
                     vB = indices[i + 1] * 3;
                     vC = indices[i + 2] * 3;
@@ -118,7 +118,7 @@ M3D.Geometry = class {
                     normals[vB + 1] += cb.y;
                     normals[vB + 2] += cb.z;
 
-                    normals[vC ] += cb.x;
+                    normals[vC] += cb.x;
                     normals[vC + 1] += cb.y;
                     normals[vC + 2] += cb.z;
                 }
@@ -127,25 +127,25 @@ M3D.Geometry = class {
                 // non-indexed elements (unconnected triangle soup)
                 for (var i = 0; i < positions.length; i += 9) {
 
-                    pA.fromArray( positions, i );
-                    pB.fromArray( positions, i + 3 );
-                    pC.fromArray( positions, i + 6 );
+                    pA.fromArray(positions, i);
+                    pB.fromArray(positions, i + 3);
+                    pC.fromArray(positions, i + 6);
 
-                    cb.subVectors( pC, pB );
-                    ab.subVectors( pA, pB );
-                    cb.cross( ab );
+                    cb.subVectors(pC, pB);
+                    ab.subVectors(pA, pB);
+                    cb.cross(ab);
 
-                    normals[ i ] = cb.x;
-                    normals[ i + 1 ] = cb.y;
-                    normals[ i + 2 ] = cb.z;
+                    normals[i] = cb.x;
+                    normals[i + 1] = cb.y;
+                    normals[i + 2] = cb.z;
 
-                    normals[ i + 3 ] = cb.x;
-                    normals[ i + 4 ] = cb.y;
-                    normals[ i + 5 ] = cb.z;
+                    normals[i + 3] = cb.x;
+                    normals[i + 4] = cb.y;
+                    normals[i + 5] = cb.z;
 
-                    normals[ i + 6 ] = cb.x;
-                    normals[ i + 7 ] = cb.y;
-                    normals[ i + 8 ] = cb.z;
+                    normals[i + 6] = cb.x;
+                    normals[i + 7] = cb.y;
+                    normals[i + 8] = cb.z;
                 }
             }
 
@@ -158,7 +158,7 @@ M3D.Geometry = class {
     computeBoundingBox() {
 
         // Check if the bounding box already exist
-        if ( this._boundingBox === null ) {
+        if (this._boundingBox === null) {
             this._boundingBox = new THREE.Box3();
         }
 
@@ -170,7 +170,7 @@ M3D.Geometry = class {
             this._boundingBox.makeEmpty();
         }
 
-        if ( isNaN( this._boundingBox.min.x ) || isNaN( this._boundingBox.min.y ) || isNaN( this._boundingBox.min.z ) ) {
+        if (isNaN(this._boundingBox.min.x) || isNaN(this._boundingBox.min.y) || isNaN(this._boundingBox.min.z)) {
             console.error('Geometry error: One or more of bounding box axis min is NaN.');
         }
     }
@@ -218,13 +218,13 @@ M3D.Geometry = class {
     get drawWireframe() { return this._drawWireframe; }
     get boundingBox() { return this._boundingBox; }
     get boundingSphere() {
-	    // If the bounding sphere was not jet computed compute it
-	    if (this._boundingSphere === null) {
-	        this.computeBoundingSphere();
+        // If the bounding sphere was not jet computed compute it
+        if (this._boundingSphere === null) {
+            this.computeBoundingSphere();
         }
 
-	    return this._boundingSphere;
-	}
+        return this._boundingSphere;
+    }
     // endregion
 
     // region SETTERS
@@ -233,7 +233,7 @@ M3D.Geometry = class {
 
         // Notify onChange subscriber
         if (!this._updateListenerManager.isEmpty()) {
-            var update = {uuid: this._uuid, changes: {array: this._indices.array.buffer.slice(0), itemSize: this._indices.itemSize}};
+            var update = { uuid: this._uuid, changes: { array: this._indices.array.buffer.slice(0), itemSize: this._indices.itemSize } };
             this._updateListenerManager.geometryUpdate(update)
         }
     }
@@ -242,7 +242,7 @@ M3D.Geometry = class {
 
         // Notify onChange subscriber
         if (!this._updateListenerManager.isEmpty()) {
-            var update = {uuid: this._uuid, changes: {array: this._vertices.array.buffer.slice(0), itemSize: this._vertices.itemSize}};
+            var update = { uuid: this._uuid, changes: { array: this._vertices.array.buffer.slice(0), itemSize: this._vertices.itemSize } };
             this._updateListenerManager.geometryUpdate(update)
         }
     }
@@ -251,7 +251,7 @@ M3D.Geometry = class {
 
         // Notify onChange subscriber
         if (!this._updateListenerManager.isEmpty()) {
-            var update = {uuid: this._uuid, changes: {array: this._normals.array.buffer.slice(0), itemSize: this._normals.itemSize}};
+            var update = { uuid: this._uuid, changes: { array: this._normals.array.buffer.slice(0), itemSize: this._normals.itemSize } };
             this._updateListenerManager.geometryUpdate(update)
         }
     }
@@ -260,7 +260,7 @@ M3D.Geometry = class {
 
         // Notify onChange subscriber
         if (!this._updateListenerManager.isEmpty()) {
-            var update = {uuid: this._uuid, changes: {array: this._vertColor.array.buffer.slice(0), itemSize: this._vertColor.itemSize}};
+            var update = { uuid: this._uuid, changes: { array: this._vertColor.array.buffer.slice(0), itemSize: this._vertColor.itemSize } };
             this._updateListenerManager.geometryUpdate(update)
         }
     }
@@ -280,19 +280,19 @@ M3D.Geometry = class {
         obj.type = this.type;
 
         if (this._indices) {
-            obj.indices = {array: this._indices.array.buffer.slice(0), itemSize: this._indices.itemSize};
+            obj.indices = { array: this._indices.array.buffer.slice(0), itemSize: this._indices.itemSize };
         }
 
         if (this._vertices) {
-            obj.vertices = {array: this._vertices.array.buffer.slice(0), itemSize: this._vertices.itemSize};
+            obj.vertices = { array: this._vertices.array.buffer.slice(0), itemSize: this._vertices.itemSize };
         }
 
         if (this._normals) {
-            obj.normals = {array: this._normals.array.buffer.slice(0), itemSize: this._normals.itemSize};
+            obj.normals = { array: this._normals.array.buffer.slice(0), itemSize: this._normals.itemSize };
         }
 
         if (this._vertColor) {
-            obj.vertColor = {array: this._vertColor.array.buffer.slice(0), itemSize: this._vertColor.itemSize};
+            obj.vertColor = { array: this._vertColor.array.buffer.slice(0), itemSize: this._vertColor.itemSize };
         }
 
         return obj;
@@ -344,5 +344,77 @@ M3D.Geometry = class {
                     break;
             }
         }
+    }
+
+    exportOBJ() {
+        var output = 'o M3D_mesh\n';
+        var i, j, k, l, x, y, z;
+
+        var vertices = this._vertices ? this._vertices.array : null;
+        var normals = this._normals ? this._normals.array : null;
+        var uvs = this._uv ? this._uv.array : null;
+        var indices = this._indices ? this._indices.array : null;
+
+        //vertices
+        if (vertices !== undefined && vertices && vertices.length >= 3) {
+            for (i = 0; i < vertices.length; i += 3) {
+                x = vertices[i];
+                y = vertices[i + 1];
+                z = vertices[i + 2];
+
+                output += 'v ' + x + ' ' + y + ' ' + z + '\n';
+            }
+        }
+
+        //uvs
+        if (uvs !== undefined && uvs && uvs.length >= 2) {
+            for (i = 0; i < uvs.length; i += 2) {
+                x = uvs[i];
+                y = uvs[i + 1];
+
+                output += 'vt ' + x + ' ' + y + '\n';
+            }
+        }
+
+        //normals
+        if (normals !== undefined && normals && normals.length >= 3) {
+            for (i = 0; i < normals.length; i += 3) {
+                x = normals[i];
+                y = normals[i + 1];
+                z = normals[i + 2];
+
+                output += 'vn ' + x + ' ' + y + ' ' + z + '\n';
+            }
+        }
+
+        //faces
+        if (indices !== undefined && indices && indices.length >= 3) {
+            for (i = 0; i < indices.length; i += 3) {
+                j = indices[i] + 1;
+                k = indices[i + 1] + 1;
+                l = indices[i + 2] + 1;
+
+                output += 'f ' + j + ' ' + k + ' ' + l + '\n';
+
+                /* if (!uvs)
+                    output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
+                else
+                    output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
+            }
+        } else if (vertices !== undefined && vertices && vertices.length >= 3) {
+            for (i = 0; i < vertices.length; i += 3) {
+                j = i + 1;
+                k = i + 2;
+                l = i + 3;
+
+                output += 'f ' + j + ' ' + k + ' ' + l + '\n';
+
+                /* if (!uvs)
+                    output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
+                else
+                    output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
+            }
+        }
+        return output;
     }
 };

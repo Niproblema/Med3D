@@ -25,7 +25,9 @@ function V_AbstractRenderer(gl, options) {
 
 Class.defaults = {
     _bufferSize : 512,
-    _background : true
+    _background : true,
+    _blendMeshRatio : 0.0,
+    _meshLightning : true
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

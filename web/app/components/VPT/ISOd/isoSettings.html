@@ -7,8 +7,12 @@
     <div class="sidebar-sub-content-title">
         <b style="color: white; font-size: 14px; font-weight: 500;">Blend mesh render</b>
     </div>
-    <div id="blendSliderISO" class="med3d-slider">
-        <div id="blendHandleISO" class="ui-slider-handle med3d-slider-handle"></div>
+    <div class="sidebar-slider-checkbox" style="display:block">
+        <div id="blendSliderISO" class="med3d-slider" style = "margin-right: 30px; display: inline-block; width: 70%;">
+            <div id="blendHandleISO" class="ui-slider-handle med3d-slider-handle"></div>
+        </div>
+        <input id="isoMeshLight" class="med3d-checkbox-custom1-meshLights" type="checkbox" ng-model="publicRenderData.vptBundle.iso.meshLight">
+        <label for="isoMeshLight" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: 2px;">
     </div>
 
     <div class="sidebar-sub-content-title">

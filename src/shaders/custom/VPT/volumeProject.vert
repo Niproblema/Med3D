@@ -3,43 +3,31 @@ precision mediump float;
 
 uniform mat4 MVMat; // Model View Matrix
 uniform mat4 PMat;  // Projection Matrix
+uniform mat3 NMat;  // Normal Matrix
 
 in vec3 VPos;       // Vertex position
+in vec3 VNorm;      // Vertex normal
 
-#if (COLORS)
-    in vec3 VColor;
-    out vec3 fragVColor;
+#if (TEXTURE)
+    in vec2 uv;          // Texture coordinate
 #fi
 
-/* #if (TEXTURE)
-    in vec2 uv;
-    out vec2 fragUV;
-#fi */
-
-#if (LIGHTS)
-    out vec3 fragVPos;
-#fi
-
-out vec4 posT;
+// Output transformed vertex position, normal and texture coordinate
+out vec3 fragVPos;
+out vec4 texPos;
+out vec3 fragVNorm;
+out vec2 fragUV;
 
 void main() {
     // Model view position
     vec4 VPos4 = MVMat * vec4(VPos, 1.0);
+    texPos = PMat * VPos4;
+    texPos = vec4(texPos.xyz/texPos.w, 1);
 
     // Projected position
-    posT = PMat * VPos4;
-    posT = vec4(posT.xyz / posT.w,1);
-    gl_Position = posT;
+    gl_Position = texPos;
+    fragVPos = vec3(VPos4) / VPos4.w;
 
-    #if (LIGHTS)
-        // Pass vertex position to fragment shader
-        fragVPos = vec3(VPos4) / VPos4.w;
-    #fi
-
-    #if (COLORS)
-        // Pass vertex color to fragment shader
-        fragVColor = VColor;
-    #fi
-
-
- }
+    // Transform normal
+    fragVNorm = vec3(NMat * VNorm);
+}
