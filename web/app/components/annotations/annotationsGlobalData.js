@@ -78,7 +78,7 @@ app.factory('Annotations', function($rootScope){
                     title: newAnnotation.title,
                     content: newAnnotation.content,
                     windowPosition: { width: newAnnotation.windowPosition.width, height: newAnnotation.windowPosition.height },
-                    markerMeta: { position: newAnnotation.markerMeta.position.toArray(), normal: newAnnotation.markerMeta.normal.toArray() }
+                    markerMeta: { position: newAnnotation.markerMeta.position.toArray(), normal: newAnnotation.markerMeta.normal.toArray(), radius: newAnnotation.markerMeta.radius }
                 };
             }
             else {
@@ -141,7 +141,7 @@ app.factory('Annotations', function($rootScope){
                         title: this.list[i].title,
                         content: this.list[i].content,
                         windowPosition: { width: this.list[i].windowPosition.width, height: this.list[i].windowPosition.height },
-                        markerMeta: { position: this.list[i].markerMeta.position.toArray(), normal: this.list[i].markerMeta.normal.toArray() }
+                        markerMeta: { position: this.list[i].markerMeta.position.toArray(), normal: this.list[i].markerMeta.normal.toArray(), radius: this.list[i].markerMeta.radius }
                     });
                 }
                 else {
@@ -182,7 +182,7 @@ app.factory('Annotations', function($rootScope){
 
             // Check if marker meta data is specified
             if (data.markerMeta !== undefined) {
-                annotation.markerMeta = { position: (new THREE.Vector3()).fromArray(data.markerMeta.position), normal: (new THREE.Vector3()).fromArray(data.markerMeta.normal) };
+                annotation.markerMeta = { position: (new THREE.Vector3()).fromArray(data.markerMeta.position), normal: (new THREE.Vector3()).fromArray(data.markerMeta.normal), radius: data.markerMeta.radius };
             }
 
             return annotation;

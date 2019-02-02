@@ -139,14 +139,14 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     // region Annotations
     this.annotationRenderGroup = new M3D.Group();
 
-    this.createMarker = function () {
+    this.createMarker = function (radius) {
         var marker = {};
 
-        marker.point = new M3D.Circle(0.35, 40);
+        marker.point = new M3D.Circle(radius, 40);
         marker.point.setVerticesColors(new THREE.Color("#FFFFFF"), new THREE.Color("#FFFFFF"), 0.3, 0);
         marker.point.material.useVertexColors = true;
         marker.point.material.transparent = true;
-        marker.point.material.side = M3D.FRONT_AND_BACK;
+        marker.point.material.side = M3D.FRONT_AND_BACK_SIDE;
         marker.point.position.set(0, 0, 0);
 
         marker.line = new M3D.Line([]);
@@ -168,9 +168,11 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
             // Do not continue if there aren't any intersects
             if (intersects.length > 0) {
+                var radius = intersects[0].object.geometry.boundingSphere.radius;
+
                 // Check if marker needs to be created
                 if (Annotations.newAnnotation.marker === undefined) {
-                    Annotations.newAnnotation.marker = self.createMarker();
+                    Annotations.newAnnotation.marker = self.createMarker(radius * 0.01);
                 }
 
                 let marker = Annotations.newAnnotation.marker;
@@ -179,12 +181,11 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
                 intersectionNormal = intersectionNormal.crossVectors((new THREE.Vector3()).subVectors(intersects[0].triangle[1], intersects[0].triangle[0]), (new THREE.Vector3()).subVectors(intersects[0].triangle[2], intersects[0].triangle[0])).normalize();
 
                 // Store marker position and normal
-                Annotations.newAnnotation.markerMeta = { position: marker.point.position, normal: intersectionNormal.clone() };
+                Annotations.newAnnotation.markerMeta = { position: marker.point.position, normal: intersectionNormal.clone(), radius: radius * 0.01};
 
                 // Look at intersected triangle normal
-                marker.point.position = new THREE.Vector3(0, 0, 0);
                 marker.point.lookAt(intersectionNormal, new THREE.Vector3(0, 0, 1));
-                marker.point.position = intersects[0].point.add(intersectionNormal.multiplyScalar(0.1));
+                marker.point.position = intersects[0].point.add(intersectionNormal.multiplyScalar(0.001));
             }
         }
     }();
@@ -212,7 +213,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
             // Check if marker exists
             if (annItem.marker === undefined) {
-                annItem.marker = self.createMarker();
+                annItem.marker = self.createMarker(annItem.markerMeta.radius);
 
                 // Setup marker parameters
                 annItem.marker.point.lookAt(annItem.markerMeta.normal, new THREE.Vector3(0, 0, 1));

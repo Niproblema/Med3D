@@ -170,9 +170,9 @@ let _raycast = (function () {
 			for (let i = 0; i < indices.array.length; i += 3) {
 
 				// Triangle indices
-				a = indices[i];
-				b = indices[i + 1];
-				c = indices[i + 2];
+				a = indices.array[i];
+				b = indices.array[i + 1];
+				c = indices.array[i + 2];
 
 				// Test ray intersection with triangle
 				intersection = checkTriangleIntersection(this, raycaster, ray, vertices, a, b, c);

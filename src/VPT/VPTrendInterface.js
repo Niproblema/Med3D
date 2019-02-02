@@ -106,7 +106,7 @@ M3D.VPTrendInterface = class {
             }
 
             //Different renderer than last time - hardResetBuffers
-            if (this._publicRenderData.vptBundle.resetBuffers || this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID) {
+            if (this._publicRenderData.vptBundle.resetBuffers || this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID || renderer._bufferSize !== this._RHToneMapper._bufferSize) {
                 this._hardResetBuffers(renderer, object);
             }
 
