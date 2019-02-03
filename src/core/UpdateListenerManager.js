@@ -1,6 +1,6 @@
 /**
  * Created by Jan on 8.1.2019
- * Manages multiple UpdateListener(s)
+ * Manages multiple UpdateListeners
  */
 
 M3D.UpdateListenerManager = class {
@@ -71,7 +71,7 @@ M3D.UpdateListenerManager = class {
             this._listeners[i].geometryUpdate.call(this.ref, update);
         }
     }
-    /* On external update - like collaboration */
+    /* On external update - like collaboration - someone else triggered change */
     externalUpdate(update){
         for (var i = 0; i < this._listeners.length; i++) {
             this._listeners[i].externalUpdate.call(this.ref, update);

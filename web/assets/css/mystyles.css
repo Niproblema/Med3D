@@ -374,6 +374,7 @@ a.disabled {
     margin-top: -5px !important;
 }
 
+/* Enable lighting @ VPTmeshBlendRender */
 .med3d-checkbox-custom1-meshLights{
     display: none;
 }
@@ -385,13 +386,34 @@ a.disabled {
     letter-spacing: 0px;
     color: rgb(114, 114, 114);
 }
-  
-/* Checked */
+
 .med3d-checkbox-custom1-meshLights:checked + label:before { 
     content: "\f0eb";
     letter-spacing: 5px;
     color: #ffffff;
 } 
+
+/* VPT UI shared session locks */
+.med3d-checkbox-custom2-uiLock{
+    display: none;
+}
+
+.med3d-checkbox-custom2-uiLock + label:before{
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f13e";    
+    letter-spacing: 0px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.med3d-checkbox-custom2-uiLock:checked + label:before { 
+    content: "\f023"; 
+    /*letter-spacing: 5px;*/
+    color: #ffffff;
+} 
+
+
+
 
 .hover-div {
     /*  */
@@ -945,13 +967,12 @@ body {
 
 /* Accordion settings */
 
-
- .vpt-settings a:hover,a:focus{
+.vpt-settings a:hover,a:focus{
      text-decoration: none;
      outline: none;
  }
 
- #accordion .panel{
+#accordion .panel{
     border: none;
     border-radius: 5px;
     box-shadow: none;
@@ -967,7 +988,7 @@ body {
 }
 #accordion .panel-title a{    
     display: block; /*New line ugly*/
-    padding: 10px 15px;
+    padding: 10px 15px 10px 40px;
     margin: 0;
     background: #49b2b2;
     color: #fff;
@@ -1002,4 +1023,10 @@ body {
     letter-spacing: 1px;
     border-top: none;
     border-radius: 5px;
+}
+
+/**/
+.med3d-disabled-menu{
+    pointer-events: none;
+    opacity: 0.4;
 }

@@ -297,13 +297,21 @@ M3D.VPTrendInterface = class {
     _saveGLstate(gl) {
         return {
             viewport: gl.getParameter(gl.VIEWPORT),
-            framebuffer: gl.getParameter(gl.FRAMEBUFFER_BINDING)
+            framebuffer: gl.getParameter(gl.FRAMEBUFFER_BINDING),
+            cullFace : gl.getParameter(gl.CULL_FACE),
+            cullFaceMode : gl.getParameter(gl.CULL_FACE_MODE)
         };
     }
 
     _restoreGLstate(gl, state) {
         gl.viewport(state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3]);
         gl.bindFramebuffer(gl.FRAMEBUFFER, state.framebuffer);
+        if(state.cullFace){
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(state.cullFaceMode);
+        }else{
+            gl.disable(gl.CULL_FACE);
+        }
     }
 
     /**
@@ -356,7 +364,7 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS._sigmaMax = settings.mcs.sigma
         this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
         if (settings.mcs.tf)
-            this._renderer_MCS.setTransferFunction = settings.mcs.tf;
+            this._renderer_MCS.setTransferFunction(settings.mcs.tf);
 
         this._renderer_MIP._background = settings.mip.background;
         this._renderer_MIP._blendMeshRatio = settings.mip.blendMeshRatio;

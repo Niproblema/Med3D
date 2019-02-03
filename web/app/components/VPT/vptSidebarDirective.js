@@ -21,6 +21,7 @@ app.directive("vptSidebar", function () {
                 scope.$apply();
             };
 
+
             //VPT renderer switcher
             scope.allRenderers = ["ERROR", "EAM", "ISO", "MCS", "MIP"];
             scope.renderer = scope.publicRenderData.vptBundle.rendererChoiceID; //current selected 
@@ -140,7 +141,7 @@ app.directive("vptSidebar", function () {
                 scope.isComputingMCC = true;
                 scope.objectsToMCC = scope.publicRenderData.vptBundle.objects.length;
                 for (let k = 0; k < scope.publicRenderData.vptBundle.objects.length; k++) {
-                    scope.runMMC(scope.cpuCount, scope.isoSetting*255, scope.publicRenderData.vptBundle.objects[k]);
+                    scope.runMMC(scope.cpuCount, scope.isoSetting * 255, scope.publicRenderData.vptBundle.objects[k]);
                 }
             };
 
@@ -169,6 +170,60 @@ app.directive("vptSidebar", function () {
                     return;
                 }
                 scope.runExportMCC(scope.publicRenderData.vptBundle.objects[0]);   //Todo: scene object selector.
+            };
+
+
+            /* ========= UI locks ========== */
+            let disabledClass = 'med3d-disabled-menu';
+
+            $("#rendererLockLabel").click(function (e) {
+                // Do something
+                scope.publicRenderData.vptBundle.uiLock.rendererSelection = !scope.publicRenderData.vptBundle.uiLock.rendererSelection;
+                _lockRenderMethod(scope.publicRenderData.vptBundle.uiLock.rendererSelection);
+                scope.$apply();
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $("#rendererSettingsLockLabel").click(function (e) {
+                // Do something
+                scope.publicRenderData.vptBundle.uiLock.rendererSettings = !scope.publicRenderData.vptBundle.uiLock.rendererSettings;
+                _lockRenderSettings(scope.publicRenderData.vptBundle.uiLock.rendererSettings);
+                scope.$apply();
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $("#tonemapperLockLabel").click(function (e) {
+                // Do something
+                scope.publicRenderData.vptBundle.uiLock.tonemapperSettings = !scope.publicRenderData.vptBundle.uiLock.tonemapperSettings;
+                _lockTonemapperSettings(scope.publicRenderData.vptBundle.uiLock.tonemapperSettings);
+                scope.$apply();
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $("#mccLockLabel").click(function (e) {
+                // Do something
+                scope.publicRenderData.vptBundle.uiLock.mccSettings = !scope.publicRenderData.vptBundle.uiLock.mccSettings;
+                _lockMCCSettings(scope.publicRenderData.vptBundle.uiLock.mccSettings);
+                scope.$apply();
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+
+            let _lockRenderMethod = function (locked) {
+                locked ? $("#renderMethodButtonBox").addClass(disabledClass) : $("#renderMethodButtonBox").removeClass(disabledClass);
+            };
+            let _lockRenderSettings = function (locked) {
+                locked ? $("#collapseOne").addClass(disabledClass) : $("#collapseOne").removeClass(disabledClass);
+            };
+            let _lockTonemapperSettings = function (locked) {
+                locked ? $("#collapseTwo").addClass(disabledClass) : $("#collapseTwo").removeClass(disabledClass);
+            };
+            let _lockMCCSettings = function (locked) {
+                locked ? $("#collapseThree").addClass(disabledClass) : $("#collapseThree").removeClass(disabledClass);
             };
 
         },

@@ -5,26 +5,30 @@
 
     <div class="sidebar-content">
         <div class="sidebar-sub-content-title">
-            Selected render method
+            Volume render method
         </div>
 
-        <div class="panel-body">
-            <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-primary active" ng-click="setRenderer(5)" href="#settingsOFF" data-toggle="tab">
+        <div style="display:block">
+            <input id="rendererLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.rendererSelection">
+            <label id="rendererLockLabel" for="rendererLock" style="display: inline-block; position: absolute; font-size: 20px; margin-top: 18px; margin-left: 16px !important;"></label>
+            <div id="renderMethodButtonBox" class="panel-body" style="display: inline-block; padding: 15px 15px 15px 54px;"">
+                <div class="btn-group" data-toggle="buttons">
+                    <!--                 <label class="btn btn-primary" ng-click="setRenderer(5)" href="#settingsOFF" data-toggle="tab">
                     <input type="radio" name="rend-selection" id="renderer5" autocomplete="off"> OFF
-                </label>
-                <label class="btn btn-primary" ng-click="setRenderer(4)" href="#settingsMIP" data-toggle="tab">
-                    <input type="radio" name="rend-selection" id="renderer1" autocomplete="off"> MIP
-                </label>
-                <label class="btn btn-primary" ng-click="setRenderer(2)" href="#settingsISO" data-toggle="tab">
-                    <input type="radio" name="rend-selection" id="renderer2" autocomplete="off"> ISO
-                </label>
-                <label class="btn btn-primary" ng-click="setRenderer(1)" href="#settingsEAM" data-toggle="tab">
-                    <input type="radio" name="rend-selection" id="renderer3" autocomplete="off"> EAM
-                </label>
-                <label class="btn btn-primary" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
-                    <input type="radio" name="rend-selection" id="renderer4" autocomplete="off" checked> MCS
-                </label>
+                </label> -->
+                    <label class="btn btn-primary active" ng-click="setRenderer(4)" href="#settingsMIP" data-toggle="tab">
+                        <input type="radio" name="rend-selection" id="renderer1" autocomplete="off"> MIP
+                    </label>
+                    <label class="btn btn-primary" ng-click="setRenderer(2)" href="#settingsISO" data-toggle="tab">
+                        <input type="radio" name="rend-selection" id="renderer2" autocomplete="off"> ISO
+                    </label>
+                    <label class="btn btn-primary" ng-click="setRenderer(1)" href="#settingsEAM" data-toggle="tab">
+                        <input type="radio" name="rend-selection" id="renderer3" autocomplete="off"> EAM
+                    </label>
+                    <label class="btn btn-primary" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
+                        <input type="radio" name="rend-selection" id="renderer4" autocomplete="off" checked> MCS
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -38,6 +42,8 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                    <input id="rendererSettingsLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.rendererSettings">
+                                    <label id="rendererSettingsLockLabel" for="rendererSettingsLock" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: -2px; margin-left: -24px !important;"></label>
                                     Renderer Settings
                                 </a>
                             </h4>
@@ -47,12 +53,12 @@
                                 <!-- Renderer settings tabs -->
                                 <div class="sidebar-sub-content-title">
                                     <div class="tab-content">
-                                        <div class="tab-pane fade active in" id="settingsOFF">
+                                        <!--                                         <div class="tab-pane fade active in" id="settingsOFF">
                                             <div class="sidebar-sub-content-title" style="padding-right: 15px; text-align: center;">
                                                 <b style="color: white; font-size: 14px; font-weight: 500;">Volumetric objects are displayed as regular mesh objects.</b>
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="settingsMIP">
+                                        </div> -->
+                                        <div class="tab-pane fade active in" id="settingsMIP">
                                             <mip-settings ng-controller="MIPSettingsController"></mip-settings>
                                         </div>
                                         <div class="tab-pane fade" id="settingsISO">
@@ -73,7 +79,9 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                    <input id="tonemapperLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.tonemapperSettings">
+                                    <label id="tonemapperLockLabel" for="tonemapperLock" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: -2px; margin-left: -24px !important;"></label>
                                     Tone Mapping Settings
                                 </a>
                             </h4>
@@ -102,7 +110,9 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                    <input id="mccLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.mccSettings">
+                                    <label id="mccLockLabel" for="mccLock" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: -2px; margin-left: -24px !important;"></label>
                                     Marching Cubes settings
                                 </a>
                             </h4>

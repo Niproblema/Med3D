@@ -1,13 +1,6 @@
-
-
-Shared session with shared VPT parameters, Marching cubes geometry. VPT data to binary blob
-
-Environment map UI option - Za celo sceno, al za VPT only?
-UI accordion, fix css defualt pick
+Shared session with shared VPT parameters
 VPT gc in shared session
-remove OFF renderer from selection, remove phong material.
-Save culling in vptInterface.
-
+MCC import/export geo fix
 
 
 Maybe:
@@ -20,3 +13,4 @@ Rethink:
  -M3D import obj, duplicate vertexes that share faces.
  -Material transparent ? some alpha artifacting : probably issue with multiple objects (without mcc)
  -Homogeneous coordinate manual division ? https://stackoverflow.com/questions/24441631/how-exactly-does-opengl-do-perspectively-correct-linear-interpolation
+ -Environment map UI option - Za celo sceno, al za VPT only?

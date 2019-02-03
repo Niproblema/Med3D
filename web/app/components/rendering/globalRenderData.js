@@ -23,9 +23,7 @@ app.factory('PublicRenderData', function () {
         // == UI interface to VPTrendInterface, also default values== //
         //VPT renderers - 0=Error, 1=EAM, 2=ISO, 3=MCS, 4=MIP, 5=Disabled=Use mesh with diffuse
         vptBundle: {
-            rendererChoiceID: 5,
-            resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
-            resetBuffers: false,   //Remakes object's framebuffers. Used when switching renderers or render buffer sizes (render resolution)
+            rendererChoiceID: 4,
             eam: {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
@@ -72,14 +70,33 @@ app.factory('PublicRenderData', function () {
                 rangeHigher: 1
             },
 
+            //Marching cubes
+            useMCC: false,
+
+
+            /* VPT UI client specific settings, todo: move to it's own factory? */
+            resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
+            resetBuffers: false,   //Remakes object's framebuffers. Used when switching renderers or render buffer sizes (render resolution)
+
             //Volume object collection. Used for MarchingCubes geometry updating and garbage collection.
             objects: [],
 
-            //Marching cubes 
-            useMCC: false,
+            //Marching cubes
             mccStatus: false,  //Marching cubes ready for current objects
 
-            refreshUI: function () { }    //Function for refreshing VPT UI outside sidebar scope.
-        }
+            refreshUI: function () { },    //Function for refreshing VPT UI outside sidebar scope.
+
+            //Locks for UI. Disables UI changes while controlled by other used in shared session.
+            uiLock : {
+                rendererSelection: false,
+                rendererSettings: false,
+                tonemapperSettings : false,
+                mccSettings: false
+            }
+
+        },
+
+
+
     };
 });
