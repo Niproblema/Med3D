@@ -17,14 +17,14 @@ app.directive("vptSidebar", function () {
             // Configure scroll bar
             element.find('.mCustomScrollbar').mCustomScrollbar({ alwaysShowScrollbar: 0, updateOnContentResize: true });
 
-            scope.publicRenderData.vptBundle.refreshUI = function () {
+            scope.vptGData.vptBundle.refreshUI = function () {
                 scope.$apply();
             };
 
 
             //VPT renderer switcher
             scope.allRenderers = ["ERROR", "EAM", "ISO", "MCS", "MIP"];
-            scope.renderer = scope.publicRenderData.vptBundle.rendererChoiceID; //current selected 
+            scope.renderer = scope.vptGData.vptBundle.rendererChoiceID; //current selected 
             scope.setRenderer = function (i) {
                 if (i != scope.renderer) {
                     console.log("VPT previous renderer: " + scope.allRenderers[scope.renderer]);
@@ -32,7 +32,7 @@ app.directive("vptSidebar", function () {
                     scope.renderer = i;
 
                     //Call VPTController
-                    scope.publicRenderData.vptBundle.rendererChoiceID = i;
+                    scope.vptGData.vptBundle.rendererChoiceID = i;
 
                     //Call for Directive-Needed for tranform function application
                     scope.$broadcast('start' + scope.allRenderers[scope.renderer]);
@@ -46,7 +46,7 @@ app.directive("vptSidebar", function () {
             // Sliders for Tone mapper settings
             let exposureHandle = element.find('#exposureHandle');
             element.find('#exposureSlider').slider({
-                value: scope.publicRenderData.vptBundle.reinhard.exposure,
+                value: scope.vptGData.vptBundle.reinhard.exposure,
                 min: 0,
                 max: 32,
                 step: 0.1,
@@ -54,7 +54,7 @@ app.directive("vptSidebar", function () {
                     exposureHandle.text($(this).slider("value"));
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.reinhard.exposure = parseFloat(ui.value);
+                    scope.vptGData.vptBundle.reinhard.exposure = parseFloat(ui.value);
                     exposureHandle.text(ui.value);
                 }
             });
@@ -65,18 +65,18 @@ app.directive("vptSidebar", function () {
                 range: true,
                 min: 0,
                 max: 1,
-                values: [scope.publicRenderData.vptBundle.range.rangeLower, scope.publicRenderData.vptBundle.range.rangeHigher],
+                values: [scope.vptGData.vptBundle.range.rangeLower, scope.vptGData.vptBundle.range.rangeHigher],
                 step: 0.01,
                 create: function () {
                     rangeHandle1.text($(this).slider("values")[0]);
                     rangeHandle2.text($(this).slider("values")[1]);
                 },
                 slide: function (event, ui) {
-                    //scope.publicRenderData.lineHardness = ui.value;
+                    //scope.vptGData.lineHardness = ui.value;
                     rangeHandle1.text(ui.values[0]);
                     rangeHandle2.text(ui.values[1]);
-                    scope.publicRenderData.vptBundle.range.rangeLower = parseFloat($(this).slider("values")[0]);
-                    scope.publicRenderData.vptBundle.range.rangeHigher = parseFloat($(this).slider("values")[1]);
+                    scope.vptGData.vptBundle.range.rangeLower = parseFloat($(this).slider("values")[0]);
+                    scope.vptGData.vptBundle.range.rangeHigher = parseFloat($(this).slider("values")[1]);
                 }
             });
 
@@ -105,7 +105,7 @@ app.directive("vptSidebar", function () {
             let mccRadioOff = $("#march-off");
             let mccRadioOn = $("march-on");
             scope.setMarching = function (bool) {
-                scope.publicRenderData.vptBundle.useMCC = bool;
+                scope.vptGData.vptBundle.useMCC = bool;
             };
 
 
@@ -139,9 +139,9 @@ app.directive("vptSidebar", function () {
                     return;
 
                 scope.isComputingMCC = true;
-                scope.objectsToMCC = scope.publicRenderData.vptBundle.objects.length;
-                for (let k = 0; k < scope.publicRenderData.vptBundle.objects.length; k++) {
-                    scope.runMMC(scope.cpuCount, scope.isoSetting * 255, scope.publicRenderData.vptBundle.objects[k]);
+                scope.objectsToMCC = scope.vptGData.vptBundle.objects.length;
+                for (let k = 0; k < scope.vptGData.vptBundle.objects.length; k++) {
+                    scope.runMMC(scope.cpuCount, scope.isoSetting * 255, scope.vptGData.vptBundle.objects[k]);
                 }
             };
 
@@ -150,14 +150,14 @@ app.directive("vptSidebar", function () {
             document.getElementById('import_input').addEventListener('change', function (event) {
                 var file = event.target.files[0];
                 if (file) {
-                    scope.publicRenderData.vptBundle.mccStatus = false; 	//signals mcc geo isn't ready, don't use it until ready.
-                    scope.runImportMCC(scope.publicRenderData.vptBundle.objects[0], file);    //Todo: scene object selector.
+                    scope.vptGData.vptBundle.mccStatus = false; 	//signals mcc geo isn't ready, don't use it until ready.
+                    scope.runImportMCC(scope.vptGData.vptBundle.objects[0], file);    //Todo: scene object selector.
                 }
                 document.getElementById('import_input').value = "";
             }, false);
             //M3D button that calls file input for selection.
             scope.importOBJ = function () {
-                if (scope.publicRenderData.vptBundle.objects.length == 0) {
+                if (scope.vptGData.vptBundle.objects.length == 0) {
                     console.log("No volume objects in scene, cannot import.");
                     return;
                 }
@@ -165,11 +165,11 @@ app.directive("vptSidebar", function () {
             };
 
             scope.exportOBJ = function () {
-                if (scope.publicRenderData.vptBundle.objects.length == 0) {
+                if (scope.vptGData.vptBundle.objects.length == 0) {
                     console.log("No volume objects in scene, cannot export.");
                     return;
                 }
-                scope.runExportMCC(scope.publicRenderData.vptBundle.objects[0]);   //Todo: scene object selector.
+                scope.runExportMCC(scope.vptGData.vptBundle.objects[0]);   //Todo: scene object selector.
             };
 
 
@@ -178,8 +178,8 @@ app.directive("vptSidebar", function () {
 
             $("#rendererLockLabel").click(function (e) {
                 // Do something
-                scope.publicRenderData.vptBundle.uiLock.rendererSelection = !scope.publicRenderData.vptBundle.uiLock.rendererSelection;
-                _lockRenderMethod(scope.publicRenderData.vptBundle.uiLock.rendererSelection);
+                scope.vptGData.vptBundle.uiLock.rendererSelection = !scope.vptGData.vptBundle.uiLock.rendererSelection;
+                _lockRenderMethod(scope.vptGData.vptBundle.uiLock.rendererSelection);
                 scope.$apply();
                 e.preventDefault();
                 e.stopPropagation();
@@ -187,8 +187,8 @@ app.directive("vptSidebar", function () {
 
             $("#rendererSettingsLockLabel").click(function (e) {
                 // Do something
-                scope.publicRenderData.vptBundle.uiLock.rendererSettings = !scope.publicRenderData.vptBundle.uiLock.rendererSettings;
-                _lockRenderSettings(scope.publicRenderData.vptBundle.uiLock.rendererSettings);
+                scope.vptGData.vptBundle.uiLock.rendererSettings = !scope.vptGData.vptBundle.uiLock.rendererSettings;
+                _lockRenderSettings(scope.vptGData.vptBundle.uiLock.rendererSettings);
                 scope.$apply();
                 e.preventDefault();
                 e.stopPropagation();
@@ -196,8 +196,8 @@ app.directive("vptSidebar", function () {
 
             $("#tonemapperLockLabel").click(function (e) {
                 // Do something
-                scope.publicRenderData.vptBundle.uiLock.tonemapperSettings = !scope.publicRenderData.vptBundle.uiLock.tonemapperSettings;
-                _lockTonemapperSettings(scope.publicRenderData.vptBundle.uiLock.tonemapperSettings);
+                scope.vptGData.vptBundle.uiLock.tonemapperSettings = !scope.vptGData.vptBundle.uiLock.tonemapperSettings;
+                _lockTonemapperSettings(scope.vptGData.vptBundle.uiLock.tonemapperSettings);
                 scope.$apply();
                 e.preventDefault();
                 e.stopPropagation();
@@ -205,8 +205,8 @@ app.directive("vptSidebar", function () {
 
             $("#mccLockLabel").click(function (e) {
                 // Do something
-                scope.publicRenderData.vptBundle.uiLock.mccSettings = !scope.publicRenderData.vptBundle.uiLock.mccSettings;
-                _lockMCCSettings(scope.publicRenderData.vptBundle.uiLock.mccSettings);
+                scope.vptGData.vptBundle.uiLock.mccSettings = !scope.vptGData.vptBundle.uiLock.mccSettings;
+                _lockMCCSettings(scope.vptGData.vptBundle.uiLock.mccSettings);
                 scope.$apply();
                 e.preventDefault();
                 e.stopPropagation();

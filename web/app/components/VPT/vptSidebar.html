@@ -9,9 +9,9 @@
         </div>
 
         <div style="display:block">
-            <input id="rendererLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.rendererSelection">
+            <input id="rendererLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="vptGData.vptBundle.uiLock.rendererSelection">
             <label id="rendererLockLabel" for="rendererLock" style="display: inline-block; position: absolute; font-size: 20px; margin-top: 18px; margin-left: 16px !important;"></label>
-            <div id="renderMethodButtonBox" class="panel-body" style="display: inline-block; padding: 15px 15px 15px 54px;"">
+            <div id="renderMethodButtonBox" class="panel-body" style="display: inline-block; padding: 15px 15px 15px 54px;">
                 <div class="btn-group" data-toggle="buttons">
                     <!--                 <label class="btn btn-primary" ng-click="setRenderer(5)" href="#settingsOFF" data-toggle="tab">
                     <input type="radio" name="rend-selection" id="renderer5" autocomplete="off"> OFF
@@ -42,7 +42,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                    <input id="rendererSettingsLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.rendererSettings">
+                                    <input id="rendererSettingsLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="vptGData.vptBundle.uiLock.rendererSettings">
                                     <label id="rendererSettingsLockLabel" for="rendererSettingsLock" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: -2px; margin-left: -24px !important;"></label>
                                     Renderer Settings
                                 </a>
@@ -80,7 +80,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                                    <input id="tonemapperLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.tonemapperSettings">
+                                    <input id="tonemapperLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="vptGData.vptBundle.uiLock.tonemapperSettings">
                                     <label id="tonemapperLockLabel" for="tonemapperLock" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: -2px; margin-left: -24px !important;"></label>
                                     Tone Mapping Settings
                                 </a>
@@ -111,7 +111,7 @@
                         <div class="panel-heading">
                             <h4 class="panel-title">
                                 <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                                    <input id="mccLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="publicRenderData.vptBundle.uiLock.mccSettings">
+                                    <input id="mccLock" class="med3d-checkbox-custom2-uiLock" type="checkbox" ng-model="vptGData.vptBundle.uiLock.mccSettings">
                                     <label id="mccLockLabel" for="mccLock" style=" display: inline-block; position: absolute; font-size: 20px; margin-top: -2px; margin-left: -24px !important;"></label>
                                     Marching Cubes settings
                                 </a>
@@ -133,7 +133,7 @@
                                     </div>
                                 </div>
 
-                                <div class="sidebar-sub-content-title" ng-show="publicRenderData.vptBundle.useMCC && !publicRenderData.vptBundle.mccStatus"
+                                <div class="sidebar-sub-content-title" ng-show="vptGData.vptBundle.useMCC && !vptGData.vptBundle.mccStatus"
                                     style="padding-right: 15px; text-align: center;">
                                     <b style="color: white; font-size: 12px; font-weight: 400;">Geometry must be computed before it's shown.</b>
                                 </div>
@@ -153,11 +153,11 @@
                                 <div class="sidebar-sub-content-title">
                                     <div class="input-group" style="overflow: hidden; padding-bottom: 10px; padding-right: 30px; padding-top: 15px; width:100%; display:flex; flex-direction:row;">
                                         <button id="calculateMRC" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
-                                            ng-click="calculateMRC()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Compute</button>
+                                            ng-click="calculateMRC()" ng-disabled="(vptGData.vptBundle.objects.length == 0) || isComputingMCC">Compute</button>
                                         <button id="import" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
-                                            ng-click="importOBJ()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Import</button>
+                                            ng-click="importOBJ()" ng-disabled="(vptGData.vptBundle.objects.length == 0) || isComputingMCC">Import</button>
                                         <button id="export" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
-                                            ng-click="exportOBJ()" ng-disabled="(publicRenderData.vptBundle.objects.length == 0) || isComputingMCC">Export</button>
+                                            ng-click="exportOBJ()" ng-disabled="(vptGData.vptBundle.objects.length == 0) || isComputingMCC">Export</button>
                                     </div>
                                 </div>
                                 <!--Inputs-->

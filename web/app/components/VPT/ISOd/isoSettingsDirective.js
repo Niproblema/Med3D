@@ -14,11 +14,11 @@ app.directive("isoSettings", function () {
 
             //Start notification for restoring UI values
             scope.$on('startISO', function () {
-                $(blendSlider).slider("value", scope.publicRenderData.vptBundle.iso.blendMeshRatio);
-                changeResolution(scope.publicRenderData.vptBundle.iso.resolution);
-                inSteps.val(scope.publicRenderData.vptBundle.iso.steps);
-                inISO.val(scope.publicRenderData.vptBundle.iso.isoVal);
-                var newColor = scope.publicRenderData.vptBundle.iso.color;
+                $(blendSlider).slider("value", scope.vptGData.vptBundle.iso.blendMeshRatio);
+                changeResolution(scope.vptGData.vptBundle.iso.resolution);
+                inSteps.val(scope.vptGData.vptBundle.iso.steps);
+                inISO.val(scope.vptGData.vptBundle.iso.isoVal);
+                var newColor = scope.vptGData.vptBundle.iso.color;
                 var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
                 inColor.colorpicker('setValue', changeTo);
             });
@@ -28,7 +28,7 @@ app.directive("isoSettings", function () {
             let blendHandle = element.find('#blendHandleISO');
             let blendSlider = element.find('#blendSliderISO');
             blendSlider.slider({
-                value: scope.publicRenderData.vptBundle.iso.blendMeshRatio,
+                value: scope.vptGData.vptBundle.iso.blendMeshRatio,
                 min: 0,
                 max: 1,
                 step: 0.01,
@@ -36,7 +36,7 @@ app.directive("isoSettings", function () {
                     blendHandle.text($(this).slider("value"));
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.iso.blendMeshRatio = parseFloat(ui.value);
+                    scope.vptGData.vptBundle.iso.blendMeshRatio = parseFloat(ui.value);
                     blendHandle.text(ui.value);
                 }
             });
@@ -57,8 +57,8 @@ app.directive("isoSettings", function () {
                     lastVal = $(this).slider("value");
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.iso.resolution = resolutionValues[ui.value];
-                    scope.publicRenderData.vptBundle.resetBuffers = true;
+                    scope.vptGData.vptBundle.iso.resolution = resolutionValues[ui.value];
+                    scope.vptGData.vptBundle.resetBuffers = true;
                     changeResolutionSlider(ui.value, true);
                 }
             }).each(function () {
@@ -122,17 +122,17 @@ app.directive("isoSettings", function () {
 
             inSteps.change(function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
-                scope.publicRenderData.vptBundle.iso.steps = value;
+                scope.vptGData.vptBundle.iso.steps = value;
                 inSteps.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
 
 
             inISO.change(function () {
                 value = Math.max(0.01, parseFloat(inISO.val())) || 0.5;
-                scope.publicRenderData.vptBundle.iso.isoVal = value;
+                scope.vptGData.vptBundle.iso.isoVal = value;
                 inISO.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
 
             inColor.colorpicker({
@@ -143,10 +143,10 @@ app.directive("isoSettings", function () {
                 sliders: sliders
             }).on('changeColor', function (e) {
                 color = e.color.toString('rgb').match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
-                scope.publicRenderData.vptBundle.iso.color.r = color[1] / 255;// parseInt(color.substr(1, 2), 16) / 255;
-                scope.publicRenderData.vptBundle.iso.color.g = color[2] / 255;//  parseInt(color.substr(3, 2), 16) / 255;
-                scope.publicRenderData.vptBundle.iso.color.b = color[3] / 255; //parseInt(color.substr(5, 2), 16) / 255;
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.iso.color.r = color[1] / 255;// parseInt(color.substr(1, 2), 16) / 255;
+                scope.vptGData.vptBundle.iso.color.g = color[2] / 255;//  parseInt(color.substr(3, 2), 16) / 255;
+                scope.vptGData.vptBundle.iso.color.b = color[3] / 255; //parseInt(color.substr(5, 2), 16) / 255;
+                scope.vptGData.vptBundle.resetMVP = true;
             });
 
 

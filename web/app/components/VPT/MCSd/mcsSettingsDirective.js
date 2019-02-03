@@ -14,10 +14,10 @@ app.directive("mcsSettings", function () {
 
             //Start notification for restoring UI values
             scope.$on('startMCS', function () {
-                $(blendSlider).slider("value", scope.publicRenderData.vptBundle.mcs.blendMeshRatio);
-                changeResolution(scope.publicRenderData.vptBundle.mcs.resolution);
-                inSigma.val(scope.publicRenderData.vptBundle.mcs.sigma);
-                inACorr.val(scope.publicRenderData.vptBundle.mcs.alphaCorrection);
+                $(blendSlider).slider("value", scope.vptGData.vptBundle.mcs.blendMeshRatio);
+                changeResolution(scope.vptGData.vptBundle.mcs.resolution);
+                inSigma.val(scope.vptGData.vptBundle.mcs.sigma);
+                inACorr.val(scope.vptGData.vptBundle.mcs.alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
             });
@@ -45,7 +45,7 @@ app.directive("mcsSettings", function () {
             let blendHandle = element.find('#blendHandleMCS');
             let blendSlider = element.find('#blendSliderMCS');
             blendSlider.slider({
-                value: scope.publicRenderData.vptBundle.mcs.blendMeshRatio,
+                value: scope.vptGData.vptBundle.mcs.blendMeshRatio,
                 min: 0,
                 max: 1,
                 step: 0.01,
@@ -53,7 +53,7 @@ app.directive("mcsSettings", function () {
                     blendHandle.text($(this).slider("value"));
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.mcs.blendMeshRatio = parseFloat(ui.value);
+                    scope.vptGData.vptBundle.mcs.blendMeshRatio = parseFloat(ui.value);
                     blendHandle.text(ui.value);
                 }
             });
@@ -74,8 +74,8 @@ app.directive("mcsSettings", function () {
                     lastVal = $(this).slider("value");
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.mcs.resolution = resolutionValues[ui.value];
-                    scope.publicRenderData.vptBundle.resetBuffers = true;
+                    scope.vptGData.vptBundle.mcs.resolution = resolutionValues[ui.value];
+                    scope.vptGData.vptBundle.resetBuffers = true;
                     changeResolutionSlider(ui.value, true);
                 }
             }).each(function () {
@@ -141,18 +141,18 @@ app.directive("mcsSettings", function () {
             ///////////////////////
             inSigma.change(function () {
                 value = Math.max(0, parseFloat(inSigma.val())) || 1;
-                scope.publicRenderData.vptBundle.mcs.sigma = value;
+                scope.vptGData.vptBundle.mcs.sigma = value;
                 inSigma.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
                 //TODO: crashes at 0.0
             }.bind(this));
 
 
             inACorr.change(function () {
                 value = Math.max(0, parseFloat(inACorr.val())) || 1;
-                scope.publicRenderData.vptBundle.mcs.alphaCorrection = value;
+                scope.vptGData.vptBundle.mcs.alphaCorrection = value;
                 inACorr.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
 
             inColor.colorpicker({
@@ -357,8 +357,8 @@ app.directive("mcsSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.vptBundle.mcs.tf = canvas;
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.mcs.tf = canvas;
+                scope.vptGData.vptBundle.resetMVP = true;
             }
 
             initTF();

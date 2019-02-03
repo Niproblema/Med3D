@@ -2,7 +2,7 @@
  * Created by Primoz on 20.7.2016.
  */
 
-let renderingController = function ($scope, SettingsService, InputService, TaskManagerService, Annotations, PublicRenderData, SharingService) {
+let renderingController = function ($scope, SettingsService, InputService, TaskManagerService, Annotations, PublicRenderData, VPT, SharingService) {
     // Context
     let self = this;
 
@@ -10,6 +10,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     this.requiredPrograms = ['basic', 'phong', 'custom_overlayTextures', 'custom_drawOnTexture', 'custom_copyTexture', 'custom_redrawOnTexture'];
 
     $scope.annotations = Annotations;
+    $scope.vpt = VPT;
 
     // Private renderer components
     this.renderer = null;
@@ -72,7 +73,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
             o.addOnChangeListener(new M3D.UpdateListener(function (update) { this._isDirty = true; }, null, null, null, function (update) { this._isDirty = true; }));
 
             PublicRenderData.contentRenderGroup.add(o);
-            PublicRenderData.vptBundle.objects.push(o);
+            VPT.vptBundle.objects.push(o);
         }
 
 
@@ -101,7 +102,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         self.renderer = renderer;
 
         // Reference to VPT interface. Used for UI controls
-        self.vptInterface = new M3D.VPTrendInterface(PublicRenderData, self.renderer._gl);
+        self.vptInterface = new M3D.VPTrendInterface(VPT, self.renderer._gl);
 
         //Renderer uses vpt interface for vptRenderers
         if (self.renderer instanceof M3D.MainRenderer)

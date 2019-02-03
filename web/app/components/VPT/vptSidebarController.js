@@ -2,8 +2,8 @@
  * Created by Jan on 9.07.2018.
  */
 
-var vptSidebarController = function ($scope, PublicRenderData, TaskManagerService) {
-    $scope.publicRenderData = PublicRenderData;
+var vptSidebarController = function ($scope, VPT, TaskManagerService) {
+    $scope.vptGData = VPT;
 
     let MC = new M3D.MarchingCubes();
     let OL = new M3D.ObjLoader();
@@ -169,7 +169,7 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
             $scope.objectsToMCC--;
             if ($scope.objectsToMCC <= 0) {
                 $scope.isComputingMCC = false;
-                $scope.publicRenderData.vptBundle.mccStatus = true;
+                $scope.vptGData.vptBundle.mccStatus = true;
             }
             $scope.$apply();
         });
@@ -180,7 +180,7 @@ var vptSidebarController = function ($scope, PublicRenderData, TaskManagerServic
             if (geometry && object) {
                 object._mccGeometry = geometry;
             }
-            $scope.publicRenderData.vptBundle.mccStatus = true;
+            $scope.vptGData.vptBundle.mccStatus = true;
             $scope.$apply();
         });
 

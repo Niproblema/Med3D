@@ -4,10 +4,10 @@
 
 M3D.VPTrendInterface = class {
     // ============================ LIFECYCLE ============================ //
-    constructor(prd, gl) {
+    constructor(vptGlobalData, gl) {
         CommonUtils.extend(this);
         this._setupVars();
-        this._publicRenderData = prd;
+        this._vptGData = vptGlobalData;
         this._gl = gl;
     }
 
@@ -39,14 +39,14 @@ M3D.VPTrendInterface = class {
      * Cleans up assets for new scene.
      */
     reset(glManager) {
-        var objects = this._publicRenderData.vptBundle.objects;
+        var objects = this._vptGData.vptBundle.objects;
         while (objects.length !== 0) {
             var object = objects.pop();
             object.switchRenderModes(true, false);
             var tex = object.material.maps[0];
             glManager._textureManager.clearTexture(tex);
         }
-        this._publicRenderData.vptBundle.mccStatus = false;
+        this._vptGData.vptBundle.mccStatus = false;
     }
 
     _setupVars() {
@@ -90,14 +90,14 @@ M3D.VPTrendInterface = class {
         //Parse UI settings - Set renderer according to UI settings.
         this._parseSettings();
 
-        var renderer = this._renderers[this._publicRenderData.vptBundle.rendererChoiceID];
+        var renderer = this._renderers[this._vptGData.vptBundle.rendererChoiceID];
 
         var savedState = this._saveGLstate(gl);
 
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
 
-            object.switchRenderModes(renderer != null, this._publicRenderData.vptBundle.useMCC && this._publicRenderData.vptBundle.mccStatus);
+            object.switchRenderModes(renderer != null, this._vptGData.vptBundle.useMCC && this._vptGData.vptBundle.mccStatus);
             if (!renderer) continue;
 
             //Set flags for mesh renderer. Skip object if no work in vpt renderer is needed.. ex. blendMeshRatio = 100%
@@ -106,7 +106,7 @@ M3D.VPTrendInterface = class {
             }
 
             //Different renderer than last time - hardResetBuffers
-            if (this._publicRenderData.vptBundle.resetBuffers || this._publicRenderData.vptBundle.rendererChoiceID != object.lastRenderTypeID || renderer._bufferSize !== this._RHToneMapper._bufferSize) {
+            if (this._vptGData.vptBundle.resetBuffers || this._vptGData.vptBundle.rendererChoiceID != object.lastRenderTypeID || renderer._bufferSize !== this._RHToneMapper._bufferSize) {
                 this._hardResetBuffers(renderer, object);
             }
 
@@ -173,7 +173,7 @@ M3D.VPTrendInterface = class {
             //Update object's texture.
             this._setObjectMaterialTexture(object, glManager);
         }
-        this._publicRenderData.vptBundle.resetBuffers = false;
+        this._vptGData.vptBundle.resetBuffers = false;
         this._softReset = false;
         this._restoreGLstate(gl, savedState);
     }
@@ -289,7 +289,7 @@ M3D.VPTrendInterface = class {
         this.__resizeToneMapperBuffer(this._RaToneMapper, renderer._bufferSize)
 
         object._lastRendererTypeID = renderer._type_id;
-        this._publicRenderData.vptBundle.resetMVP = true;
+        this._vptGData.vptBundle.resetMVP = true;
     }
 
     // ==== Saved and restore GL state ==== //
@@ -319,22 +319,22 @@ M3D.VPTrendInterface = class {
      * @param {VPT} objects 
      */
     _parseObjects(objects) { //TODO
-        if (objects.length !== this._publicRenderData.vptBundle.objects.length) {   //Maybe not a good method
+        if (objects.length !== this._vptGData.vptBundle.objects.length) {   //Maybe not a good method
 
-            this._publicRenderData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
-            this._publicRenderData.vptBundle.refreshUI();
+            this._vptGData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
+            this._vptGData.vptBundle.refreshUI();
         }
 
     }
 
     /**
-     * Parses publicRenderData for new settings
+     * Parses vptGData for new settings
      */
     _parseSettings() {
-        var settings = this._publicRenderData.vptBundle;
+        var settings = this._vptGData.vptBundle;
 
         this._softReset = settings.resetMVP;
-        this._publicRenderData.vptBundle.resetMVP = false;
+        this._vptGData.vptBundle.resetMVP = false;
 
         this._renderer_EAM._background = settings.eam.background;
         this._renderer_EAM._blendMeshRatio = settings.eam.blendMeshRatio;

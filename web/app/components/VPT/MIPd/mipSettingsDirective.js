@@ -14,9 +14,9 @@ app.directive("mipSettings", function () {
 
             //Start notification for restoring UI values
             scope.$on('startMIP', function () {  
-                $(blendSlider).slider("value", scope.publicRenderData.vptBundle.mip.blendMeshRatio);
-                changeResolution(scope.publicRenderData.vptBundle.mip.resolution);
-                inSteps.val(scope.publicRenderData.vptBundle.mip.steps);//Math.round(1 / scope.publicRenderData.getVPTController().getRenderer()._stepSize));
+                $(blendSlider).slider("value", scope.vptGData.vptBundle.mip.blendMeshRatio);
+                changeResolution(scope.vptGData.vptBundle.mip.resolution);
+                inSteps.val(scope.vptGData.vptBundle.mip.steps);//Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
             });
             //
 
@@ -24,7 +24,7 @@ app.directive("mipSettings", function () {
             let blendHandle = element.find('#blendHandleMIP');
             let blendSlider = element.find('#blendSliderMIP');
             blendSlider.slider({
-                value: scope.publicRenderData.vptBundle.mip.blendMeshRatio,
+                value: scope.vptGData.vptBundle.mip.blendMeshRatio,
                 min: 0,
                 max: 1,
                 step: 0.01,
@@ -32,7 +32,7 @@ app.directive("mipSettings", function () {
                     blendHandle.text($(this).slider("value"));
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.mip.blendMeshRatio = parseFloat(ui.value);
+                    scope.vptGData.vptBundle.mip.blendMeshRatio = parseFloat(ui.value);
                     blendHandle.text(ui.value);
                 }
             });
@@ -53,8 +53,8 @@ app.directive("mipSettings", function () {
                     lastVal = $(this).slider("value");
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.mip.resolution = resolutionValues[ui.value];
-                    scope.publicRenderData.vptBundle.resetBuffers = true;
+                    scope.vptGData.vptBundle.mip.resolution = resolutionValues[ui.value];
+                    scope.vptGData.vptBundle.resetBuffers = true;
                     changeResolutionSlider(ui.value, true);
                 }
             }).each(function () {
@@ -99,9 +99,9 @@ app.directive("mipSettings", function () {
             let inSteps = element.find('[name="inSteps"]');
             inSteps.change(function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
-                scope.publicRenderData.vptBundle.mip.steps = value; //1 / value;
+                scope.vptGData.vptBundle.mip.steps = value; //1 / value;
                 inSteps.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
         },
         templateUrl: function (element, attributes) {

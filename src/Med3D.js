@@ -23,6 +23,14 @@ var M3D = {
 	FUNC_EQUAL: 5,
 	FUNC_NOTEQUAL: 6,
 	FUNC_GREATER: 7,
-	FUNC_GEQUAL: 8
+	FUNC_GEQUAL: 8,
+
+	//VPT constants
+	EAM: 1,
+	ISO: 2,
+	MCS: 3,
+	MIP: 4,
+	PHO: 5, 	//Phong test rendeder for volume's mesh projection
+
 };
 

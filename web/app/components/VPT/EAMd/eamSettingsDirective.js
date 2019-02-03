@@ -14,10 +14,10 @@ app.directive("eamSettings", function () {
 
             //Start notification for restoring UI values
             scope.$on('startEAM', function () {
-                $(blendSlider).slider("value", scope.publicRenderData.vptBundle.eam.blendMeshRatio);
-                changeResolution(scope.publicRenderData.vptBundle.eam.resolution);
-                inSteps.val(scope.publicRenderData.vptBundle.eam.steps);   //Math.round(1 / scope.publicRenderData.getVPTController().getRenderer()._stepSize));
-                inACorr.val(scope.publicRenderData.vptBundle.eam.alphaCorrection);//scope.publicRenderData.getVPTController().getRenderer()._alphaCorrection);
+                $(blendSlider).slider("value", scope.vptGData.vptBundle.eam.blendMeshRatio);
+                changeResolution(scope.vptGData.vptBundle.eam.resolution);
+                inSteps.val(scope.vptGData.vptBundle.eam.steps);   //Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
+                inACorr.val(scope.vptGData.vptBundle.eam.alphaCorrection);//scope.vptGData.getVPTController().getRenderer()._alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
             });
@@ -42,7 +42,7 @@ app.directive("eamSettings", function () {
             let blendHandle = element.find('#blendHandleEAM');
             let blendSlider = element.find('#blendSliderEAM');
             blendSlider.slider({
-                value: scope.publicRenderData.vptBundle.eam.blendMeshRatio,
+                value: scope.vptGData.vptBundle.eam.blendMeshRatio,
                 min: 0,
                 max: 1,
                 step: 0.01,
@@ -50,7 +50,7 @@ app.directive("eamSettings", function () {
                     blendHandle.text($(this).slider("value"));
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.eam.blendMeshRatio = parseFloat(ui.value);
+                    scope.vptGData.vptBundle.eam.blendMeshRatio = parseFloat(ui.value);
                     blendHandle.text(ui.value);
                 }
             });
@@ -71,8 +71,8 @@ app.directive("eamSettings", function () {
                     lastVal = $(this).slider("value");
                 },
                 slide: function (event, ui) {
-                    scope.publicRenderData.vptBundle.eam.resolution = resolutionValues[ui.value];
-                    scope.publicRenderData.vptBundle.resetBuffers = true;
+                    scope.vptGData.vptBundle.eam.resolution = resolutionValues[ui.value];
+                    scope.vptGData.vptBundle.resetBuffers = true;
                     changeResolutionSlider(ui.value, true);
                 }
             }).each(function () {
@@ -138,17 +138,17 @@ app.directive("eamSettings", function () {
             ///
             inSteps.change(function () {
                 value = Math.max(1, parseInt(inSteps.val(), 10)) || 10;
-                scope.publicRenderData.vptBundle.eam.steps = value;
+                scope.vptGData.vptBundle.eam.steps = value;
                 inSteps.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
 
 
             inACorr.change(function () {
                 value = Math.max(0, parseFloat(inACorr.val())) || 1;
-                scope.publicRenderData.vptBundle.eam.alphaCorrection = value;
+                scope.vptGData.vptBundle.eam.alphaCorrection = value;
                 inACorr.val(value);
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
 
             inColor.colorpicker({
@@ -353,8 +353,8 @@ app.directive("eamSettings", function () {
             };
 
             let onChange = function () {
-                scope.publicRenderData.vptBundle.eam.tf = canvas;
-                scope.publicRenderData.vptBundle.resetMVP = true;
+                scope.vptGData.vptBundle.eam.tf = canvas;
+                scope.vptGData.vptBundle.resetMVP = true;
             }
 
             initTF();
