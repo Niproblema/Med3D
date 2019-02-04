@@ -245,7 +245,7 @@ app.factory('VPT', function ($rootScope) {
 
 
         /* ================= Public methods ================= */
-
+        //get vptBundle - this._gNsModel
         Object.defineProperty(_vptFactory.prototype, "vptBundle", {
             get: function myProperty() {
                 return self._gNsModel;

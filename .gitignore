@@ -1,4 +1,4 @@
 database/
 database_init_resources/
-src_server/database/diagnostic.data/
-src_server/database/journal/
+src_server/database/*
+!src_server/database/DatabaseManager.js

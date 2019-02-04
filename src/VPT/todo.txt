@@ -1,16 +1,15 @@
 Shared session with shared VPT parameters
 VPT gc in shared session
 MCC import/export geo fix
+Mesh diffuse color
+Limit na obj vertex # export + fix objLoader for import
+MCS EnvironmentMap when MCC is projected
 
 
 Maybe:
  -VPT geometry switch causes GL drawArrays error in first draw. Move vptInterface further up in MainPass
  -Move vptInterface into it's own render pass?
+ -blend VPT renderers
 
-Rethink:
- -M3D group of meshes vs single large mesh.
- -Export to obj - too many vertexes.
- -M3D import obj, duplicate vertexes that share faces.
- -Material transparent ? some alpha artifacting : probably issue with multiple objects (without mcc)
+Rethink: 
  -Homogeneous coordinate manual division ? https://stackoverflow.com/questions/24441631/how-exactly-does-opengl-do-perspectively-correct-linear-interpolation
- -Environment map UI option - Za celo sceno, al za VPT only?
