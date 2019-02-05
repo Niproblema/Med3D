@@ -12,17 +12,21 @@ app.directive("eamSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            //Start notification for restoring UI values
-            scope.$on('startEAM', function () {
+            let _startupFunction = function () {
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.eam.blendMeshRatio);
+                var newColor = scope.vptGData.vptBundle.eam.blendMeshColor;
+                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                meshColorEAM.colorpicker('setValue', changeTo);
                 changeResolution(scope.vptGData.vptBundle.eam.resolution);
                 inSteps.val(scope.vptGData.vptBundle.eam.steps);   //Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
                 inACorr.val(scope.vptGData.vptBundle.eam.alphaCorrection);//scope.vptGData.getVPTController().getRenderer()._alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
-            });
-            //
+            };
 
+            //Start notification for restoring UI values
+            scope.$on('startEAM', _startupFunction);
+            //
 
             //////TF variables//////
 
@@ -54,6 +58,35 @@ app.directive("eamSettings", function () {
                     blendHandle.text(ui.value);
                 }
             });
+
+            let sliders = {
+                saturation: {
+                    maxLeft: 210,
+                    maxTop: 125,
+                    callLeft: 'setSaturation',
+                    callTop: 'setBrightness'
+                },
+                hue: {
+                    maxLeft: 0,
+                    maxTop: 125,
+                    callLeft: false,
+                    callTop: 'setHue'
+                }
+            };
+
+            //Bleded mesh color
+            let meshColorEAM = $('#meshColorEAM');
+            meshColorEAM.colorpicker({
+                color: "#ffffff",
+                format: "rgb",
+                sliders: sliders
+            }).on('changeColor', function (e) {
+                color = e.color.toString('rgb').match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
+                scope.vptGData.vptBundle.eam.blendMeshColor.r = color[1] / 255;
+                scope.vptGData.vptBundle.eam.blendMeshColor.g = color[2] / 255;
+                scope.vptGData.vptBundle.eam.blendMeshColor.b = color[3] / 255;
+            });
+
 
             //Res setting
 
@@ -120,20 +153,7 @@ app.directive("eamSettings", function () {
             let canvas = element.find('canvas').get(0);
             let inAlpha = element.find('[name="inAlpha"]');
             let inColor = element.find('#inColor');
-            let sliders = {
-                saturation: {
-                    maxLeft: 210,
-                    maxTop: 125,
-                    callLeft: 'setSaturation',
-                    callTop: 'setBrightness'
-                },
-                hue: {
-                    maxLeft: 0,
-                    maxTop: 125,
-                    callLeft: false,
-                    callTop: 'setHue'
-                }
-            };
+
 
             ///
             inSteps.change(function () {
@@ -358,7 +378,7 @@ app.directive("eamSettings", function () {
             }
 
             initTF();
-
+            _startupFunction();
         },
         templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/EAMd/eamSettings.html';

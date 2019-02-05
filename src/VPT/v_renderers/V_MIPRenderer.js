@@ -22,7 +22,8 @@ function V_MIPRenderer(gl, options) {
 };
 
 Class.defaults = {
-    _stepSize : 0.05
+    _stepSize : 0.05,
+    _blendMeshColor : [0.0, 0.0, 0.0] 
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

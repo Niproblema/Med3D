@@ -12,15 +12,20 @@ app.directive("mcsSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            //Start notification for restoring UI values
-            scope.$on('startMCS', function () {
+            let _startupFunction = function () {
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.mcs.blendMeshRatio);
+                var newColor = scope.vptGData.vptBundle.mcs.blendMeshColor;
+                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                meshColorMCS.colorpicker('setValue', changeTo);
                 changeResolution(scope.vptGData.vptBundle.mcs.resolution);
                 inSigma.val(scope.vptGData.vptBundle.mcs.sigma);
                 inACorr.val(scope.vptGData.vptBundle.mcs.alphaCorrection);
                 if (tfBumps.length > 0)
                     onChange();
-            });
+            }
+
+            //Start notification for restoring UI values
+            scope.$on('startMCS', _startupFunction);
             //
 
             //////TF variables//////
@@ -57,6 +62,35 @@ app.directive("mcsSettings", function () {
                     blendHandle.text(ui.value);
                 }
             });
+
+
+            let sliders = {
+                saturation: {
+                    maxLeft: 210,
+                    maxTop: 125,
+                    callLeft: 'setSaturation',
+                    callTop: 'setBrightness'
+                },
+                hue: {
+                    maxLeft: 0,
+                    maxTop: 125,
+                    callLeft: false,
+                    callTop: 'setHue'
+                }
+            };
+            //Bleded mesh color
+            let meshColorMCS = $('#meshColorMCS');
+            meshColorMCS.colorpicker({
+                color: "#ffffff",
+                format: "rgb",
+                sliders: sliders
+            }).on('changeColor', function (e) {
+                color = e.color.toString('rgb').match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
+                scope.vptGData.vptBundle.mcs.blendMeshColor.r = color[1] / 255;
+                scope.vptGData.vptBundle.mcs.blendMeshColor.g = color[2] / 255;
+                scope.vptGData.vptBundle.mcs.blendMeshColor.b = color[3] / 255;
+            });
+
 
             //Res setting
 
@@ -123,20 +157,6 @@ app.directive("mcsSettings", function () {
             let canvas = element.find('canvas').get(0);
             let inAlpha = element.find('[name="inAlpha"]');
             let inColor = element.find('#inColor');
-            let sliders = {
-                saturation: {
-                    maxLeft: 210,
-                    maxTop: 125,
-                    callLeft: 'setSaturation',
-                    callTop: 'setBrightness'
-                },
-                hue: {
-                    maxLeft: 0,
-                    maxTop: 125,
-                    callLeft: false,
-                    callTop: 'setHue'
-                }
-            };
 
             ///////////////////////
             inSigma.change(function () {
@@ -362,7 +382,7 @@ app.directive("mcsSettings", function () {
             }
 
             initTF();
-
+            _startupFunction();
         },
         templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/MCSd/mcsSettings.html';

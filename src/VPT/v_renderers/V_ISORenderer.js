@@ -25,7 +25,8 @@ Class.defaults = {
     _stepSize : 0.05,
     _isovalue : 0.4,
     _light    : [0.5, 0.5, 0.5],
-    _diffuse  : [0.7, 0.8, 0.9]
+    _diffuse  : [0.7, 0.8, 0.9],
+    _blendMeshColor : [0.0, 0.0, 0.0] 
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

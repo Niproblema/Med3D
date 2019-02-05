@@ -12,12 +12,17 @@ app.directive("mipSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            //Start notification for restoring UI values
-            scope.$on('startMIP', function () {  
+            let _startupFunction = function () {
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.mip.blendMeshRatio);
+                var newColor = scope.vptGData.vptBundle.mip.blendMeshColor;
+                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                meshColorMIP.colorpicker('setValue', changeTo);
                 changeResolution(scope.vptGData.vptBundle.mip.resolution);
                 inSteps.val(scope.vptGData.vptBundle.mip.steps);//Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
-            });
+            };
+
+            //Start notification for restoring UI values
+            scope.$on('startMIP', _startupFunction);
             //
 
             //Blend mesh ratio
@@ -72,6 +77,36 @@ app.directive("mipSettings", function () {
                 }
             });
 
+            // Configure color picker
+            let sliders = {
+                saturation: {
+                    maxLeft: 210,
+                    maxTop: 125,
+                    callLeft: 'setSaturation',
+                    callTop: 'setBrightness'
+                },
+                hue: {
+                    maxLeft: 0,
+                    maxTop: 125,
+                    callLeft: false,
+                    callTop: 'setHue'
+                }
+            };
+
+            //Bleded mesh color
+            let meshColorMIP = $('#meshColorMIP');
+            meshColorMIP.colorpicker({
+                color: "#ffffff",
+                format: "rgb",
+                sliders: sliders
+            }).on('changeColor', function (e) {
+                color = e.color.toString('rgb').match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d(?:\.\d?))\))?/);
+                scope.vptGData.vptBundle.mip.blendMeshColor.r = color[1] / 255;
+                scope.vptGData.vptBundle.mip.blendMeshColor.g = color[2] / 255;
+                scope.vptGData.vptBundle.mip.blendMeshColor.b = color[3] / 255;
+            });
+
+
             //Changes UI to closest selectable value
             let changeResolution = function (resValue) {
                 var i = 0;
@@ -103,6 +138,16 @@ app.directive("mipSettings", function () {
                 inSteps.val(value);
                 scope.vptGData.vptBundle.resetMVP = true;
             }.bind(this));
+
+            let toHex = function (int) {
+                var hex = Number(int).toString(16);
+                if (hex.length < 2) {
+                    hex = "0" + hex;
+                }
+                return hex;
+            };
+            
+            _startupFunction();
         },
         templateUrl: function (element, attributes) {
             return '/web/app/components/VPT/MIPd/mipSettings.html';

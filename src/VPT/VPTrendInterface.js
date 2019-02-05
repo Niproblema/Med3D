@@ -339,6 +339,9 @@ M3D.VPTrendInterface = class {
         this._renderer_EAM._background = settings.eam.background;
         this._renderer_EAM._blendMeshRatio = settings.eam.blendMeshRatio;
         this._renderer_EAM._meshLightning = settings.eam.meshLight;
+        this._renderer_EAM._blendMeshColor[0] = settings.eam.blendMeshColor.r;
+        this._renderer_EAM._blendMeshColor[1] = settings.eam.blendMeshColor.g;
+        this._renderer_EAM._blendMeshColor[2] = settings.eam.blendMeshColor.b;
         this._renderer_EAM._bufferSize = settings.eam.resolution;
         this._renderer_EAM._stepSize = 1 / settings.eam.steps;
         this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
@@ -348,6 +351,9 @@ M3D.VPTrendInterface = class {
         this._renderer_ISO._background = settings.iso.background;
         this._renderer_ISO._blendMeshRatio = settings.iso.blendMeshRatio;
         this._renderer_ISO._meshLightning = settings.iso.meshLight;
+        this._renderer_ISO._blendMeshColor[0] = settings.iso.blendMeshColor.r;
+        this._renderer_ISO._blendMeshColor[1] = settings.iso.blendMeshColor.g;
+        this._renderer_ISO._blendMeshColor[2] = settings.iso.blendMeshColor.b;
         this._renderer_ISO._bufferSize = settings.iso.resolution;
         this._renderer_ISO._stepSize = 1 / settings.iso.steps
         this._renderer_ISO._isovalue = settings.iso.isoVal;
@@ -360,6 +366,9 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS._background = settings.mcs.background;
         this._renderer_MCS._blendMeshRatio = settings.mcs.blendMeshRatio;
         this._renderer_MCS._meshLightning = settings.mcs.meshLight;
+        this._renderer_MCS._blendMeshColor[0] = settings.mcs.blendMeshColor.r;
+        this._renderer_MCS._blendMeshColor[1] = settings.mcs.blendMeshColor.g;
+        this._renderer_MCS._blendMeshColor[2] = settings.mcs.blendMeshColor.b;
         this._renderer_MCS._bufferSize = settings.mcs.resolution;
         this._renderer_MCS._sigmaMax = settings.mcs.sigma
         this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
@@ -369,11 +378,13 @@ M3D.VPTrendInterface = class {
         this._renderer_MIP._background = settings.mip.background;
         this._renderer_MIP._blendMeshRatio = settings.mip.blendMeshRatio;
         this._renderer_MIP._meshLightning = settings.mip.meshLight;
+        this._renderer_MIP._blendMeshColor[0] = settings.mip.blendMeshColor.r;
+        this._renderer_MIP._blendMeshColor[1] = settings.mip.blendMeshColor.g;
+        this._renderer_MIP._blendMeshColor[2] = settings.mip.blendMeshColor.b;
         this._renderer_MIP._bufferSize = settings.mip.resolution;
         this._renderer_MIP._stepSize = 1 / settings.mip.steps;
 
         this._RHToneMapper._exposure = settings.reinhard.exposure;
-        //todo: rangeToneMapper is not enabled.
         this._RaToneMapper._min = 1 - settings.range.rangeHigher;
         this._RaToneMapper._max = 1 - settings.range.rangeLower;
     }
@@ -384,6 +395,8 @@ M3D.VPTrendInterface = class {
      * @param  object 
      */
     _setMeshRenderFlags(renderer, object){
+        object.material.color = renderer._blendMeshColor;   //TODO: only if changed?
+        object.material.setUniform("material.diffuse", object.material.color)
         object.material.setUniform("meshBlendRatio", renderer._blendMeshRatio);
         object.material.setUniform("meshLight", renderer._meshLightning);
         return renderer._blendMeshRatio < 0.995 ? true : false;

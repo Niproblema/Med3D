@@ -1,7 +1,6 @@
 Shared session with shared VPT parameters
 VPT gc in shared session
 MCC import/export geo fix
-Mesh diffuse color
 Limit na obj vertex # export + fix objLoader for import
 MCS EnvironmentMap when MCC is projected
 

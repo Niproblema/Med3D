@@ -24,6 +24,7 @@ function V_MCSRenderer(gl, options) {
 Class.defaults = {
     _sigmaMax        : 1,
     _alphaCorrection : 1,
+    _blendMeshColor : [0.0, 0.0, 0.0] 
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

@@ -148,9 +148,11 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         marker.point.material.useVertexColors = true;
         marker.point.material.transparent = true;
         marker.point.material.side = M3D.FRONT_AND_BACK_SIDE;
+        marker.point.material.depthTest = false;
         marker.point.position.set(0, 0, 0);
 
         marker.line = new M3D.Line([]);
+        marker.line.material.depthTest = false;
         marker.line.frustumCulled = false;
 
         return marker;
@@ -181,12 +183,13 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
                 // Calculate intersected triangle normal
                 intersectionNormal = intersectionNormal.crossVectors((new THREE.Vector3()).subVectors(intersects[0].triangle[1], intersects[0].triangle[0]), (new THREE.Vector3()).subVectors(intersects[0].triangle[2], intersects[0].triangle[0])).normalize();
 
-                // Store marker position and normal
-                Annotations.newAnnotation.markerMeta = { position: marker.point.position, normal: intersectionNormal.clone(), radius: radius * 0.01};
-
+                marker.point._position = new THREE.Vector3(0,0,0);
                 // Look at intersected triangle normal
                 marker.point.lookAt(intersectionNormal, new THREE.Vector3(0, 0, 1));
                 marker.point.position = intersects[0].point.add(intersectionNormal.multiplyScalar(0.001));
+
+                // Store marker position and normal
+                Annotations.newAnnotation.markerMeta = { position: marker.point.position, normal: intersectionNormal.clone(), radius: radius * 0.01};
             }
         }
     }();
@@ -216,6 +219,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
             if (annItem.marker === undefined) {
                 annItem.marker = self.createMarker(annItem.markerMeta.radius);
 
+                annItem.marker.point._position = new THREE.Vector3(0,0,0);
                 // Setup marker parameters
                 annItem.marker.point.lookAt(annItem.markerMeta.normal, new THREE.Vector3(0, 0, 1));
                 annItem.marker.point.position = annItem.markerMeta.position.clone();

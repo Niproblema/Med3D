@@ -26,6 +26,11 @@ app.factory('VPT', function ($rootScope) {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
                 meshLight: true,
+                blendMeshColor: {
+                    r: 0.28,
+                    g: 0.7,
+                    b: 0.7
+                },
                 resolution: 512,        //Buffer dimensions
                 steps: 10,
                 alphaCorrection: 5,
@@ -35,6 +40,11 @@ app.factory('VPT', function ($rootScope) {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
                 meshLight: true,
+                blendMeshColor: {
+                    r: 0.28,
+                    g: 0.7,
+                    b: 0.7
+                },
                 resolution: 512,        //Buffer dimensions
                 steps: 10,
                 isoVal: 0.25,
@@ -48,6 +58,11 @@ app.factory('VPT', function ($rootScope) {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
                 meshLight: true,
+                blendMeshColor: {
+                    r: 0.28,
+                    g: 0.7,
+                    b: 0.7
+                },
                 resolution: 512,        //Buffer dimensions
                 sigma: 30,
                 alphaCorrection: 30,
@@ -57,6 +72,11 @@ app.factory('VPT', function ($rootScope) {
                 background: true,
                 blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
                 meshLight: true,
+                blendMeshColor: {
+                    r: 0.28,
+                    g: 0.7,
+                    b: 0.7
+                },
                 resolution: 512,        //Buffer dimensions
                 steps: 10
             },
@@ -117,6 +137,18 @@ app.factory('VPT', function ($rootScope) {
                 get meshLight() { return self._activeSettings.eam.meshLight; },
                 set meshLight(val) { self._activeSettings.eam.meshLight = val },
 
+                get blendMeshColor() {
+                    return {
+                        get r() { return self._activeSettings.eam.blendMeshColor.r; },
+                        set r(val) { self._activeSettings.eam.blendMeshColor.r = val },
+                        get g() { return self._activeSettings.eam.blendMeshColor.g; },
+                        set g(val) { self._activeSettings.eam.blendMeshColor.g = val },
+                        get b() { return self._activeSettings.eam.blendMeshColor.b; },
+                        set b(val) { self._activeSettings.eam.blendMeshColor.b = val }
+                    }
+                },
+                set blendMeshColor(val) { self._activeSettings.eam.color = val },
+
                 get resolution() { return self._activeSettings.eam.resolution; },
                 set resolution(val) { self._activeSettings.eam.resolution = val },
 
@@ -138,6 +170,18 @@ app.factory('VPT', function ($rootScope) {
 
                 get meshLight() { return self._activeSettings.iso.meshLight; },
                 set meshLight(val) { self._activeSettings.iso.meshLight = val },
+
+                get blendMeshColor() {
+                    return {
+                        get r() { return self._activeSettings.iso.blendMeshColor.r; },
+                        set r(val) { self._activeSettings.iso.blendMeshColor.r = val },
+                        get g() { return self._activeSettings.iso.blendMeshColor.g; },
+                        set g(val) { self._activeSettings.iso.blendMeshColor.g = val },
+                        get b() { return self._activeSettings.iso.blendMeshColor.b; },
+                        set b(val) { self._activeSettings.iso.blendMeshColor.b = val }
+                    }
+                },
+                set blendMeshColor(val) { self._activeSettings.iso.color = val },
 
                 get resolution() { return self._activeSettings.iso.resolution; },
                 set resolution(val) { self._activeSettings.iso.resolution = val },
@@ -170,6 +214,18 @@ app.factory('VPT', function ($rootScope) {
                 get meshLight() { return self._activeSettings.mcs.meshLight; },
                 set meshLight(val) { self._activeSettings.mcs.meshLight = val },
 
+                get blendMeshColor() {
+                    return {
+                        get r() { return self._activeSettings.mcs.blendMeshColor.r; },
+                        set r(val) { self._activeSettings.mcs.blendMeshColor.r = val },
+                        get g() { return self._activeSettings.mcs.blendMeshColor.g; },
+                        set g(val) { self._activeSettings.mcs.blendMeshColor.g = val },
+                        get b() { return self._activeSettings.mcs.blendMeshColor.b; },
+                        set b(val) { self._activeSettings.mcs.blendMeshColor.b = val }
+                    }
+                },
+                set blendMeshColor(val) { self._activeSettings.mcs.color = val },
+
                 get resolution() { return self._activeSettings.mcs.resolution; },
                 set resolution(val) { self._activeSettings.mcs.resolution = val },
 
@@ -191,6 +247,18 @@ app.factory('VPT', function ($rootScope) {
 
                 get meshLight() { return self._activeSettings.mip.meshLight; },
                 set meshLight(val) { self._activeSettings.mip.meshLight = val },
+
+                get blendMeshColor() {
+                    return {
+                        get r() { return self._activeSettings.mip.blendMeshColor.r; },
+                        set r(val) { self._activeSettings.mip.blendMeshColor.r = val },
+                        get g() { return self._activeSettings.mip.blendMeshColor.g; },
+                        set g(val) { self._activeSettings.mip.blendMeshColor.g = val },
+                        get b() { return self._activeSettings.mip.blendMeshColor.b; },
+                        set b(val) { self._activeSettings.mip.blendMeshColor.b = val }
+                    }
+                },
+                set blendMeshColor(val) { self._activeSettings.mip.color = val },
 
                 get resolution() { return self._activeSettings.mip.resolution; },
                 set resolution(val) { self._activeSettings.mip.resolution = val },

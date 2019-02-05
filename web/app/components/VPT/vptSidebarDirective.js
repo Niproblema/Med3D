@@ -38,10 +38,6 @@ app.directive("vptSidebar", function () {
                     scope.$broadcast('start' + scope.allRenderers[scope.renderer]);
                 }
             };
-            //Apply default!
-            scope.$broadcast('start' + scope.allRenderers[scope.renderer]);
-
-
 
             // Sliders for Tone mapper settings
             let exposureHandle = element.find('#exposureHandle');
