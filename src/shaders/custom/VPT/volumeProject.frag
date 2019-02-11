@@ -108,7 +108,7 @@ void main() {
     #if (TEXTURE)
         // Apply all of the textures
         #for I_TEX in 0 to NUM_TEX
-             color[0] = (meshBlendRatio) * color[0] + (1.0-meshBlendRatio) * texture(material.texture##I_TEX, vec2(texPos.x, texPos.y)*0.5+0.5);   //texture(material.texture##I_TEX, fragUV);
+             color[0] = (meshBlendRatio) * color[0] + (1.0-meshBlendRatio) * texture(material.texture##I_TEX, vec2(texPos.xy / abs(texPos.w))*0.5+0.5);   //texture(material.texture##I_TEX, fragUV);
         #end
 
     #fi

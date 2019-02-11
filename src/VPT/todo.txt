@@ -1,7 +1,5 @@
-Shared session with shared VPT parameters
-VPT gc in shared session
+Shared session with shared VPT parameters + gc in shared session
 MCC import/export geo fix
-Limit na obj vertex # export + fix objLoader for import
 MCS EnvironmentMap when MCC is projected
 
 
@@ -9,6 +7,7 @@ Maybe:
  -VPT geometry switch causes GL drawArrays error in first draw. Move vptInterface further up in MainPass
  -Move vptInterface into it's own render pass?
  -blend VPT renderers
+ -Second subscriber rejoin - duplicate shared cameras on host.
 
 Rethink: 
- -Homogeneous coordinate manual division ? https://stackoverflow.com/questions/24441631/how-exactly-does-opengl-do-perspectively-correct-linear-interpolation
+ -Mip background off maybe broken

@@ -101,6 +101,9 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Store reference to renderer
         self.renderer = renderer;
 
+        // Init VPT global data. Prepares for shared vpt session.
+        VPT.initCameraManager(self.cameraManager);
+
         // Reference to VPT interface. Used for UI controls
         self.vptInterface = new M3D.VPTrendInterface(VPT, self.renderer._gl);
 

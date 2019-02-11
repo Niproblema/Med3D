@@ -1,26 +1,53 @@
 /**
  * Created by Jan on 3.2.2019
  * Hold and VPT settings and states for rendering and collaboration.
+ * 
+ * 
+ * Event hierarchy:
+ *  -camera's vpt bundle 
+ *   -settings   
  */
 app.factory('VPT', function ($rootScope) {
     return new (function _vptFactory() {
         let self = this;
+        let _cameraManager = null;
+        let _lastActiveCameraUuid = null;
 
-        /* Change listener */
-        this._onChangeListener = {};
+        /* User collection : user -> cameras */
 
-        this.addListener = function (id, onChange) {
-            this._onChangeListener[id] = onChange;
+        /* Change listener. camera -> vptBundle */
+        this._onChangeListener = new Map();
+
+        this.addListener = function (camera, onChange) {
+            this._onChangeListener.set(camera, onChange);
         }
 
-        this.rmListener = function (id) {
-            delete this._onChangeListener[id];
+        this.rmListener = function (camera) {
+            this._onChangeListener.delete(camera);
         }
+
 
         /* ================= SETTING BUNDLES ================= */
 
+        //Bundles : Camera -> vptBundle
+        this._vptBundles = new Map();
+
+        this.setCameraBundle = function (camera, bundle) {
+            this._vptBundles.set(camera, bundle);
+        }
+        this.getCameraBundle = function (camera) {
+            return this._vptBundles.get(camera);
+        }
+        this.hasCameraBundle = function (camera) {
+            return this._vptBundles.has(camera);
+        }
+        this.rmCameraBundle = function (camera) {
+            return this._vptBundles.delete(camera);
+        }
+
         //Default settings, if needed to reset.
         this._defaultSettings = {
+            uuid: THREE.Math.generateUUID(),
             rendererChoiceID: 4, //VPT renderers - 0=Error, 1=EAM, 2=ISO, 3=MCS, 4=MIP, 5=Disabled=Use mesh with diffuse
             eam: {    //eam
                 background: true,
@@ -93,7 +120,7 @@ app.factory('VPT', function ($rootScope) {
         };
 
         //This client's currently active settings. For init, copy default settings. 
-        this._activeSettings = jQuery.extend(true, {}, this._defaultSettings);
+        this._activeSettings = null; //jQuery.extend(true, {}, this._defaultSettings);
 
 
         /* ================= STATE BUNDLE ================= */
@@ -311,15 +338,142 @@ app.factory('VPT', function ($rootScope) {
             }
         };
 
-
-        /* ================= Public methods ================= */
-        //get vptBundle - this._gNsModel
+        /**
+         * Get active bundle gNsModel. Used by UI, triggers onChnage updates
+         */
         Object.defineProperty(_vptFactory.prototype, "vptBundle", {
             get: function myProperty() {
                 return self._gNsModel;
             }
         });
 
+
+        /* ================= External updates ================= */
+        /* Do not trigger onChange updates */
+
+        /**
+         * Updates bundle.
+         */
+        let _update = function (bundle, data) {
+            for (var prop in data) {
+                switch (prop) {
+                    case "position":
+                        this._position.fromArray(data.position);
+                        delete data.position;
+                        break;
+                    case "quaternion":
+                        this._quaternion.fromArray(data.quaternion);
+                        delete data.quaternion;
+                        break;
+                    case "scale":
+                        this._scale.fromArray(data.scale);
+                        delete data.scale;
+                        break;
+                    case "visible":
+                        this._visible = data.visible;
+                        delete data.visible;
+                        break;
+                    case "frustumCulled":
+                        this._frustumCulled = data.frustumCulled;
+                        delete data.frustumCulled;
+                        break;
+                    case "matrixAutoUpdate":
+                        this._matrixAutoUpdate = data.matrixAutoUpdate;
+                        delete data.matrixAutoUpdate;
+                        break;
+                }
+            }
+
+        }
+
+        let updateSharedVPTSettings = function (userId, owner, camera, updates) {
+            //Entry should first be added with add.
+            if (!this.hasCameraBundle(camera)) {
+                return;
+            }
+
+            //let userAnnotations = this.sharedDrawnAnnotations[userId].annotations;
+            let bundle = this._vptBundles.get(camera);
+
+            $rootScope.$apply(function () {
+                self._update(bundle, updates);
+
+                /*                 for (let annUuid in updates) {
+                                    for (let i = 0; i < userAnnotations.length; i++) {
+                                        if (userAnnotations[i]._uuid === annUuid) {
+                                            // Update annotation
+                                            this._update(updates[annUuid], owner);
+                                            break;
+                                        }
+                                    }
+                                } */
+            });
+        };
+
+
+
+        /* ================= Camera triggers ================= */
+        this._onAddCamera = function (data) {
+            var camera = data.camera;
+            var local = data.local;
+            var active = data.active;
+            console.log("Camera " + data.camera._uuid + " added");
+            if (!self.hasCameraBundle(camera._uuid)) {
+                self.setCameraBundle(camera._uuid, jQuery.extend(true, {}, self._defaultSettings));   //Set it to defaults
+            }
+            if (!self._activeSettings) {
+                self._onActivateCamera(data);
+            }
+        }
+
+        this._onRmCamera = function (data) {
+            var camera = data.camera;
+            var local = data.local;
+            var active = data.active;
+            console.log("Camera " + data.camera._uuid + " removed");
+            self.rmCameraBundle(camera._uuid);
+            if(active){
+                var newActive = self._cameraManager._activeCamera;
+                self._lastActiveCameraUuid = null;
+                self._onActivateCamera({camera : newActive, local : self._cameraManager.isOwnCamera(newActive) , active : true});
+            }
+        }
+
+        this._onActivateCamera = function (data) {
+            var camera = data.camera;
+            var local = data.local;
+            var active = data.active;
+            console.log("Camera " + data.camera._uuid + " activated");
+            
+            if(self._lastActiveCameraUuid === camera._uuid) return;
+
+            //Add camera first, if it doesn't exist yet - should not happen
+            if (!self.hasCameraBundle(camera._uuid))
+                self._onAddCamera(data);
+
+            //Save previous active bundle into last active camera    
+            if(self._lastActiveCameraUuid){
+                self.setCameraBundle(self._lastActiveCameraUuid, self._activeSettings);
+            }
+
+            self._activeSettings = self.getCameraBundle(camera._uuid);
+            self._lastActiveCameraUuid = camera._uuid;
+            //TODO: run UI parser in scope.apply
+            console.log("TODO: run UI parser in scope.apply");
+        }
+
+        /** Init camera manager listeners for camera events */
+        this.initCameraManager = function (cameraManager) {
+            if (this._cameraManager) {
+                this._cameraManager.rmOnAddCameraListner(this._onAddCamera);
+                this._cameraManager.rmOnRemoveCameraListner(this._onRmCamera);
+                this._cameraManager.rmOnSwitchActiveCameraListner(this._onActivateCamera);
+            }
+            this._cameraManager = cameraManager;
+            this._cameraManager.addOnAddCameraListner(this._onAddCamera);
+            this._cameraManager.addOnRemoveCameraListner(this._onRmCamera);
+            this._cameraManager.addOnSwitchActiveCameraListner(this._onActivateCamera);
+        };
 
     })(this);
 });

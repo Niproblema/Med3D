@@ -22,7 +22,6 @@ void main() {
     // Model view position
     vec4 VPos4 = MVMat * vec4(VPos, 1.0);
     texPos = PMat * VPos4;
-    texPos = vec4(texPos.xyz / abs(texPos.w), 1);
 
     // Projected position
     gl_Position = texPos;

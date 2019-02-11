@@ -18,8 +18,16 @@ CameraManager = class {
         // Dictionary of all of the cameras that are shared with this user
         this._sharedCameras = {};
 
+        // On change inside manager listners queues.
+        this._onChangeListeners = {
+            onAddCamera: [],       //On add camera to manager
+            onRemoveCamera: [],    //On remove camera from manager
+            onActiveCamera: []     //When new camera active
+        };
+
         this._aspectRatio = 1;
     }
+
 
     update(inputData, deltaT) {
         // Update active camera
@@ -51,6 +59,10 @@ CameraManager = class {
     addRegularCamera(camera) {
         this._cameras.push(camera);
         this._cameraControls[camera._uuid] = new M3D.RegularCameraControls(camera);
+
+        this._onChangeListeners.onAddCamera.forEach(function (item, index) {
+            item({ camera: camera, local: true, active: false });
+        });
     }
 
     /**
@@ -61,6 +73,10 @@ CameraManager = class {
     addOrbitCamera(camera, orbitCenter) {
         this._cameras.push(camera);
         this._cameraControls[camera._uuid] = new M3D.OrbitCameraControls(camera, orbitCenter);
+
+        this._onChangeListeners.onAddCamera.forEach(function (item, index) {
+            item({ camera: camera, local: true, active: false });
+        });
     }
 
     /**
@@ -82,6 +98,15 @@ CameraManager = class {
      * camera.
      */
     clearSharedCameras() {
+        var self = this;
+        for (let userId in this._sharedCameras) {
+            while (this._sharedCameras[userId].list.length > 0) {
+                var cam = this._sharedCameras[userId].list.shift();
+                this._onChangeListeners.onRemoveCamera.forEach(function (item, index) {
+                    item({ camera: cam, local: false, userId: userId, owner: self._sharedCameras[userId].ownerUsername, active: cam == self._activeCamera });
+                });
+            }
+        }
         this._sharedCameras = [];
 
         if (!this.isOwnCamera(this._activeCamera)) {
@@ -90,7 +115,17 @@ CameraManager = class {
     }
 
     setSharedCameras(sharedCameras) {
-        this._sharedCameras = sharedCameras;
+        this.clearSharedCameras();
+
+        for (let userId in sharedCameras) {
+            for (var i = 0; i < sharedCameras[userId].list.length; i++) {
+                var cam = sharedCameras[userId].list[i];
+                this._onChangeListeners.onAddCamera.forEach(function (item, index) {
+                    item({ camera: cam, local: false, userId: userId, owner: sharedCameras[userId].ownerUsername, active: false });
+                });
+            }
+        }
+        this._sharedCameras = jQuery.extend(true, {}, sharedCameras); //sharedCameras;
     }
 
     /**
@@ -102,8 +137,12 @@ CameraManager = class {
             console.error("Tried to set the camera that is managed by the camera manager as the active camera!")
             return
         }
-
         this._activeCamera = camera;
+
+        var self = this;
+        this._onChangeListeners.onActiveCamera.forEach(function (item, index) {
+            item({ camera: camera, local: self.isOwnCamera(camera), active: true });
+        });
     }
 
     /**
@@ -226,4 +265,45 @@ CameraManager = class {
     get aspectTratio() { return this._aspectRatio; }
 
     set aspectRatio(aspect) { this._aspectRatio = aspect; }
+
+
+
+    /* Setup onChange listners */
+    addOnAddCameraListner(listener) {
+        this._onChangeListeners.onAddCamera.push(listener);
+    }
+    rmOnAddCameraListner(listener) {
+        this._removeFromQueue(this._onChangeListeners.onAddCamera, listener)
+    }
+    addOnRemoveCameraListner(listener) {
+        this._onChangeListeners.onRemoveCamera.push(listener);
+    }
+    rmOnRemoveCameraListner(listener) {
+        this._removeFromQueue(this._onChangeListeners.onRemoveCamera, listener)
+    }
+    addOnSwitchActiveCameraListner(listener) {
+        this._onChangeListeners.onActiveCamera.push(listener);
+    }
+    rmOnSwitchActiveCameraListner(listener) {
+        this._removeFromQueue(this._onChangeListeners.onActiveCamera, listener)
+    }
+
+    _removeFromQueue(queue, element) {
+        if (queue.isEmpty())
+            console.error("Cannot remove element.");
+
+        var found = false;
+        var temp;
+        for (var i = 0; i < queue.length; i++) {
+            temp = queue.shift();
+            if (temp == element) {
+                found = true;
+                break;
+            }
+            queue.push(temp);
+        }
+        if (!found)
+            console.error("Cannot remove element from queue - No such element in queue.");
+    }
+    /* === */
 };

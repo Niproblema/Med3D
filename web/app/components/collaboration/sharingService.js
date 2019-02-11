@@ -3,7 +3,7 @@
  */
 
 
-app.service("SharingService", function ($rootScope, PublicRenderData, Annotations, Messages) {
+app.service("SharingService", function ($rootScope, PublicRenderData, Annotations, Messages, VPT) {
     // This reference
     let self = this;
 
@@ -126,7 +126,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
         let onTerminated = function () {
             self.leaveSession(function () {});
             $rootScope.$apply(function() {
-                self.leaveSession(null);
+                //self.leaveSession(null);
             });
         };
 
