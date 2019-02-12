@@ -380,7 +380,7 @@ M3D.MainRenderer = class extends M3D.Renderer {
             if (object.frustumCulled === false || this._isObjectVisible(object)) {
 
                 // Adds required program to the array of required programs if it's not present in it already. Added extra rule for VPT type object, todo refactor later into different render pass or make a queue of materials on object to avoid making exceptions.
-                let requiredPrograms = (object instanceof M3D.VPTVolume) ? [object._vptMaterial.requiredProgram(), object._phongMaterial.requiredProgram()] : [object.material.requiredProgram()];
+                let requiredPrograms = [object.material.requiredProgram()];
 
                 for (let rp = 0; rp < requiredPrograms.length; rp++) {
                     let requiredProgram = requiredPrograms[rp];

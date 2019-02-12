@@ -24,7 +24,8 @@ function V_EAMRenderer(gl, options) {
 Class.defaults = {
     _stepSize        : 0.05,
     _alphaCorrection : 3,
-    _blendMeshColor : [0.0, 0.0, 0.0] 
+    _blendMeshColor : [0.0, 0.0, 0.0],
+    _lastTFuuid : null
 };
 
 // ======================= CONSTRUCTOR & DESTRUCTOR ======================== //

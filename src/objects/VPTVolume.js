@@ -113,11 +113,6 @@ M3D.VPTVolume = class extends M3D.Mesh {
 
         // ==== General render data ==== //
         this._vptMaterial = material;
-        var phongAltenative = new M3D.MeshPhongMaterial();
-        phongAltenative.specular = new THREE.Color("#444444");
-        phongAltenative.color = new THREE.Color("#49b2b2");
-        phongAltenative.shininess = 8;
-        this._phongMaterial = phongAltenative;
         this._cubeGeometry = geometry;
         this._mccGeometry = null;
     }
@@ -160,8 +155,7 @@ M3D.VPTVolume = class extends M3D.Mesh {
     }
 
     /** Switches render modes */
-    switchRenderModes(useVPTtex, useMCCgeo) {
-        this._material = useVPTtex ? this._vptMaterial : this._phongMaterial;
+    switchRenderModes(useMCCgeo) {
         this._geometry = (useMCCgeo && this._mccGeometry) ? this._mccGeometry : this._cubeGeometry;
     }
 

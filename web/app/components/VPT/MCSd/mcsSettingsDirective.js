@@ -20,8 +20,7 @@ app.directive("mcsSettings", function () {
                 changeResolution(scope.vptGData.vptBundle.mcs.resolution);
                 inSigma.val(scope.vptGData.vptBundle.mcs.sigma);
                 inACorr.val(scope.vptGData.vptBundle.mcs.alphaCorrection);
-                if (tfBumps.length > 0)
-                    onChange();
+                parseTFBundle();
             }
 
             //Start notification for restoring UI values
@@ -39,6 +38,7 @@ app.directive("mcsSettings", function () {
             var tfClipQuad = null;
             var tfProgram = null;
             var tfBumps = null;
+            var tfBundle = {uuid: "0", bumps: []};
             var color = null;
             var alpha = 1;
 
@@ -191,7 +191,7 @@ app.directive("mcsSettings", function () {
                     tfBumps[i].color.b = color[3] / 255;
                     tfBumps[i].color.a = alpha;
                     render();
-                    onChange();
+                    onUIChangeTF();
                 }
             });
 
@@ -206,7 +206,7 @@ app.directive("mcsSettings", function () {
                     tfBumps[i].color.b = color[3] / 255;
                     tfBumps[i].color.a = alpha;
                     render();
-                    onChange();
+                    onUIChangeTF();
                 }
             }.bind(this));
 
@@ -233,21 +233,23 @@ app.directive("mcsSettings", function () {
                 addHandle(bumpIndex);
                 selectBump(bumpIndex);
                 render();
-                onChange();
+                onUIChangeTF();
             };
             scope.loadTF_MCS = function () {          //TODO
                 CommonUtils.readTextFile(function (data) {
-                    tfBumps = JSON.parse(data);
+                    var parsed = JSON.parse(data);
+                    tfBumps = parsed.bumps;
                     render();
                     rebuildHandles();
-                    onChange();
+                    onUIChangeTF();
                 }.bind(this));
             };
             scope.saveTF_MCS = function () {
-                CommonUtils.downloadJSON(tfBumps, 'TransferFunction.json');
+                if (tfBundle)
+                    CommonUtils.downloadJSON(tfBundle, 'TransferFunction.json');
+                else
+                    console.error("No tf settings prepared for export");
             };
-
-
 
 
             ////TF methods/////
@@ -322,7 +324,7 @@ app.directive("mcsSettings", function () {
                         tfBumps[i].position.x = x;
                         tfBumps[i].position.y = y;
                         render();
-                        onChange();
+                        onUIChangeTF();
                     }.bind(this)
                 });
                 $handle.mousedown(function (e) {
@@ -341,7 +343,7 @@ app.directive("mcsSettings", function () {
                     }
                     e.stopPropagation();
                     render();
-                    onChange();
+                    onUIChangeTF();
                 }.bind(this));
             }
 
@@ -376,12 +378,28 @@ app.directive("mcsSettings", function () {
                 return hex;
             };
 
-            let onChange = function () {
-                scope.vptGData.vptBundle.mcs.tf = canvas;
+            // When UI changes tf. Update TF bundle
+            let onUIChangeTF = function () {
+                var newUUID = THREE.Math.generateUUID();
+                tfBundle = { uuid: newUUID, bumps: tfBumps };
+                scope.vptGData.vptBundle.mcs.tfBundle = tfBundle;
+                scope.vptGData.vptBundle.resetMVP = true;
+            }
+
+            // Import settings from bundle. Refresh UI
+            let parseTFBundle = function () {
+                if (tfBundle.uuid === scope.vptGData.vptBundle.mcs.tfBundle.uuid)
+                    return;
+
+                tfBundle = scope.vptGData.vptBundle.mcs.tfBundle;
+                tfBumps = tfBundle.bumps;
+                render();
+                rebuildHandles();
                 scope.vptGData.vptBundle.resetMVP = true;
             }
 
             initTF();
+            scope.vptGData.vptBundle.mcs.tf = canvas;
             _startupFunction();
         },
         templateUrl: function (element, attributes) {

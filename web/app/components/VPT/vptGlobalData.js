@@ -61,7 +61,7 @@ app.factory('VPT', function ($rootScope) {
                 resolution: 512,        //Buffer dimensions
                 steps: 10,
                 alphaCorrection: 5,
-                tf: null
+                tfBundle: {uuid: "1", bumps: []}
             },
             iso: {    //iso
                 background: true,
@@ -93,7 +93,7 @@ app.factory('VPT', function ($rootScope) {
                 resolution: 512,        //Buffer dimensions
                 sigma: 30,
                 alphaCorrection: 30,
-                tf: null
+                tfBundle: {uuid: "2", bumps: []}
             },
             mip: {    //mip
                 background: true,
@@ -126,6 +126,11 @@ app.factory('VPT', function ($rootScope) {
         /* ================= STATE BUNDLE ================= */
         /* Client specific only settings - not shareable */
         this._state = {
+            tf: {  //transferFunctions canvas ref
+                eam: null,
+                mcs: null
+            },
+
             resetMVP: false,  //Set true to reset MVP for VPT render in next pass.
             resetBuffers: false,   //Remakes object's framebuffers. Used when switching renderers or render buffer sizes (render resolution)
 
@@ -185,8 +190,11 @@ app.factory('VPT', function ($rootScope) {
                 get alphaCorrection() { return self._activeSettings.eam.alphaCorrection; },
                 set alphaCorrection(val) { self._activeSettings.eam.alphaCorrection = val },
 
-                get tf() { return self._activeSettings.eam.tf; },
-                set tf(val) { self._activeSettings.eam.tf = val }
+                get tf() { return self._state.tf.eam; },
+                set tf(val) { self._state.tf.eam = val },
+
+                get tfBundle() { return self._activeSettings.eam.tfBundle; },
+                set tfBundle(val) { self._activeSettings.eam.tfBundle = val }
             },
             iso: {
                 get background() { return self._activeSettings.iso.background; },
@@ -262,8 +270,11 @@ app.factory('VPT', function ($rootScope) {
                 get alphaCorrection() { return self._activeSettings.mcs.alphaCorrection; },
                 set alphaCorrection(val) { self._activeSettings.mcs.alphaCorrection = val },
 
-                get tf() { return self._activeSettings.mcs.tf; },
-                set tf(val) { self._activeSettings.mcs.tf = val }
+                get tf() { return self._state.tf.mcs; },
+                set tf(val) { self._state.tf.mcs = val },
+
+                get tfBundle() { return self._activeSettings.mcs.tfBundle; },
+                set tfBundle(val) { self._activeSettings.mcs.tfBundle = val }
             },
             mip: {
                 get background() { return self._activeSettings.mip.background; },
@@ -432,10 +443,10 @@ app.factory('VPT', function ($rootScope) {
             var active = data.active;
             console.log("Camera " + data.camera._uuid + " removed");
             self.rmCameraBundle(camera._uuid);
-            if(active){
+            if (active) {
                 var newActive = self._cameraManager._activeCamera;
                 self._lastActiveCameraUuid = null;
-                self._onActivateCamera({camera : newActive, local : self._cameraManager.isOwnCamera(newActive) , active : true});
+                self._onActivateCamera({ camera: newActive, local: self._cameraManager.isOwnCamera(newActive), active: true });
             }
         }
 
@@ -444,15 +455,15 @@ app.factory('VPT', function ($rootScope) {
             var local = data.local;
             var active = data.active;
             console.log("Camera " + data.camera._uuid + " activated");
-            
-            if(self._lastActiveCameraUuid === camera._uuid) return;
+
+            if (self._lastActiveCameraUuid === camera._uuid) return;
 
             //Add camera first, if it doesn't exist yet - should not happen
             if (!self.hasCameraBundle(camera._uuid))
                 self._onAddCamera(data);
 
             //Save previous active bundle into last active camera    
-            if(self._lastActiveCameraUuid){
+            if (self._lastActiveCameraUuid) {
                 self.setCameraBundle(self._lastActiveCameraUuid, self._activeSettings);
             }
 

@@ -20,8 +20,7 @@ app.directive("eamSettings", function () {
                 changeResolution(scope.vptGData.vptBundle.eam.resolution);
                 inSteps.val(scope.vptGData.vptBundle.eam.steps);   //Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
                 inACorr.val(scope.vptGData.vptBundle.eam.alphaCorrection);//scope.vptGData.getVPTController().getRenderer()._alphaCorrection);
-                if (tfBumps.length > 0)
-                    onChange();
+                parseTFBundle();
             };
 
             //Start notification for restoring UI values
@@ -39,6 +38,7 @@ app.directive("eamSettings", function () {
             var tfClipQuad = null;
             var tfProgram = null;
             var tfBumps = null;
+            var tfBundle = { uuid: "0", bumps: [] };
             var color = null;
             var alpha = 1;
 
@@ -187,7 +187,7 @@ app.directive("eamSettings", function () {
                     tfBumps[i].color.b = color[3] / 255;
                     tfBumps[i].color.a = alpha;
                     render();
-                    onChange();
+                    onUIChangeTF();
                 }
             });
 
@@ -202,7 +202,7 @@ app.directive("eamSettings", function () {
                     tfBumps[i].color.b = color[3] / 255;
                     tfBumps[i].color.a = alpha;
                     render();
-                    onChange();
+                    onUIChangeTF();
                 }
             }.bind(this));
 
@@ -229,18 +229,22 @@ app.directive("eamSettings", function () {
                 addHandle(bumpIndex);
                 selectBump(bumpIndex);
                 render();
-                onChange();
+                onUIChangeTF();
             };
             scope.loadTF_EAM = function () {
                 CommonUtils.readTextFile(function (data) {
-                    tfBumps = JSON.parse(data);
+                    var parsed = JSON.parse(data);
+                    tfBumps = parsed.bumps;
                     render();
                     rebuildHandles();
-                    onChange();
+                    onUIChangeTF();
                 }.bind(this));
             };
             scope.saveTF_EAM = function () {
-                CommonUtils.downloadJSON(tfBumps, 'TransferFunction.json');
+                if (tfBundle)
+                    CommonUtils.downloadJSON(tfBundle, 'TransferFunction.json');
+                else
+                    console.error("No tf settings prepared for export");
             };
 
 
@@ -318,7 +322,7 @@ app.directive("eamSettings", function () {
                         tfBumps[i].position.x = x;
                         tfBumps[i].position.y = y;
                         render();
-                        onChange();
+                        onUIChangeTF();
                     }.bind(this)
                 });
                 $handle.mousedown(function (e) {
@@ -337,7 +341,7 @@ app.directive("eamSettings", function () {
                     }
                     e.stopPropagation();
                     render();
-                    onChange();
+                    onUIChangeTF();
                 }.bind(this));
             }
 
@@ -372,12 +376,28 @@ app.directive("eamSettings", function () {
                 return hex;
             };
 
-            let onChange = function () {
-                scope.vptGData.vptBundle.eam.tf = canvas;
+            // When UI changes tf. Update TF bundle
+            let onUIChangeTF = function () {
+                var newUUID = THREE.Math.generateUUID();
+                tfBundle = { uuid: newUUID, bumps: tfBumps };
+                scope.vptGData.vptBundle.eam.tfBundle = tfBundle;
+                scope.vptGData.vptBundle.resetMVP = true;
+            }
+
+            // Import settings from bundle. Refresh UI
+            let parseTFBundle = function () {
+                if (tfBundle.uuid === scope.vptGData.vptBundle.eam.tfBundle.uuid)
+                    return;
+
+                tfBundle = scope.vptGData.vptBundle.eam.tfBundle;
+                tfBumps = tfBundle.bumps;
+                render();
+                rebuildHandles();
                 scope.vptGData.vptBundle.resetMVP = true;
             }
 
             initTF();
+            scope.vptGData.vptBundle.eam.tf = canvas;
             _startupFunction();
         },
         templateUrl: function (element, attributes) {

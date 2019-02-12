@@ -42,7 +42,7 @@ M3D.VPTrendInterface = class {
         var objects = this._vptGData.vptBundle.objects;
         while (objects.length !== 0) {
             var object = objects.pop();
-            object.switchRenderModes(true, false);
+            object.switchRenderModes(false);
             var tex = object.material.maps[0];
             glManager._textureManager.clearTexture(tex);
         }
@@ -59,7 +59,6 @@ M3D.VPTrendInterface = class {
         this._renderers = null;
         this._RHToneMapper = null;
         this._RaToneMapper = null;
-        this._transferFunction = null;  //TODO - This should be set for each object individually
         this._program = null;
         this._clipQuad = null;
         this._extColorBufferFloat = null;
@@ -97,7 +96,7 @@ M3D.VPTrendInterface = class {
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
 
-            object.switchRenderModes(renderer != null, this._vptGData.vptBundle.useMCC && this._vptGData.vptBundle.mccStatus);
+            object.switchRenderModes(this._vptGData.vptBundle.useMCC && this._vptGData.vptBundle.mccStatus);
             if (!renderer) continue;
 
             //Set flags for mesh renderer. Skip object if no work in vpt renderer is needed.. ex. blendMeshRatio = 100%
@@ -345,8 +344,10 @@ M3D.VPTrendInterface = class {
         this._renderer_EAM._bufferSize = settings.eam.resolution;
         this._renderer_EAM._stepSize = 1 / settings.eam.steps;
         this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
-        if (settings.eam.tf)
-            this._renderer_EAM.setTransferFunction(settings.eam.tf);
+        if (settings.eam.tfBundle.uuid != this._renderer_EAM._lastTFuuid){
+            this._renderer_EAM.setTransferFunction(settings.eam.tfBundle.bumps.length > 0 ? settings.eam.tf : null);
+            this._renderer_EAM._lastTFuuid = settings.eam.tfBundle.uuid;
+        }
 
         this._renderer_ISO._background = settings.iso.background;
         this._renderer_ISO._blendMeshRatio = settings.iso.blendMeshRatio;
@@ -372,8 +373,10 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS._bufferSize = settings.mcs.resolution;
         this._renderer_MCS._sigmaMax = settings.mcs.sigma
         this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
-        if (settings.mcs.tf)
-            this._renderer_MCS.setTransferFunction(settings.mcs.tf);
+        if (settings.mcs.tfBundle.uuid != this._renderer_MCS._lastTFuuid){
+            this._renderer_MCS.setTransferFunction(settings.mcs.tfBundle.bumps.length > 0 ? settings.mcs.tf : null);
+            this._renderer_MCS._lastTFuuid = settings.mcs.tfBundle.uuid;
+        }
 
         this._renderer_MIP._background = settings.mip.background;
         this._renderer_MIP._blendMeshRatio = settings.mip.blendMeshRatio;
