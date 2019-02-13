@@ -141,9 +141,40 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
     $scope.runExportMCC = function (object) {
         // Create task
         let runnable = function (onLoad, onProgress, onError) {
-            //onLoad('data:text/json;charset=utf-8,' + encodeURIComponent(object.exportOBJ()));
-            //onLoad('data:text/json;charset=utf-8,' + object.exportOBJ());
-            onLoad(object.exportGeometry());
+
+            var aPromise = new Promise(function(resolve, reject){
+                const fileStream = streamSaver.createWriteStream('M3D_MCC.obj', 1, 1)
+                const writer = fileStream.getWriter()
+                const encoder = new TextEncoder
+                let chunks = Promise.resolve();
+    
+                object.streamExportGeometry(async data => {
+                    console.log("writerQueued");
+                    await new Promise((resolve, reject) => {
+                        writer.write(encoder.encode(data)).then(() => { setTimeout(resolve)})
+                    });
+                    console.log("writerDone");
+                }, onProgress);
+                writer.close()
+                resolve();
+            });
+
+            aPromise.then(function(){
+                onLoad();
+            })
+
+            
+
+
+            /*             
+            let que = Promise.resolve()
+                let pump = () => {
+                n-- && que.then(() => {
+                    writer.write(text).then(() => { setTimeout(pump) })
+                })
+            }
+            pump() 
+            */
         };
 
 
@@ -185,25 +216,29 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
         });
 
     TaskManagerService.addResultCallback("MCC-EXPORT",
-        function (data) {
-
-            var blob = new Blob([data], { type: 'text/obj;charset=utf-8;' });
-            if (navigator.msSaveBlob) { // IE 10+
-                navigator.msSaveBlob(blob, filename);
-            } else {
-                var link = document.createElement("a");
-                if (link.download !== undefined) { // feature detection
-                    // Browsers that support HTML5 download attribute
-                    var url = URL.createObjectURL(blob);
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", 'M3D_MCC.obj');
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-            }
-        });
+        /*         function (data) {
+        
+                    var blob = new Blob([data], { type: 'text/obj;charset=utf-8;' });
+                    if (navigator.msSaveBlob) { // IE 10+
+                        navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var link = document.createElement("a");
+                        if (link.download !== undefined) { // feature detection
+                            // Browsers that support HTML5 download attribute
+                            var url = URL.createObjectURL(blob);
+                            link.setAttribute("href", url);
+                            link.setAttribute("download", 'M3D_MCC.obj');
+                            link.style.visibility = 'hidden';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    }
+                } */
+        function () {
+            console.log("Geometry exported successfully!")
+        }
+    );
 
 
 

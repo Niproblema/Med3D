@@ -61,7 +61,7 @@ app.factory('VPT', function ($rootScope) {
                 resolution: 512,        //Buffer dimensions
                 steps: 10,
                 alphaCorrection: 5,
-                tfBundle: {uuid: "1", bumps: []}
+                tfBundle: { uuid: "1", bumps: [] }
             },
             iso: {    //iso
                 background: true,
@@ -93,7 +93,7 @@ app.factory('VPT', function ($rootScope) {
                 resolution: 512,        //Buffer dimensions
                 sigma: 30,
                 alphaCorrection: 30,
-                tfBundle: {uuid: "2", bumps: []}
+                tfBundle: { uuid: "2", bumps: [] }
             },
             mip: {    //mip
                 background: true,
@@ -428,9 +428,9 @@ app.factory('VPT', function ($rootScope) {
             var camera = data.camera;
             var local = data.local;
             var active = data.active;
-            console.log("Camera " + data.camera._uuid + " added");
             if (!self.hasCameraBundle(camera._uuid)) {
                 self.setCameraBundle(camera._uuid, jQuery.extend(true, {}, self._defaultSettings));   //Set it to defaults
+                console.log("Camera " + data.camera._uuid + " added");
             }
             if (!self._activeSettings) {
                 self._onActivateCamera(data);
@@ -441,8 +441,8 @@ app.factory('VPT', function ($rootScope) {
             var camera = data.camera;
             var local = data.local;
             var active = data.active;
-            console.log("Camera " + data.camera._uuid + " removed");
-            self.rmCameraBundle(camera._uuid);
+            if (self.rmCameraBundle(camera._uuid))
+                console.log("Camera " + data.camera._uuid + " removed");
             if (active) {
                 var newActive = self._cameraManager._activeCamera;
                 self._lastActiveCameraUuid = null;
@@ -454,7 +454,6 @@ app.factory('VPT', function ($rootScope) {
             var camera = data.camera;
             var local = data.local;
             var active = data.active;
-            console.log("Camera " + data.camera._uuid + " activated");
 
             if (self._lastActiveCameraUuid === camera._uuid) return;
 
@@ -470,6 +469,7 @@ app.factory('VPT', function ($rootScope) {
             self._activeSettings = self.getCameraBundle(camera._uuid);
             self._lastActiveCameraUuid = camera._uuid;
             //TODO: run UI parser in scope.apply
+            console.log("Camera " + data.camera._uuid + " activated");
             console.log("TODO: run UI parser in scope.apply");
         }
 

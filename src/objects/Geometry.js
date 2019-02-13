@@ -346,14 +346,39 @@ M3D.Geometry = class {
         }
     }
 
-    exportOBJ() {
-        var output = 'o M3D_mesh\n';
+    streamExportOBJ(writer, onProgressCallback) {
         var i, j, k, l, x, y, z;
 
         var vertices = this._vertices ? this._vertices.array : null;
         var normals = this._normals ? this._normals.array : null;
         var uvs = this._uv ? this._uv.array : null;
         var indices = this._indices ? this._indices.array : null;
+
+        //Buffer object, to optimize amount of lines per write
+        var writeBuffer = {
+            _outputBuffer: "",
+            _currBuffer: 0,
+            _bufferLineLimit: 10000,
+            _progress: 0,
+            _expectedProgress: 1 + (vertices ? vertices.length / 3 : 0) + (uvs ? uvs.length / 2 : 0) + (normals ? normals.length / 3 : 0) + (indices ? indices.length / 3 : vertices.length / 3),
+            writeLine: function (data) {
+                this._outputBuffer += data;
+                this._currBuffer++;
+                if (this._currBuffer >= this._bufferLineLimit)
+                    this.flush();
+            },
+            flush: function () {
+                if (this._outputBuffer) {
+                    writer(this._outputBuffer);
+                    this._outputBuffer = "";
+                    this._progress += this._currBuffer;
+                    this._currBuffer = 0;
+                    onProgressCallback(this._progress / this._expectedProgress * 100);
+                }
+            }
+        }
+
+        writeBuffer.writeLine('o M3D_geometry\n');
 
         //vertices
         if (vertices !== undefined && vertices && vertices.length >= 3) {
@@ -362,7 +387,7 @@ M3D.Geometry = class {
                 y = vertices[i + 1];
                 z = vertices[i + 2];
 
-                output += 'v ' + x + ' ' + y + ' ' + z + '\n';
+                writeBuffer.writeLine('v ' + x + ' ' + y + ' ' + z + '\n');
             }
         }
 
@@ -372,7 +397,7 @@ M3D.Geometry = class {
                 x = uvs[i];
                 y = uvs[i + 1];
 
-                output += 'vt ' + x + ' ' + y + '\n';
+                writeBuffer.writeLine('vt ' + x + ' ' + y + '\n');
             }
         }
 
@@ -383,7 +408,7 @@ M3D.Geometry = class {
                 y = normals[i + 1];
                 z = normals[i + 2];
 
-                output += 'vn ' + x + ' ' + y + ' ' + z + '\n';
+                writeBuffer.writeLine('vn ' + x + ' ' + y + ' ' + z + '\n');
             }
         }
 
@@ -394,7 +419,7 @@ M3D.Geometry = class {
                 k = indices[i + 1] + 1;
                 l = indices[i + 2] + 1;
 
-                output += 'f ' + j + ' ' + k + ' ' + l + '\n';
+                writeBuffer.writeLine('f ' + j + ' ' + k + ' ' + l + '\n');
 
                 /* if (!uvs)
                     output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
@@ -407,7 +432,7 @@ M3D.Geometry = class {
                 k = i + 2;
                 l = i + 3;
 
-                output += 'f ' + j + ' ' + k + ' ' + l + '\n';
+                writeBuffer.writeLine('f ' + j + ' ' + k + ' ' + l + '\n');
 
                 /* if (!uvs)
                     output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
@@ -415,6 +440,7 @@ M3D.Geometry = class {
                     output += 'f ' + j + '/' + j + '/' + j + ' ' + k + '/' + k + '/' + k + ' ' + l + '/' + l + '/' + l + '\n'; */
             }
         }
-        return output;
+
+        writeBuffer.flush();
     }
 };
