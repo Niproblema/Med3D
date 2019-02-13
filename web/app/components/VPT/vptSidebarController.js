@@ -6,7 +6,7 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
     $scope.vptGData = VPT;
 
     let MC = new M3D.MarchingCubes();
-    let OL = new M3D.ObjLoader();
+    let OL = new M3D.ObjLoader2();
 
     $scope.runMMC = function (cores, iso, object) {
         var runnable = function (onLoad, onProgress, onError) {
@@ -80,38 +80,26 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
         // Create task
         let runnable = function (onLoad, onProgress, onError) {
             let privateOnLoad = function (data) {
-                var concatVertLength = 0;
-                var concatNormLength = 0;
-                for (var i = 0; i < data.length; i++) {
-                    concatVertLength += data[i].geometry.vertices.length;
-                    concatNormLength += data[i].geometry.normals.length;
-                }
-                let vertArr = new Float32Array(concatVertLength);
-                let normArr = new Float32Array(concatNormLength);
-
-                let vertCount = 0;
-                for (var i = 0; i < data.length; i++) {
-                    vertArr.set(data[i].geometry.vertices, vertCount);
-                    if (concatNormLength > 0) {
-                        normArr.set(data[i].geometry.normals, vertCount);
-                    }
-                    vertCount += data[i].geometry.vertices.length;
-                }
 
                 var geometry = new M3D.Geometry();
+                let vertArr = new Float32Array(data.vertices);
                 geometry.vertices = new M3D.BufferAttribute(vertArr, 3);
-                if (concatNormLength > 0)
+
+/*                 if (data.indices.length >= 3) {
+                    geometry.indices = new M3D.Uint32Attribute(data.indices, 1);
+                } */
+
+                if (data.normals.length >= 3) {
+                    let normArr = new Float32Array(data.normals);
                     geometry.normals = new M3D.BufferAttribute(normArr, 3);
-                else
+                } else
                     geometry.computeVertexNormals();
-                geometry.computeBoundingSphere();
 
                 onLoad(object, geometry);
             };
 
-            let privateOnProgress = function (event) {
-                // Calculate finished percentage
-                onProgress(event.loaded / event.total * 100);
+            let privateOnProgress = function (parsed) {
+                onProgress(parsed);
             };
 
             let privateOnError = function () {
@@ -140,7 +128,7 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
 
     $scope.runExportMCC = function (object) {
         // Create task
-        
+
         let runnable = function (onLoad, onProgress, onError) {
 
 
@@ -150,14 +138,13 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
             let chunks = Promise.resolve();
 
             object.streamExportGeometry(async data => {
-                console.log("writerQueued");
-                //writer.write(encoder.encode(data))
+                //console.log("writerQueued");
                 await new Promise((resolve, reject) => {
                     writer.write(encoder.encode(data)).then(() => { setTimeout(resolve) })
-                }); 
-                console.log("writerDone");
-            }, onProgress, function(){writer.close();onLoad();});
-        
+                });
+                //console.log("writerDone");
+            }, onProgress, function () { writer.close(); onLoad(); });
+
 
 
         };

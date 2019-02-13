@@ -183,7 +183,7 @@ M3D.VPTVolume = class extends M3D.Mesh {
     }
 
     streamExportGeometry(writer, onProgressCallback, onLoad) {
-		this._geometry.streamExportOBJ(writer, onProgressCallback, onLoad);  //TODO: change to only MCC geometry later.
+		this._mccGeometry.streamExportOBJ(writer, onProgressCallback, onLoad);  //TODO: change to only MCC geometry later.
     }
     
 };

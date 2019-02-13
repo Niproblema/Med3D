@@ -349,7 +349,7 @@ M3D.ObjLoader = class {
             }
 
             return meshes;
-        } else{
+        } else {
             return objects;
         }
     }

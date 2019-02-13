@@ -157,7 +157,7 @@
                                         <button id="import" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
                                             ng-click="importOBJ()" ng-disabled="(vptGData.vptBundle.objects.length == 0) || isComputingMCC">Import</button>
                                         <button id="export" type="button" class="btn med3d-btn-primary" style="border-radius: 5px 5px 5px 5px; flex-grow:1; margin-left:7px"
-                                            ng-click="exportOBJ()" ng-disabled="(vptGData.vptBundle.objects.length == 0) || isComputingMCC">Export</button>
+                                            ng-click="exportOBJ()" ng-disabled="(vptGData.vptBundle.objects.length == 0) || (!vptGData.vptBundle.mccStatus) || isComputingMCC">Export</button>
                                     </div>
                                 </div>
                                 <!--Inputs-->

@@ -1,6 +1,7 @@
 Shared session with shared VPT parameters + gc in shared session
-MCC import/export geo fix -streamSaver? -limitfloat32 digits
-MCS EnvironmentMap when MCC is projected
+MCC import + fix vertex parsing
+streamsaver offline
+
 
 
 Maybe:
@@ -8,6 +9,8 @@ Maybe:
  -Move vptInterface into it's own render pass?
  -blend VPT renderers
  -Second subscriber rejoin - duplicate shared cameras on host.
+ -MCS EnvironmentMap when MCC is projected
+ -Don't block UI thread when exporting MCC
 
 Rethink: 
  -Mip background off maybe broken
