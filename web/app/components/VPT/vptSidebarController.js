@@ -140,41 +140,26 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
 
     $scope.runExportMCC = function (object) {
         // Create task
+        
         let runnable = function (onLoad, onProgress, onError) {
 
-            var aPromise = new Promise(function(resolve, reject){
-                const fileStream = streamSaver.createWriteStream('M3D_MCC.obj', 1, 1)
-                const writer = fileStream.getWriter()
-                const encoder = new TextEncoder
-                let chunks = Promise.resolve();
-    
-                object.streamExportGeometry(async data => {
-                    console.log("writerQueued");
-                    await new Promise((resolve, reject) => {
-                        writer.write(encoder.encode(data)).then(() => { setTimeout(resolve)})
-                    });
-                    console.log("writerDone");
-                }, onProgress);
-                writer.close()
-                resolve();
-            });
 
-            aPromise.then(function(){
-                onLoad();
-            })
+            const fileStream = streamSaver.createWriteStream('M3D_MCC.obj')
+            const writer = fileStream.getWriter()
+            const encoder = new TextEncoder
+            let chunks = Promise.resolve();
 
-            
+            object.streamExportGeometry(async data => {
+                console.log("writerQueued");
+                //writer.write(encoder.encode(data))
+                await new Promise((resolve, reject) => {
+                    writer.write(encoder.encode(data)).then(() => { setTimeout(resolve) })
+                }); 
+                console.log("writerDone");
+            }, onProgress, function(){writer.close();onLoad();});
+        
 
 
-            /*             
-            let que = Promise.resolve()
-                let pump = () => {
-                n-- && que.then(() => {
-                    writer.write(text).then(() => { setTimeout(pump) })
-                })
-            }
-            pump() 
-            */
         };
 
 

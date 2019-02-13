@@ -346,8 +346,11 @@ M3D.Geometry = class {
         }
     }
 
-    streamExportOBJ(writer, onProgressCallback) {
-        var i, j, k, l, x, y, z;
+    async streamExportOBJ(writer, onProgressCallback, onDoneCallback) {
+        var i, j, k, l;
+
+        var decimalPrecision = 6;
+        var fasterTrunc = this.fasterTrunc;
 
         var vertices = this._vertices ? this._vertices.array : null;
         var normals = this._normals ? this._normals.array : null;
@@ -358,57 +361,52 @@ M3D.Geometry = class {
         var writeBuffer = {
             _outputBuffer: "",
             _currBuffer: 0,
-            _bufferLineLimit: 10000,
+            _bufferLineLimit: 100000,
             _progress: 0,
             _expectedProgress: 1 + (vertices ? vertices.length / 3 : 0) + (uvs ? uvs.length / 2 : 0) + (normals ? normals.length / 3 : 0) + (indices ? indices.length / 3 : vertices.length / 3),
-            writeLine: function (data) {
+            writeLine: async function (data) {
                 this._outputBuffer += data;
                 this._currBuffer++;
                 if (this._currBuffer >= this._bufferLineLimit)
-                    this.flush();
+                    await this.flush();
             },
-            flush: function () {
+            flush: async function () {
                 if (this._outputBuffer) {
-                    writer(this._outputBuffer);
+                    await new Promise((resolve, reject) => {
+                        setTimeout(() => { writer(this._outputBuffer); resolve(); })
+                    });
                     this._outputBuffer = "";
                     this._progress += this._currBuffer;
                     this._currBuffer = 0;
                     onProgressCallback(this._progress / this._expectedProgress * 100);
                 }
+            },
+            finish: async function () {
+                await this.flush();
+                setTimeout(onDoneCallback);
             }
         }
 
-        writeBuffer.writeLine('o M3D_geometry\n');
+        await writeBuffer.writeLine('o M3D_geometry\n');
 
         //vertices
         if (vertices !== undefined && vertices && vertices.length >= 3) {
             for (i = 0; i < vertices.length; i += 3) {
-                x = vertices[i];
-                y = vertices[i + 1];
-                z = vertices[i + 2];
-
-                writeBuffer.writeLine('v ' + x + ' ' + y + ' ' + z + '\n');
+                await writeBuffer.writeLine('v ' + fasterTrunc(vertices[i], decimalPrecision) + ' ' + fasterTrunc(vertices[i + 1], decimalPrecision) + ' ' + fasterTrunc(vertices[i + 2], decimalPrecision) + '\n');
             }
         }
 
         //uvs
         if (uvs !== undefined && uvs && uvs.length >= 2) {
             for (i = 0; i < uvs.length; i += 2) {
-                x = uvs[i];
-                y = uvs[i + 1];
-
-                writeBuffer.writeLine('vt ' + x + ' ' + y + '\n');
+                await writeBuffer.writeLine('vt ' + fasterTrunc(uvs[i], decimalPrecision) + ' ' + fasterTrunc(uvs[i + 1], decimalPrecision) + '\n');
             }
         }
 
         //normals
         if (normals !== undefined && normals && normals.length >= 3) {
             for (i = 0; i < normals.length; i += 3) {
-                x = normals[i];
-                y = normals[i + 1];
-                z = normals[i + 2];
-
-                writeBuffer.writeLine('vn ' + x + ' ' + y + ' ' + z + '\n');
+                await writeBuffer.writeLine('vn ' + fasterTrunc(normals[i], decimalPrecision) + ' ' + fasterTrunc(normals[i + 1], decimalPrecision) + ' ' + fasterTrunc(normals[i + 2], decimalPrecision) + '\n');
             }
         }
 
@@ -419,7 +417,7 @@ M3D.Geometry = class {
                 k = indices[i + 1] + 1;
                 l = indices[i + 2] + 1;
 
-                writeBuffer.writeLine('f ' + j + ' ' + k + ' ' + l + '\n');
+                await writeBuffer.writeLine('f ' + j + ' ' + k + ' ' + l + '\n');
 
                 /* if (!uvs)
                     output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
@@ -432,7 +430,7 @@ M3D.Geometry = class {
                 k = i + 2;
                 l = i + 3;
 
-                writeBuffer.writeLine('f ' + j + ' ' + k + ' ' + l + '\n');
+                await writeBuffer.writeLine('f ' + j + ' ' + k + ' ' + l + '\n');
 
                 /* if (!uvs)
                     output += 'f ' + j + '//' + j + ' ' + k + '//' + k + ' ' + l + '//' + l + '\n';
@@ -441,6 +439,18 @@ M3D.Geometry = class {
             }
         }
 
-        writeBuffer.flush();
+        await writeBuffer.finish();
+    }
+
+    fasterTrunc(num, digits) {
+        if(digits ==  0) return num;
+
+        var numS = num.toString(),
+            decPos = numS.indexOf('.'),
+            substrLength = decPos == -1 ? numS.length : 1 + decPos + digits,
+            trimmedResult = numS.substr(0, substrLength),
+            finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+
+        return finalResult;
     }
 };
