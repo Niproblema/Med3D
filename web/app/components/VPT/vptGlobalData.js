@@ -574,8 +574,8 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
         this._applyUpdateBundleToBundle = function (update, target) {
             for (let prop in update) {
                 if (update.hasOwnProperty(prop) && target.hasOwnProperty(prop) && typeof update[prop] === typeof target[prop]) {
-                    if (prop === "bumps") {      //Exception for bumps
-                        target.bumps = jQuery.extend(true, {}, update.bumps);
+                    if (prop === "tfBundle") {      //Exception for tfBundle, 
+                        target.tfBundle = jQuery.extend(true, [], update.tfBundle);
                     } else if (typeof update[prop] === "object") {
                         this._applyUpdateBundleToBundle(update[prop], target[prop]);
                     } else {

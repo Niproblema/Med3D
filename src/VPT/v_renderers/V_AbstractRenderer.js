@@ -36,8 +36,9 @@
         this._frameBuffer = null;
         this._accumulationBuffer = null;
         this._renderBuffer = null;
-        this._transferFunctionDefault = null;
-        this._transferFunction = null;
+        this._transferFunctionDefault = null;   //Saved default one
+        this._transferFunctionDrawing = null;   //Drawing one
+        this._transferFunction = null;          //Active one - Just reference for either Default one or Drawing.
         this._mvpInverseMatrix = null;
         this._clipQuad = null;
         this._clipQuadProgram = null;
@@ -61,6 +62,16 @@
             mag: gl.LINEAR
         });
 
+        this._transferFunctionDrawing = WebGLUtils.createTexture(gl, {
+            width: 2,
+            height: 1,
+            data: new Uint8Array([255, 0, 0, 0, 255, 0, 0, 255]),
+            wrapS: gl.CLAMP_TO_EDGE,
+            wrapT: gl.CLAMP_TO_EDGE,
+            min: gl.LINEAR,
+            mag: gl.LINEAR
+        });
+
         this._transferFunction = this._transferFunctionDefault;
 
         this._mvpInverseMatrix = null;
@@ -72,10 +83,8 @@
 
     _.destroy = function () {
         var gl = this._gl;
-        if(this.transferFunction == this._transferFunctionDefault){
-            gl.deleteTexture(this._transferFunctionDefault);
-        }
-        gl.deleteTexture(this._transferFunction);
+        gl.deleteTexture(this._transferFunctionDefault);
+        gl.deleteTexture(this._transferFunctionDrawing);
         gl.deleteProgram(this._clipQuadProgram.program);
 
         _._nullify.call(this);
@@ -84,13 +93,14 @@
 
     _.setTransferFunction = function (transferFunction) {
         if (transferFunction) {
+            this._transferFunction = this._transferFunctionDrawing;         //Set Drawing one as active - draw canvas to it
             var gl = this._gl;
             gl.bindTexture(gl.TEXTURE_2D, this._transferFunction);
             gl.texImage2D(gl.TEXTURE_2D, 0,
                 gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, transferFunction);
             gl.bindTexture(gl.TEXTURE_2D, null);
-        }else{
-            this._transferFunction = this._transferFunctionDefault;
+        } else {
+            this._transferFunction = this._transferFunctionDefault;         //Set default one as active - no transfer 
         }
     };
 

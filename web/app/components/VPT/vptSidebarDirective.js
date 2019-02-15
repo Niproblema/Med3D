@@ -36,9 +36,9 @@ app.directive("vptSidebar", function () {
 
                     //Call for Directive-Needed for tranform function application
                     scope.$broadcast('uiRefresh' + scope.allRenderers[scope.renderer]);
-                } else {
-                    scope.$broadcast('uiRefresh' + scope.allRenderers[i]);  //Still refresh for external updates
-                }
+                } //else {
+                    //scope.$broadcast('uiRefresh' + scope.allRenderers[i]);  //Still refresh for external updates
+                //}
             };
 
             // Sliders for Tone mapper settings
@@ -240,7 +240,11 @@ app.directive("vptSidebar", function () {
                 //Renderer selection    // ["ERROR", "EAM", "ISO", "MCS", "MIP"]
 
                 //Select + refresh Renderer settings.
-                setTimeout(function () { $("#rendererSelect" + scope.allRenderers[settings.rendererChoiceID]).click(); });
+                if (scope.renderer != settings.rendererChoiceID) {
+                    setTimeout(function () { $("#rendererSelect" + scope.allRenderers[settings.rendererChoiceID]).click(); });
+                }else{
+                    scope.$broadcast('uiRefresh' + scope.allRenderers[settings.rendererChoiceID]);
+                }
 
 
                 //Tonemapper settings
