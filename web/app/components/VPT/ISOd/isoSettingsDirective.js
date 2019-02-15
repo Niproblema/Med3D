@@ -13,6 +13,7 @@ app.directive("isoSettings", function () {
             scope.getKeys = Object.keys;
 
             let _startupFunction = function () {
+                blendHandle.text(scope.vptGData.vptBundle.iso.blendMeshRatio);
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.iso.blendMeshRatio);
                 var newColor = scope.vptGData.vptBundle.iso.blendMeshColor;
                 var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
@@ -23,10 +24,11 @@ app.directive("isoSettings", function () {
                 newColor = scope.vptGData.vptBundle.iso.color;
                 changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
                 inColor.colorpicker('setValue', changeTo);
+                //scope.$apply();
             };
 
             //Start notification for restoring UI values
-            scope.$on('startISO', _startupFunction);
+            scope.$on('uiRefreshISO', _startupFunction);
             //
 
             //Blend mesh ratio

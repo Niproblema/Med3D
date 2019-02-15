@@ -110,7 +110,7 @@ CameraManager = class {
         this._sharedCameras = [];
 
         if (!this.isOwnCamera(this._activeCamera)) {
-            this._activeCamera = this._cameras[0];
+            this.setActiveCamera(this._cameras[0]);
         }
     }
 

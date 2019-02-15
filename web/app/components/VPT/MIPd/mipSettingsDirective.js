@@ -13,16 +13,18 @@ app.directive("mipSettings", function () {
             scope.getKeys = Object.keys;
 
             let _startupFunction = function () {
+                blendHandle.text(scope.vptGData.vptBundle.mip.blendMeshRatio);
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.mip.blendMeshRatio);
                 var newColor = scope.vptGData.vptBundle.mip.blendMeshColor;
                 var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
                 meshColorMIP.colorpicker('setValue', changeTo);
                 changeResolution(scope.vptGData.vptBundle.mip.resolution);
                 inSteps.val(scope.vptGData.vptBundle.mip.steps);//Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
+                //scope.$apply();
             };
 
             //Start notification for restoring UI values
-            scope.$on('startMIP', _startupFunction);
+            scope.$on('uiRefreshMIP', _startupFunction);
             //
 
             //Blend mesh ratio

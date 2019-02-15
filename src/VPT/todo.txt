@@ -1,6 +1,5 @@
 Shared session with shared VPT parameters + gc in shared session
-MCC import + fix vertex parsing
-streamsaver offline
+How to synchronize MCC geometry?
 
 
 
@@ -9,9 +8,11 @@ Maybe:
  -Move vptInterface into it's own render pass?
  -blend VPT renderers
  -Second subscriber rejoin - duplicate shared cameras on host.
- -MCS EnvironmentMap when MCC is projected
- -Don't block UI thread when exporting MCC
+ -MCS EnvironmentMap when MCC is projected 
+ -UI update in vptBundle
+
 
 Rethink: 
  -Mip background off maybe broken
- -Geometry export locks UI and still broken
+ -Geometry export locks UI and MCC indices export maybe wrong + Cancel on geometry export
+ -Limit number of UI updates/s and merge them into one.

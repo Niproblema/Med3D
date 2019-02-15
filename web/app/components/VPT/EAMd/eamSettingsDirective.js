@@ -13,6 +13,7 @@ app.directive("eamSettings", function () {
             scope.getKeys = Object.keys;
 
             let _startupFunction = function () {
+                blendHandle.text(scope.vptGData.vptBundle.eam.blendMeshRatio);
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.eam.blendMeshRatio);
                 var newColor = scope.vptGData.vptBundle.eam.blendMeshColor;
                 var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
@@ -21,10 +22,11 @@ app.directive("eamSettings", function () {
                 inSteps.val(scope.vptGData.vptBundle.eam.steps);   //Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
                 inACorr.val(scope.vptGData.vptBundle.eam.alphaCorrection);//scope.vptGData.getVPTController().getRenderer()._alphaCorrection);
                 parseTFBundle();
+                //scope.$apply();
             };
 
             //Start notification for restoring UI values
-            scope.$on('startEAM', _startupFunction);
+            scope.$on('uiRefreshEAM', _startupFunction);
             //
 
             //////TF variables//////

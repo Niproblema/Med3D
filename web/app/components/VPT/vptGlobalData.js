@@ -1,19 +1,14 @@
 /**
  * Created by Jan on 3.2.2019
- * Hold and VPT settings and states for rendering and collaboration.
- * 
- * 
- * Event hierarchy:
- *  -camera's vpt bundle 
- *   -settings   
+ * Hold and VPT settings and states for rendering and collaboration. 
  */
-app.factory('VPT', function ($rootScope) {
+app.factory('VPT', ['$rootScope', function ($rootScope) {
     return new (function _vptFactory() {
         let self = this;
         let _cameraManager = null;
         let _lastActiveCameraUuid = null;
 
-        /* User collection : user -> cameras */
+
 
         /* Change listener. camera -> vptBundle */
         this._onChangeListener = new Map();
@@ -31,6 +26,9 @@ app.factory('VPT', function ($rootScope) {
 
         //Bundles : Camera -> vptBundle
         this._vptBundles = new Map();
+
+        //Local specific meta : Bundle.uuid -> meta -> keys: amOwner, cameraUUID
+        this.__bundleMeta = new Map();
 
         this.setCameraBundle = function (camera, bundle) {
             this._vptBundles.set(camera, bundle);
@@ -116,11 +114,17 @@ app.factory('VPT', function ($rootScope) {
             },
 
             //Marching cubes
-            useMCC: false,
+            useMCC: false
         };
 
+        this.getNewBundle = function () {
+            var bundle = jQuery.extend(true, {}, self._defaultSettings);
+            bundle.uuid = THREE.Math.generateUUID();
+            return bundle
+        }
+
         //This client's currently active settings. For init, copy default settings. 
-        this._activeSettings = null; //jQuery.extend(true, {}, this._defaultSettings);
+        this._activeSettings = null;
 
 
         /* ================= STATE BUNDLE ================= */
@@ -148,8 +152,102 @@ app.factory('VPT', function ($rootScope) {
             rendererSelection: false,
             rendererSettings: false,
             tonemapperSettings: false,
-            mccSettings: false
+            mccSettings: false,
+
+            // Object structure that is defined by lock. Update can be applied to fiter, to only update that part of settings
+            filters: {
+                rendererSelection: {
+                    rendererChoiceID: 100
+                },
+                rendererSettings: {
+                    eam: {
+                        background: true,
+                        blendMeshRatio: 0.0,
+                        meshLight: true,
+                        blendMeshColor: {
+                            r: 0.28,
+                            g: 0.7,
+                            b: 0.7
+                        },
+                        resolution: 512,
+                        steps: 10,
+                        alphaCorrection: 5,
+                        tfBundle: { uuid: "1", bumps: [] }
+                    },
+                    iso: {
+                        background: true,
+                        blendMeshRatio: 0.0,
+                        meshLight: true,
+                        blendMeshColor: {
+                            r: 0.28,
+                            g: 0.7,
+                            b: 0.7
+                        },
+                        resolution: 512,
+                        steps: 10,
+                        isoVal: 0.25,
+                        color: {
+                            r: 1,
+                            g: 1,
+                            b: 1
+                        }
+                    },
+                    mcs: {    //mcs
+                        background: true,
+                        blendMeshRatio: 0.0,
+                        meshLight: true,
+                        blendMeshColor: {
+                            r: 0.28,
+                            g: 0.7,
+                            b: 0.7
+                        },
+                        resolution: 512,
+                        sigma: 30,
+                        alphaCorrection: 30,
+                        tfBundle: { uuid: "2", bumps: [] }
+                    },
+                    mip: {    //mip
+                        background: true,
+                        blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
+                        meshLight: true,
+                        blendMeshColor: {
+                            r: 0.28,
+                            g: 0.7,
+                            b: 0.7
+                        },
+                        resolution: 512,        //Buffer dimensions
+                        steps: 10
+                    }
+                },
+                tonemapperSettings: {
+                    reinhard: {
+                        exposure: 1
+                    },
+                    range: {
+                        rangeLower: 0,
+                        rangeHigher: 1
+                    }
+                },
+                mccSettings: {
+                    useMCC: false
+                }
+            },
+
+            onChange: {
+                rendererSelection: function (locked) { if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.rendererSelection) },
+                rendererSettings: function (locked) {if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.rendererSettings) },
+                tonemapperSettings: function (locked) {if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.tonemapperSettings) },
+                mccSettings :function (locked) {if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.mccSettings) }
+            }
         };
+
+        /* Locks section of UI. Restore saved settings and refreshes UI */
+        this.lockAndRestoreSection = function(filter){
+            let saved = self.getCameraBundle(self.__bundleMeta.get(self._activeSettings.uuid).cameraUUID);
+            self._applyUpdateBundleToBundle(saved, filter);
+            self._applyUpdateBundleToBundle(filter, self._activeSettings);
+            self._updateUIsidebar();
+        }
 
 
 
@@ -157,168 +255,168 @@ app.factory('VPT', function ($rootScope) {
         /* Controller for _activeSettings, holds setters with onChangeListeners */
         this._gNsModel = {
             get rendererChoiceID() { return self._activeSettings.rendererChoiceID; },
-            set rendererChoiceID(val) { self._activeSettings.rendererChoiceID = val },
+            set rendererChoiceID(val) { self._activeSettings.rendererChoiceID = val; self._outUpdate({ rendererChoiceID: val }) },
 
             eam: {
                 get background() { return self._activeSettings.eam.background; },
-                set background(val) { self._activeSettings.eam.background = val },
+                set background(val) { self._activeSettings.eam.background = val; self._outUpdate({ eam: { background: val } }) },
 
                 get blendMeshRatio() { return self._activeSettings.eam.blendMeshRatio; },
-                set blendMeshRatio(val) { self._activeSettings.eam.blendMeshRatio = val },
+                set blendMeshRatio(val) { self._activeSettings.eam.blendMeshRatio = val; self._outUpdate({ eam: { blendMeshRatio: val } }) },
 
                 get meshLight() { return self._activeSettings.eam.meshLight; },
-                set meshLight(val) { self._activeSettings.eam.meshLight = val },
+                set meshLight(val) { self._activeSettings.eam.meshLight = val; self._outUpdate({ eam: { meshLight: val } }) },
 
                 get blendMeshColor() {
                     return {
                         get r() { return self._activeSettings.eam.blendMeshColor.r; },
-                        set r(val) { self._activeSettings.eam.blendMeshColor.r = val },
+                        set r(val) { self._activeSettings.eam.blendMeshColor.r = val; self._outUpdate({ eam: { blendMeshColor: { r: val } } }) },
                         get g() { return self._activeSettings.eam.blendMeshColor.g; },
-                        set g(val) { self._activeSettings.eam.blendMeshColor.g = val },
+                        set g(val) { self._activeSettings.eam.blendMeshColor.g = val; self._outUpdate({ eam: { blendMeshColor: { g: val } } }) },
                         get b() { return self._activeSettings.eam.blendMeshColor.b; },
-                        set b(val) { self._activeSettings.eam.blendMeshColor.b = val }
+                        set b(val) { self._activeSettings.eam.blendMeshColor.b = val; self._outUpdate({ eam: { blendMeshColor: { b: val } } }) }
                     }
                 },
-                set blendMeshColor(val) { self._activeSettings.eam.color = val },
+                set blendMeshColor(val) { self._activeSettings.eam.color = val; self._outUpdate({ eam: { blendMeshColor: val } }) },
 
                 get resolution() { return self._activeSettings.eam.resolution; },
-                set resolution(val) { self._activeSettings.eam.resolution = val },
+                set resolution(val) { self._activeSettings.eam.resolution = val; self._outUpdate({ eam: { resolution: val } }) },
 
                 get steps() { return self._activeSettings.eam.steps; },
-                set steps(val) { self._activeSettings.eam.steps = val },
+                set steps(val) { self._activeSettings.eam.steps = val; self._outUpdate({ eam: { steps: val } }) },
 
                 get alphaCorrection() { return self._activeSettings.eam.alphaCorrection; },
-                set alphaCorrection(val) { self._activeSettings.eam.alphaCorrection = val },
+                set alphaCorrection(val) { self._activeSettings.eam.alphaCorrection = val; self._outUpdate({ eam: { alphaCorrection: val } }) },
 
                 get tf() { return self._state.tf.eam; },
                 set tf(val) { self._state.tf.eam = val },
 
                 get tfBundle() { return self._activeSettings.eam.tfBundle; },
-                set tfBundle(val) { self._activeSettings.eam.tfBundle = val }
+                set tfBundle(val) { self._activeSettings.eam.tfBundle = val; self._outUpdate({ eam: { tfBundle: val } }) }
             },
             iso: {
                 get background() { return self._activeSettings.iso.background; },
-                set background(val) { self._activeSettings.iso.background = val },
+                set background(val) { self._activeSettings.iso.background = val; self._outUpdate({ iso: { background: val } }) },
 
                 get blendMeshRatio() { return self._activeSettings.iso.blendMeshRatio; },
-                set blendMeshRatio(val) { self._activeSettings.iso.blendMeshRatio = val },
+                set blendMeshRatio(val) { self._activeSettings.iso.blendMeshRatio = val; self._outUpdate({ iso: { blendMeshRatio: val } }) },
 
                 get meshLight() { return self._activeSettings.iso.meshLight; },
-                set meshLight(val) { self._activeSettings.iso.meshLight = val },
+                set meshLight(val) { self._activeSettings.iso.meshLight = val; self._outUpdate({ iso: { meshLight: val } }) },
 
                 get blendMeshColor() {
                     return {
                         get r() { return self._activeSettings.iso.blendMeshColor.r; },
-                        set r(val) { self._activeSettings.iso.blendMeshColor.r = val },
+                        set r(val) { self._activeSettings.iso.blendMeshColor.r = val; self._outUpdate({ iso: { blendMeshColor: { r: val } } }) },
                         get g() { return self._activeSettings.iso.blendMeshColor.g; },
-                        set g(val) { self._activeSettings.iso.blendMeshColor.g = val },
+                        set g(val) { self._activeSettings.iso.blendMeshColor.g = val; self._outUpdate({ iso: { blendMeshColor: { g: val } } }) },
                         get b() { return self._activeSettings.iso.blendMeshColor.b; },
-                        set b(val) { self._activeSettings.iso.blendMeshColor.b = val }
+                        set b(val) { self._activeSettings.iso.blendMeshColor.b = val; self._outUpdate({ iso: { blendMeshColor: { b: val } } }) }
                     }
                 },
-                set blendMeshColor(val) { self._activeSettings.iso.color = val },
+                set blendMeshColor(val) { self._activeSettings.iso.color = val; self._outUpdate({ iso: { blendMeshColor: val } }) },
 
                 get resolution() { return self._activeSettings.iso.resolution; },
-                set resolution(val) { self._activeSettings.iso.resolution = val },
+                set resolution(val) { self._activeSettings.iso.resolution = val; self._outUpdate({ iso: { resolution: val } }) },
 
                 get steps() { return self._activeSettings.iso.steps; },
-                set steps(val) { self._activeSettings.iso.steps = val },
+                set steps(val) { self._activeSettings.iso.steps = val; self._outUpdate({ iso: { steps: val } }) },
 
                 get isoVal() { return self._activeSettings.iso.isoVal; },
-                set isoVal(val) { self._activeSettings.iso.isoVal = val },
+                set isoVal(val) { self._activeSettings.iso.isoVal = val; self._outUpdate({ iso: { isoVal: val } }) },
 
                 get color() {
                     return {
                         get r() { return self._activeSettings.iso.color.r; },
-                        set r(val) { self._activeSettings.iso.color.r = val },
+                        set r(val) { self._activeSettings.iso.color.r = val; self._outUpdate({ iso: { color: { r: val } } }) },
                         get g() { return self._activeSettings.iso.color.g; },
-                        set g(val) { self._activeSettings.iso.color.g = val },
+                        set g(val) { self._activeSettings.iso.color.g = val; self._outUpdate({ iso: { color: { g: val } } }) },
                         get b() { return self._activeSettings.iso.color.b; },
-                        set b(val) { self._activeSettings.iso.color.b = val }
+                        set b(val) { self._activeSettings.iso.color.b = val; self._outUpdate({ iso: { color: { b: val } } }) }
                     }
                 },
-                set color(val) { self._activeSettings.iso.color = val }
+                set color(val) { self._activeSettings.iso.color = val; self._outUpdate({ iso: { color: val } }) }
             },
             mcs: {
                 get background() { return self._activeSettings.mcs.background; },
-                set background(val) { self._activeSettings.mcs.background = val },
+                set background(val) { self._activeSettings.mcs.background = val; self._outUpdate({ mcs: { background: val } }) },
 
                 get blendMeshRatio() { return self._activeSettings.mcs.blendMeshRatio; },
-                set blendMeshRatio(val) { self._activeSettings.mcs.blendMeshRatio = val },
+                set blendMeshRatio(val) { self._activeSettings.mcs.blendMeshRatio = val; self._outUpdate({ mcs: { blendMeshRatio: val } }) },
 
                 get meshLight() { return self._activeSettings.mcs.meshLight; },
-                set meshLight(val) { self._activeSettings.mcs.meshLight = val },
+                set meshLight(val) { self._activeSettings.mcs.meshLight = val; self._outUpdate({ mcs: { meshLight: val } }) },
 
                 get blendMeshColor() {
                     return {
                         get r() { return self._activeSettings.mcs.blendMeshColor.r; },
-                        set r(val) { self._activeSettings.mcs.blendMeshColor.r = val },
+                        set r(val) { self._activeSettings.mcs.blendMeshColor.r = val; self._outUpdate({ mcs: { blendMeshColor: { r: val } } }) },
                         get g() { return self._activeSettings.mcs.blendMeshColor.g; },
-                        set g(val) { self._activeSettings.mcs.blendMeshColor.g = val },
+                        set g(val) { self._activeSettings.mcs.blendMeshColor.g = val; self._outUpdate({ mcs: { blendMeshColor: { g: val } } }) },
                         get b() { return self._activeSettings.mcs.blendMeshColor.b; },
-                        set b(val) { self._activeSettings.mcs.blendMeshColor.b = val }
+                        set b(val) { self._activeSettings.mcs.blendMeshColor.b = val; self._outUpdate({ mcs: { blendMeshColor: { b: val } } }) }
                     }
                 },
-                set blendMeshColor(val) { self._activeSettings.mcs.color = val },
+                set blendMeshColor(val) { self._activeSettings.mcs.color = val; self._outUpdate({ mcs: { blendMeshColor: val } }) },
 
                 get resolution() { return self._activeSettings.mcs.resolution; },
-                set resolution(val) { self._activeSettings.mcs.resolution = val },
+                set resolution(val) { self._activeSettings.mcs.resolution = val;; self._outUpdate({ mcs: { resolution: val } }) },
 
                 get sigma() { return self._activeSettings.mcs.sigma; },
-                set sigma(val) { self._activeSettings.mcs.sigma = val },
+                set sigma(val) { self._activeSettings.mcs.sigma = val; self._outUpdate({ mcs: { sigma: val } }) },
 
                 get alphaCorrection() { return self._activeSettings.mcs.alphaCorrection; },
-                set alphaCorrection(val) { self._activeSettings.mcs.alphaCorrection = val },
+                set alphaCorrection(val) { self._activeSettings.mcs.alphaCorrection = val; self._outUpdate({ mcs: { alphaCorrection: val } }) },
 
                 get tf() { return self._state.tf.mcs; },
                 set tf(val) { self._state.tf.mcs = val },
 
                 get tfBundle() { return self._activeSettings.mcs.tfBundle; },
-                set tfBundle(val) { self._activeSettings.mcs.tfBundle = val }
+                set tfBundle(val) { self._activeSettings.mcs.tfBundle = val; self._outUpdate({ mcs: { tfBundle: val } }) }
             },
             mip: {
                 get background() { return self._activeSettings.mip.background; },
-                set background(val) { self._activeSettings.mip.background = val },
+                set background(val) { self._activeSettings.mip.background = val; self._outUpdate({ mip: { background: val } }) },
 
                 get blendMeshRatio() { return self._activeSettings.mip.blendMeshRatio; },
-                set blendMeshRatio(val) { self._activeSettings.mip.blendMeshRatio = val },
+                set blendMeshRatio(val) { self._activeSettings.mip.blendMeshRatio = val; self._outUpdate({ mip: { blendMeshRatio: val } }) },
 
                 get meshLight() { return self._activeSettings.mip.meshLight; },
-                set meshLight(val) { self._activeSettings.mip.meshLight = val },
+                set meshLight(val) { self._activeSettings.mip.meshLight = val; self._outUpdate({ mip: { meshLight: val } }) },
 
                 get blendMeshColor() {
                     return {
                         get r() { return self._activeSettings.mip.blendMeshColor.r; },
-                        set r(val) { self._activeSettings.mip.blendMeshColor.r = val },
+                        set r(val) { self._activeSettings.mip.blendMeshColor.r = val; self._outUpdate({ mip: { blendMeshColor: { r: val } } }) },
                         get g() { return self._activeSettings.mip.blendMeshColor.g; },
-                        set g(val) { self._activeSettings.mip.blendMeshColor.g = val },
+                        set g(val) { self._activeSettings.mip.blendMeshColor.g = val; self._outUpdate({ mip: { blendMeshColor: { g: val } } }) },
                         get b() { return self._activeSettings.mip.blendMeshColor.b; },
-                        set b(val) { self._activeSettings.mip.blendMeshColor.b = val }
+                        set b(val) { self._activeSettings.mip.blendMeshColor.b = val; self._outUpdate({ mip: { blendMeshColor: { b: val } } }) }
                     }
                 },
-                set blendMeshColor(val) { self._activeSettings.mip.color = val },
+                set blendMeshColor(val) { self._activeSettings.mip.color = val; self._outUpdate({ mip: { blendMeshColor: val } }) },
 
                 get resolution() { return self._activeSettings.mip.resolution; },
-                set resolution(val) { self._activeSettings.mip.resolution = val },
+                set resolution(val) { self._activeSettings.mip.resolution = val; self._outUpdate({ mip: { resolution: val } }) },
 
                 get steps() { return self._activeSettings.mip.steps; },
-                set steps(val) { self._activeSettings.mip.steps = val }
+                set steps(val) { self._activeSettings.mip.steps = val; self._outUpdate({ mip: { steps: val } }) }
             },
 
             reinhard: {
                 get exposure() { return self._activeSettings.reinhard.exposure; },
-                set exposure(val) { self._activeSettings.reinhard.exposure = val }
+                set exposure(val) { self._activeSettings.reinhard.exposure = val; self._outUpdate({ reinhard: { exposure: val } }) }
             },
             range: {
                 get rangeLower() { return self._activeSettings.range.rangeLower; },
-                set rangeLower(val) { self._activeSettings.range.rangeLower = val },
+                set rangeLower(val) { self._activeSettings.range.rangeLower = val; self._outUpdate({ range: { rangeLower: val } }) },
 
                 get rangeHigher() { return self._activeSettings.range.rangeHigher; },
-                set rangeHigher(val) { self._activeSettings.range.rangeHigher = val }
+                set rangeHigher(val) { self._activeSettings.range.rangeHigher = val; self._outUpdate({ range: { rangeHigher: val } }) }
             },
 
             get useMCC() { return self._activeSettings.useMCC; },
-            set useMCC(val) { self._activeSettings.useMCC = val },
+            set useMCC(val) { self._activeSettings.useMCC = val; self._outUpdate({ useMCC: val }) },
 
             get resetMVP() { return self._state.resetMVP; },
             set resetMVP(val) { self._state.resetMVP = val },
@@ -336,16 +434,16 @@ app.factory('VPT', function ($rootScope) {
 
             uiLock: {
                 get rendererSelection() { return self._uiLock.rendererSelection; },
-                set rendererSelection(val) { self._uiLock.rendererSelection = val },
+                set rendererSelection(val) { self._uiLock.rendererSelection = val; self._uiLock.onChange.rendererSelection(val) },
 
                 get rendererSettings() { return self._uiLock.rendererSettings; },
-                set rendererSettings(val) { self._uiLock.rendererSettings = val },
+                set rendererSettings(val) { self._uiLock.rendererSettings = val; self._uiLock.onChange.rendererSettings(val) },
 
                 get tonemapperSettings() { return self._uiLock.tonemapperSettings; },
-                set tonemapperSettings(val) { self._uiLock.tonemapperSettings = val },
+                set tonemapperSettings(val) { self._uiLock.tonemapperSettings = val; self._uiLock.onChange.tonemapperSettings(val) },
 
                 get mccSettings() { return self._uiLock.mccSettings; },
-                set mccSettings(val) { self._uiLock.mccSettings = val },
+                set mccSettings(val) { self._uiLock.mccSettings = val; self._uiLock.onChange.mccSettings(val) },
             }
         };
 
@@ -359,77 +457,17 @@ app.factory('VPT', function ($rootScope) {
         });
 
 
-        /* ================= External updates ================= */
-        /* Do not trigger onChange updates */
-
-        /**
-         * Updates bundle.
-         */
-        let _update = function (bundle, data) {
-            for (var prop in data) {
-                switch (prop) {
-                    case "position":
-                        this._position.fromArray(data.position);
-                        delete data.position;
-                        break;
-                    case "quaternion":
-                        this._quaternion.fromArray(data.quaternion);
-                        delete data.quaternion;
-                        break;
-                    case "scale":
-                        this._scale.fromArray(data.scale);
-                        delete data.scale;
-                        break;
-                    case "visible":
-                        this._visible = data.visible;
-                        delete data.visible;
-                        break;
-                    case "frustumCulled":
-                        this._frustumCulled = data.frustumCulled;
-                        delete data.frustumCulled;
-                        break;
-                    case "matrixAutoUpdate":
-                        this._matrixAutoUpdate = data.matrixAutoUpdate;
-                        delete data.matrixAutoUpdate;
-                        break;
-                }
-            }
-
-        }
-
-        let updateSharedVPTSettings = function (userId, owner, camera, updates) {
-            //Entry should first be added with add.
-            if (!this.hasCameraBundle(camera)) {
-                return;
-            }
-
-            //let userAnnotations = this.sharedDrawnAnnotations[userId].annotations;
-            let bundle = this._vptBundles.get(camera);
-
-            $rootScope.$apply(function () {
-                self._update(bundle, updates);
-
-                /*                 for (let annUuid in updates) {
-                                    for (let i = 0; i < userAnnotations.length; i++) {
-                                        if (userAnnotations[i]._uuid === annUuid) {
-                                            // Update annotation
-                                            this._update(updates[annUuid], owner);
-                                            break;
-                                        }
-                                    }
-                                } */
-            });
-        };
-
-
-
         /* ================= Camera triggers ================= */
         this._onAddCamera = function (data) {
             var camera = data.camera;
             var local = data.local;
             var active = data.active;
             if (!self.hasCameraBundle(camera._uuid)) {
-                self.setCameraBundle(camera._uuid, jQuery.extend(true, {}, self._defaultSettings));   //Set it to defaults
+                var bundle = self.getNewBundle();
+                //Save bundle to _vptBundles
+                self.setCameraBundle(camera._uuid, bundle);
+                //Set some local meta for this bundle
+                self.__bundleMeta.set(bundle.uuid, { amOwner: self._cameraManager.isOwnCamera(camera), cameraUUID: camera._uuid });
                 console.log("Camera " + data.camera._uuid + " added");
             }
             if (!self._activeSettings) {
@@ -441,12 +479,17 @@ app.factory('VPT', function ($rootScope) {
             var camera = data.camera;
             var local = data.local;
             var active = data.active;
-            if (self.rmCameraBundle(camera._uuid))
-                console.log("Camera " + data.camera._uuid + " removed");
+            //Delete saved bundle's meta and bundle itself
+            try {
+                if (self.__bundleMeta.delete(self.getCameraBundle(camera._uuid).uuid) && self.rmCameraBundle(camera._uuid))
+                    console.log("Camera " + data.camera._uuid + " removed");
+                else
+                    console.error("Error trying to remove camera " + camera._uuid + ".");
+            } catch (err) {
+                console.error("Error trying to remove camera " + camera._uuid + ". " + err);
+            }
             if (active) {
-                var newActive = self._cameraManager._activeCamera;
                 self._lastActiveCameraUuid = null;
-                self._onActivateCamera({ camera: newActive, local: self._cameraManager.isOwnCamera(newActive), active: true });
             }
         }
 
@@ -458,19 +501,26 @@ app.factory('VPT', function ($rootScope) {
             if (self._lastActiveCameraUuid === camera._uuid) return;
 
             //Add camera first, if it doesn't exist yet - should not happen
-            if (!self.hasCameraBundle(camera._uuid))
+            if (!self.hasCameraBundle(camera._uuid)) {
+                console.error("Trying to activate camera, that doesn't exist.")
                 self._onAddCamera(data);
-
-            //Save previous active bundle into last active camera    
-            if (self._lastActiveCameraUuid) {
-                self.setCameraBundle(self._lastActiveCameraUuid, self._activeSettings);
             }
 
-            self._activeSettings = self.getCameraBundle(camera._uuid);
+            // Use deep clone, so we don't overwrite saved bundles.
+            self._activeSettings = jQuery.extend(true, {}, self.getCameraBundle(camera._uuid));
             self._lastActiveCameraUuid = camera._uuid;
-            //TODO: run UI parser in scope.apply
+
             console.log("Camera " + data.camera._uuid + " activated");
-            console.log("TODO: run UI parser in scope.apply");
+
+            // Lock UI locks, on shared camera
+            var unlock = self._cameraManager.isOwnCamera(camera);
+            self._uiLock.rendererSelection = !unlock;
+            self._uiLock.rendererSettings = !unlock;
+            self._uiLock.tonemapperSettings = !unlock;
+            self._uiLock.mccSettings = !unlock;
+
+            // Update UI with new active settings
+            self._updateUIsidebar();
         }
 
         /** Init camera manager listeners for camera events */
@@ -486,5 +536,89 @@ app.factory('VPT', function ($rootScope) {
             this._cameraManager.addOnSwitchActiveCameraListner(this._onActivateCamera);
         };
 
+
+        /* ================= Sidebar controls ================= */
+
+        this._updateUIsidebar = function () {
+            //This doesn't work for startup with first camera as sidebarDirective isn't init yet. Would be nice if it was
+            $rootScope.$broadcast('refreshVPTsidebar');
+        }
+
+
+        /* ================ Updating values ================== */
+        /* Outgoing updates. UI change -> active settings chnage -> stored settings update + notify other users */
+        this._outUpdate = function (update) {
+            //Don't make update for bundle that's not mine
+            var meta = self.__bundleMeta.get(self._activeSettings.uuid);
+
+            if (meta == null || !meta.amOwner)
+                return;
+
+
+            //Update local stored bundle too.
+            var storedBundle = self.getCameraBundle(meta.cameraUUID)
+            if (storedBundle == undefined || storedBundle == null) {
+                console.error("Error vpt changing settings");
+                return;
+            }
+            this._applyUpdateBundleToBundle(update, storedBundle);
+
+
+            //TODO: send update to persons. TODO : merge shitton of updates into bigger packages to not spamm everyone?
+
+
+        }
+
+
+        /* Deep copy all union data from bundle or update budle to target bundle */
+        this._applyUpdateBundleToBundle = function (update, target) {
+            for (let prop in update) {
+                if (update.hasOwnProperty(prop) && target.hasOwnProperty(prop) && typeof update[prop] === typeof target[prop]) {
+                    if (prop === "bumps") {      //Exception for bumps
+                        target.bumps = jQuery.extend(true, {}, update.bumps);
+                    } else if (typeof update[prop] === "object") {
+                        this._applyUpdateBundleToBundle(update[prop], target[prop]);
+                    } else {
+                        target[prop] = update[prop];
+                    }
+                }
+            }
+        }
+
+
+        /* Ingoing updates - do not trigger onChnage updates */
+        this.inUpdate = function (userId, owner, camera, update) {
+            //Entry should first be added with add.
+            if (!this.hasCameraBundle(camera._uuid)) {
+                return;
+            }
+            let bundle = this.getCameraBundle(camera._uuid);
+            this._applyUpdateBundleToBundle(update, bundle);
+            if (bundle.uuid === this._activeSettings.uuid) {
+
+                if (this._uiLock.rendererSelection) {
+                    let rendChoiceFilter = this.uiLock.filters.rendererSelection;
+                    this._applyUpdateBundleToBundle(update, rendChoiceFilter);
+                    this._applyUpdateBundleToBundle(rendChoiceFilter, this._activeSettings);
+                }
+                if (this._uiLock.rendererSettings) {
+                    let rendSettingsFilter = this.uiLock.filters.rendererSettings;
+                    this._applyUpdateBundleToBundle(update, rendSettingsFilter);
+                    this._applyUpdateBundleToBundle(rendSettingsFilter, this._activeSettings);
+                }
+                if (this._uiLock.tonemapperSettings) {
+                    let tmSettingsFilter = this.uiLock.filters.tonemapperSettings;
+                    this._applyUpdateBundleToBundle(update, tmSettingsFilter);
+                    this._applyUpdateBundleToBundle(tmSettingsFilter, this._activeSettings);
+                }
+                if (this._uiLock.mccSettings) {
+                    let mccSettingsFilter = this.uiLock.filters.mccSettings;
+                    this._applyUpdateBundleToBundle(update, mccSettingsFilter);
+                    this._applyUpdateBundleToBundle(mccSettingsFilter, this._activeSettings);
+                }
+
+                this._updateUIsidebar();
+            }
+        };
     })(this);
-});
+}]);

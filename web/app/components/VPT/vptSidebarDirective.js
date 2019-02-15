@@ -35,7 +35,9 @@ app.directive("vptSidebar", function () {
                     scope.vptGData.vptBundle.rendererChoiceID = i;
 
                     //Call for Directive-Needed for tranform function application
-                    scope.$broadcast('start' + scope.allRenderers[scope.renderer]);
+                    scope.$broadcast('uiRefresh' + scope.allRenderers[scope.renderer]);
+                } else {
+                    scope.$broadcast('uiRefresh' + scope.allRenderers[i]);  //Still refresh for external updates
                 }
             };
 
@@ -221,6 +223,43 @@ app.directive("vptSidebar", function () {
             let _lockMCCSettings = function (locked) {
                 locked ? $("#collapseThree").addClass(disabledClass) : $("#collapseThree").removeClass(disabledClass);
             };
+
+
+            /* ========== Refresh UI ========== */
+            /* Parse new settings from vptGData */
+            scope.$on('refreshVPTsidebar', function () {
+                var settings = scope.vptGData.vptBundle;
+
+                //Locks first
+                _lockRenderMethod(settings.uiLock.rendererSelection);
+                _lockRenderSettings(settings.uiLock.rendererSettings);
+                _lockTonemapperSettings(settings.uiLock.tonemapperSettings);
+                _lockMCCSettings(settings.uiLock.mccSettings);
+
+
+                //Renderer selection    // ["ERROR", "EAM", "ISO", "MCS", "MIP"]
+
+                //Select + refresh Renderer settings.
+                setTimeout(function () { $("#rendererSelect" + scope.allRenderers[settings.rendererChoiceID]).click(); });
+
+
+                //Tonemapper settings
+                exposureHandle.text(settings.reinhard.exposure);
+                $('#exposureSlider').slider("value", settings.reinhard.exposure)
+
+                rangeHandle1.text(settings.range.rangeLower);
+                rangeHandle2.text(settings.range.rangeHigher);
+                $('#rangeSlider').slider('option', { values: [settings.range.rangeLower, settings.range.rangeHigher] });
+
+
+                //MCC settings
+                setTimeout(function () { $("#marchSelect" + (settings.useMCC ? "ON" : "OFF")).click() });
+
+                //TODO: how to synchronize MCC geometry?
+
+            });
+
+
 
         },
         templateUrl: function (element, attributes) {

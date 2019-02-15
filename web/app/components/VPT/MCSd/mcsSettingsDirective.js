@@ -13,6 +13,7 @@ app.directive("mcsSettings", function () {
             scope.getKeys = Object.keys;
 
             let _startupFunction = function () {
+                blendHandle.text(scope.vptGData.vptBundle.mcs.blendMeshRatio);
                 $(blendSlider).slider("value", scope.vptGData.vptBundle.mcs.blendMeshRatio);
                 var newColor = scope.vptGData.vptBundle.mcs.blendMeshColor;
                 var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
@@ -21,10 +22,11 @@ app.directive("mcsSettings", function () {
                 inSigma.val(scope.vptGData.vptBundle.mcs.sigma);
                 inACorr.val(scope.vptGData.vptBundle.mcs.alphaCorrection);
                 parseTFBundle();
+                //scope.$apply();
             }
 
             //Start notification for restoring UI values
-            scope.$on('startMCS', _startupFunction);
+            scope.$on('uiRefreshMCS', _startupFunction);
             //
 
             //////TF variables//////

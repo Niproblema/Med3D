@@ -16,16 +16,16 @@
                     <!--                 <label class="btn btn-primary" ng-click="setRenderer(5)" href="#settingsOFF" data-toggle="tab">
                     <input type="radio" name="rend-selection" id="renderer5" autocomplete="off"> OFF
                 </label> -->
-                    <label class="btn btn-primary active" ng-click="setRenderer(4)" href="#settingsMIP" data-toggle="tab">
+                    <label id="rendererSelectMIP" class="btn btn-primary active" ng-click="setRenderer(4)" href="#settingsMIP" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer1" autocomplete="off"> MIP
                     </label>
-                    <label class="btn btn-primary" ng-click="setRenderer(2)" href="#settingsISO" data-toggle="tab">
+                    <label id="rendererSelectISO" class="btn btn-primary" ng-click="setRenderer(2)" href="#settingsISO" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer2" autocomplete="off"> ISO
                     </label>
-                    <label class="btn btn-primary" ng-click="setRenderer(1)" href="#settingsEAM" data-toggle="tab">
+                    <label id="rendererSelectEAM" class="btn btn-primary" ng-click="setRenderer(1)" href="#settingsEAM" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer3" autocomplete="off"> EAM
                     </label>
-                    <label class="btn btn-primary" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
+                    <label id="rendererSelectMCS" class="btn btn-primary" ng-click="setRenderer(3)" href="#settingsMCS" data-toggle="tab">
                         <input type="radio" name="rend-selection" id="renderer4" autocomplete="off" checked> MCS
                     </label>
                 </div>
@@ -123,10 +123,10 @@
                                     <div class="button-box" style="width: 100%">
                                         <b style="color: white; font-size: 14px; font-weight: 500;">Use MCC geometry</b>
                                         <div class="btn-group" data-toggle="buttons" style="display: table; margin: 0 auto;">
-                                            <label class="btn btn-primary active" ng-click="setMarching(false)">
+                                            <label id="marchSelectOFF" class="btn btn-primary active" ng-click="setMarching(false)">
                                                 <input type="radio" name="marching-selection" id="march-off" autocomplete="off"> OFF
                                             </label>
-                                            <label class="btn btn-primary" ng-click="setMarching(true)">
+                                            <label id="marchSelectON" class="btn btn-primary" ng-click="setMarching(true)">
                                                 <input type="radio" name="marching-selection" id="march-on" autocomplete="off"> ON
                                             </label>
                                         </div>
