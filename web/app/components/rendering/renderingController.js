@@ -110,6 +110,8 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         // Init vgd link to interface
         VPT.initVPTrendInterface(self.vptInterface);
 
+        VPT.initSharingService(SharingService);
+
         //Renderer uses vpt interface for vptRenderers
         if (self.renderer instanceof M3D.MainRenderer)
             self.renderer.linkVPTinterface(self.vptInterface);

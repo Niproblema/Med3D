@@ -8,6 +8,8 @@ Session = class {
 
     constructor(host, username) {
         this._cameras = {};
+        this._vptBundles = new Map();  // Camera._uuid -> vptBundle state. //null value -> not shared / not uploaded any data.
+        this._vptDataStructure = require('../../src/VPT/vptDataStructure'); // Provides vpt bundle default data structure and methods.
         this._annotations = {};
         this._drawnAnnotations = {};
         this._objects = {};
@@ -31,7 +33,7 @@ Session = class {
     get materials() { return this._materials; }
     get camera() { return this._camera; }
     get host() { return this._host; }
-    get initialData() { return {cameras: this._cameras, objects: this._objects, geometries: this._geometries, materials: this._materials}}
+    get initialData() { return { cameras: this._cameras, objects: this._objects, geometries: this._geometries, materials: this._materials } }
     get ownerUsername() { return this._username; }
 
 
@@ -39,10 +41,14 @@ Session = class {
     addCameras(userId, username, cameras) {
         if (!this._cameras[userId]) {
             this._cameras[userId] = { ownerUsername: username, list: cameras };
+            for (let uuid in cameras) {
+                this._vptBundles.set(uuid, null);
+            }
         }
         else {
             for (let uuid in cameras) {
                 this._cameras[userId].list[uuid] = cameras[uuid];
+                this._vptBundles.set(uuid, null);
             }
         }
     }
@@ -53,8 +59,12 @@ Session = class {
 
             if (uuid !== undefined) {
                 delete camerasList[uuid];
+                this._vptBundles.delete(uuid);
             }
             else {
+                for (let uuid in camerasList) {
+                    this._vptBundles.delete(uuid);
+                }
                 delete this._cameras[userId];
             }
         }
@@ -96,10 +106,31 @@ Session = class {
         return allCameras;
     }
 
+    // VPT SETTINGS
+    updateVPTSettings(userId, cameraUUID, update) {
+        let saved = this._vptBundles.get(cameraUUID);
+        if (saved === undefined) {
+            return false;
+        } else if (!saved) {
+            saved = this._vptDataStructure.deepCopy(this._vptDataStructure.defaultSettings);
+            this._vptBundles.set(cameraUUID, saved);
+        }
+        this._vptDataStructure.applyUpdateBundleToBundle(update, saved);
+        return true;
+    }
+
+    fetchVPTSettings(userId) {
+        let out = {};
+        this._vptBundles.forEach(function(value, key){
+            out[key] = value
+        });
+        return out;
+    }
+
     // ANNOTATIONS
     addAnnotations(userId, username, annotations) {
         if (!this._annotations[userId]) {
-            this._annotations[userId] = {ownerUsername: username, list: annotations};
+            this._annotations[userId] = { ownerUsername: username, list: annotations };
         }
         else {
             for (let i = 0; i < annotations.length; i++) {
@@ -142,7 +173,7 @@ Session = class {
     // DRAWN ANNOTATIONS
     addDrawnAnnotations(userId, username, annotations) {
         if (!this._drawnAnnotations.hasOwnProperty(userId)) {
-            this._drawnAnnotations[userId] = {ownerUsername: username, annotations: annotations};
+            this._drawnAnnotations[userId] = { ownerUsername: username, annotations: annotations };
         }
         else {
             for (let uuid in annotations) {

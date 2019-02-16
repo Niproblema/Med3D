@@ -1,14 +1,16 @@
-Shared session with shared VPT parameters + gc in shared session
-How to synchronize MCC geometry?
-
+Move reset VPT to nGS model, don't trigger on refresh UI, don't trigger on same settings
 
 
 Maybe:
  -Second subscriber rejoin - duplicate shared cameras on host.
  -Context Lost?
+ -Store less MCC geometry copies - memory issue
+ -How to synchronize MCC geometry?
+ -choose to share VPT settings or nah
 
 
 Rethink: 
  -Mip background off maybe broken
  -Geometry export locks UI and MCC indices export maybe wrong + Cancel on geometry export
  -Limit number of UI updates/s and merge them into one.
+ -Decrease update amount.

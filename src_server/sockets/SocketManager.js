@@ -14,7 +14,7 @@ SocketManager = class {
 
         this._socketOptions = {
             transports: ["websocket", "pooling"], // First try with websocket and if it fails fallback to pooling
-            httpCompression: {threshold: 1024} // Compress the data when larger than 1024 bytes
+            httpCompression: { threshold: 1024 } // Compress the data when larger than 1024 bytes
         }
     }
 
@@ -28,7 +28,7 @@ SocketManager = class {
          * Sets up on connection callback. This is called when a new socket connection is established with a client providing
          * us with a per client scope.
          */
-        this.SocketIO.sockets.on('connection', function(socket) {
+        this.SocketIO.sockets.on('connection', function (socket) {
             // Data of the user connected to this socket
             let sessionId;
             let username;
@@ -44,7 +44,7 @@ SocketManager = class {
              *     sessionId: ID of the session to which a user wants to join (only present when type == "join")
              * }
              */
-            socket.on('session', function(request, callback) {
+            socket.on('session', function (request, callback) {
 
                 console.log(logDelimiter);
 
@@ -84,7 +84,7 @@ SocketManager = class {
                     // Check if the requested session was found
                     if (!session) {
                         console.warn("User tried to join the session that does not exist!");
-                        socket.emit("connectResponse", {status: 1});
+                        socket.emit("connectResponse", { status: 1 });
                         return;
                     }
 
@@ -94,7 +94,7 @@ SocketManager = class {
 
                     // Join the user into the session
                     socket.join(request.sessionId);
-                    socket.emit("joinSessionResponse", {status: 0, initialData: session.initialData});
+                    socket.emit("joinSessionResponse", { status: 0, initialData: session.initialData });
                 }
             });
 
@@ -109,7 +109,7 @@ SocketManager = class {
              * Session data update handler. This is called by the host when the shared scene objects and parameters have
              * changed and need to be globally updated.
              */
-            socket.on('sessionDataUpdate', function(request, callback) {
+            socket.on('sessionDataUpdate', function (request, callback) {
                 let hostId = socket.id.substring(2);
 
                 // Try to update the sessions data
@@ -145,7 +145,7 @@ SocketManager = class {
                     self.SessionManager.addCamerasToSession(sessionId, socket.id.substring(2), username, request.cameras);
 
                     // Forward the new camera request to other session members
-                    let forward = {type: request.type, userId: socket.id.substring(2), data: {ownerUsername: username, list: request.cameras}};
+                    let forward = { type: request.type, userId: socket.id.substring(2), data: { ownerUsername: username, list: request.cameras } };
                     socket.broadcast.to(sessionId).emit('sessionCameras', forward);
                     callback();
                 }
@@ -166,7 +166,7 @@ SocketManager = class {
                     self.SessionManager.addCamerasToSession(sessionId, socket.id.substring(2), username, request.newCameras);
 
                     // Forward the camera update request to other session members
-                    let forward = {type: request.type, userId: socket.id.substring(2), timestamp: request.timestamp, updates: request.updates, data: {ownerUsername: username, list: request.newCameras}};
+                    let forward = { type: request.type, userId: socket.id.substring(2), timestamp: request.timestamp, updates: request.updates, data: { ownerUsername: username, list: request.newCameras } };
                     socket.broadcast.to(sessionId).emit('sessionCameras', forward);
                     callback();
                 }
@@ -184,7 +184,7 @@ SocketManager = class {
                     self.SessionManager.rmCameraFromSession(sessionId, socket.id.substring(2), request.uuid);
 
                     // Forward the camera removal request to other session members
-                    let forward = {type: request.type, userId: socket.id.substring(2), uuid: request.uuid};
+                    let forward = { type: request.type, userId: socket.id.substring(2), uuid: request.uuid };
                     socket.broadcast.to(sessionId).emit('sessionCameras', forward);
                     callback();
                 }
@@ -201,9 +201,58 @@ SocketManager = class {
 
                     // Fetch cameras and return them via callback
                     let cameras = self.SessionManager.fetchSessionCameras(sessionId, socket.id.substring(2));
-                    callback({status: (cameras !== null) ? 0 : 1, data: cameras});
+                    callback({ status: (cameras !== null) ? 0 : 1, data: cameras });
                 }
             });
+
+
+            /**
+             * Vpt's shared UI settings management handler. This can be called by any user participating in 
+             * some session to manage own shared settings and fetch other peoples settings.
+             * Settings are dependant on cameras. Camera by default will have default VPTsettingsBundle. 
+             * VPTsettingsBundle can be updated with "update", fetched with fetch and rm automatically when camera is removed.
+             */
+            socket.on('sessionVPT', function (request, callback) {
+
+                /**
+                 * UPDATE REQUEST:
+                 * {
+                 *      type: "update",
+                 *      cameraUUID : camera
+                 *      updates: updatePackageStructureObject
+                 * }
+                 */
+                if (request.type === "update") {
+                    // Update the settings
+                    var success = self.SessionManager.updateSessionVPT(sessionId, socket.id.substring(2), request.cameraUUID, request.updates);
+
+                    if (!success)
+                        console.log(logDelimiter + "\nUser " + username + " unsuccessfully tried to update vptSettings with camera " + request.cameraUUID);
+                    else {
+                        // Forward the camera update request to other session members
+                        let forward = { type: request.type, userId: socket.id.substring(2), timestamp: request.timestamp, cameraUUID: request.cameraUUID, updates: request.updates };
+                        socket.broadcast.to(sessionId).emit('sessionVPT', forward);
+                    }
+                    callback();
+                }
+
+                /**
+                 * FETCH REQUEST:
+                 * {
+                 *      type: "fetch",
+                 * }
+                 */
+                else if (request.type === "fetch") {
+                    console.log(logDelimiter + "\nUser " + username + " fetched vpt settings.");
+
+                    // Fetch vpt settings and return them via callback
+                    let settings = self.SessionManager.fetchSessionVPT(sessionId, socket.id.substring(2));
+                    callback({ status: (settings !== null) ? 0 : 1, data: settings });
+                }
+            });
+
+
+
 
             /**
              * Session annotations handler. This can be called by any user participating in some session to manage the
@@ -224,7 +273,7 @@ SocketManager = class {
                     self.SessionManager.addAnnotationsToSession(sessionId, socket.id.substring(2), username, request.annotations);
 
                     // Forward the new annotations request to other session members
-                    let forward = {type: request.type, userId: socket.id.substring(2), data: {ownerUsername: username, annotations: request.annotations}};
+                    let forward = { type: request.type, userId: socket.id.substring(2), data: { ownerUsername: username, annotations: request.annotations } };
                     socket.broadcast.to(sessionId).emit('sessionAnnotations', forward);
                     callback();
                 }
@@ -242,7 +291,7 @@ SocketManager = class {
                     self.SessionManager.rmSessionAnnotation(sessionId, socket.id.substring(2), request.index);
 
                     // Forward the remove request to other session members
-                    let forward = {type: request.type, userId: socket.id.substring(2), index: request.index};
+                    let forward = { type: request.type, userId: socket.id.substring(2), index: request.index };
                     socket.broadcast.to(sessionId).emit('sessionAnnotations', forward);
                     callback();
                 }
@@ -258,7 +307,7 @@ SocketManager = class {
 
                     // Fetch the annotations of this session and return them via callback
                     let annotations = self.SessionManager.fetchSessionAnnotations(sessionId, socket.id.substring(2));
-                    callback({status: (annotations !== null) ? 0 : 1, data: annotations});
+                    callback({ status: (annotations !== null) ? 0 : 1, data: annotations });
                 }
 
 
@@ -281,7 +330,7 @@ SocketManager = class {
                     self.SessionManager.clearSessionAnnotations(sessionId);
 
                     // Forward the clear request to other session members
-                    let forward = {type: request.type};
+                    let forward = { type: request.type };
                     socket.broadcast.to(sessionId).emit('sessionAnnotations', forward);
                     callback();
                 }
@@ -308,8 +357,8 @@ SocketManager = class {
 
                     // Forward the new annotations request to other session members
                     let data = {};
-                    data[socket.id.substring(2)] = {ownerUsername: username, annotations: request.annotations};
-                    let forward = {type: request.type, data: data};
+                    data[socket.id.substring(2)] = { ownerUsername: username, annotations: request.annotations };
+                    let forward = { type: request.type, data: data };
                     socket.broadcast.to(sessionId).emit('sessionDrawnAnnotations', forward);
                 }
 
@@ -325,7 +374,7 @@ SocketManager = class {
                     self.SessionManager.rmSessionDrawnAnnotation(sessionId, socket.id.substring(2), request.uuid);
 
                     // Forward the remove request to other session members
-                    let forward = {type: request.type, userId: socket.id.substring(2), uuid: request.uuid};
+                    let forward = { type: request.type, userId: socket.id.substring(2), uuid: request.uuid };
                     socket.broadcast.to(sessionId).emit('sessionDrawnAnnotations', forward);
                 }
 
@@ -363,7 +412,7 @@ SocketManager = class {
                     self.SessionManager.clearSessionDrawnAnnotations(sessionId);
 
                     // Forward the clear request to other session members
-                    let forward = {type: request.type};
+                    let forward = { type: request.type };
                     socket.broadcast.to(sessionId).emit('sessionDrawnAnnotations', forward);
                 }
 
@@ -373,7 +422,7 @@ SocketManager = class {
                 else if (request.type === "update") {
                     self.SessionManager.updateSessionDrawnAnnotation(sessionId, socket.id.substring(2), request.updates);
 
-                    let forward = {type: request.type, userId: socket.id.substring(2), username: username, updates: request.updates};
+                    let forward = { type: request.type, userId: socket.id.substring(2), username: username, updates: request.updates };
                     socket.broadcast.to(sessionId).emit('sessionDrawnAnnotations', forward);
                 }
             });
@@ -394,11 +443,11 @@ SocketManager = class {
                 console.log("Removing " + username + " annotations.");
                 // Remove own annotations
                 self.SessionManager.rmSessionAnnotation(sessionId, socket.id.substring(2));
-                socket.broadcast.to(sessionId).emit('sessionAnnotations', {type: "rm", userId: socket.id.substring(2)});
+                socket.broadcast.to(sessionId).emit('sessionAnnotations', { type: "rm", userId: socket.id.substring(2) });
 
                 // Remove own cameras
                 self.SessionManager.rmCameraFromSession(sessionId, socket.id.substring(2));
-                socket.broadcast.to(sessionId).emit('sessionCameras', {type: "rm", userId: socket.id.substring(2)});
+                socket.broadcast.to(sessionId).emit('sessionCameras', { type: "rm", userId: socket.id.substring(2) });
 
                 // If session owner terminate the session
                 if (self.SessionManager.fetchSession(clientId)) {
@@ -420,7 +469,7 @@ SocketManager = class {
             /**
              * This is called when the client disconnects from the socket
              */
-            socket.on('disconnect', function() {
+            socket.on('disconnect', function () {
                 console.log(logDelimiter + "\nUser " + username + " disconnected.");
                 stopSharing();
 

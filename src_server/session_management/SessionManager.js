@@ -109,6 +109,27 @@ SessionManager = class {
         return null;
     }
 
+    // VPT
+    updateSessionVPT(sessionID, userID, cameraUUID, update){
+        let session = this._sessions[sessionID];
+
+        if(session){
+            return session.updateVPTSettings(userID, cameraUUID, update);
+        }
+        return false;
+    }
+
+    fetchSessionVPT(sessionID, userID){
+        let session = this._sessions[sessionID];
+
+        if (session) {
+            return session.fetchVPTSettings(userID)
+        }
+
+        return null;
+    }
+
+
     // ANNOTATIONS
     addAnnotationsToSession(sessionID, userID, username, annotations) {
         let session = this._sessions[sessionID];

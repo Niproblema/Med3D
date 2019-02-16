@@ -322,9 +322,8 @@ M3D.VPTrendInterface = class {
      */
     _parseObjects(objects) { //TODO
         if (objects.length !== this._vptGData.vptBundle.objects.length) {   //Maybe not a good method
-
             this._vptGData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
-            this._vptGData.vptBundle._updateUIsidebar();
+            this._vptGData._updateUIsidebar();
         }
 
     }

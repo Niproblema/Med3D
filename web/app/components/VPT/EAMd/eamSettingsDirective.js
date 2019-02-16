@@ -395,7 +395,7 @@ app.directive("eamSettings", function () {
                 tfBumps = tfBundle.bumps;
                 render();
                 rebuildHandles();
-                scope.vptGData.vptBundle.resetMVP = true;
+                onUIChangeTF();
             }
 
             initTF();

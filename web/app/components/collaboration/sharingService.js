@@ -38,7 +38,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
 
         // Check if the render data is initialized
         if (PublicRenderData.contentRenderGroup === null) {
-            callback({status: 1, msg: "Error: render data is not initialized!"});
+            callback({ status: 1, msg: "Error: render data is not initialized!" });
             return
         }
 
@@ -53,7 +53,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
         // Initiate publishing
         self.sceneHost.startPublishing(null, function () {
             // Set hosting in progress flag
-            $rootScope.$apply(function() {
+            $rootScope.$apply(function () {
                 self.state.hostingInProgress = true;
             });
 
@@ -65,7 +65,9 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
 
             self.drawnAnnotationSharing.startSharing(true);
 
-            callback({status: 0, msg: "Successfully started hosting session."});
+            self._setupVPTsettingsSharing(true);
+
+            callback({ status: 0, msg: "Successfully started hosting session." });
         });
     };
 
@@ -74,9 +76,9 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
             // Clear annotations when session hosting stops
             self.socketManager.emit("sessionAnnotations", {
                 type: "clear"
-            }, function () {});
+            }, function () { });
 
-            $rootScope.$apply(function() {
+            $rootScope.$apply(function () {
                 PublicRenderData.cameraManager.clearSharedCameras();
             });
 
@@ -87,14 +89,14 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
             self.socketManager.emit("terminate", "Client termination.");
 
             // Unset the hosting in progress flag
-            $rootScope.$apply(function() {
+            $rootScope.$apply(function () {
                 self.state.hostingInProgress = false;
             });
 
             self.sceneHost = null;
         }
 
-        callback({"status": 0, msg: "Successfully stopped session hosting."});
+        callback({ "status": 0, msg: "Successfully stopped session hosting." });
     };
     // endregion
 
@@ -106,26 +108,27 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
             if (status === 0) {
                 PublicRenderData.replaceRenderContent.apply(this, rootObjects);
 
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     PublicRenderData.cameraManager.setSharedCameras(cameras);
                 });
 
                 // Set the listening in progress flag
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     self.state.listeningInProgress = true;
                 });
 
                 self._setupCameraSharing(false);
                 self._setupClientAnnotationSharing();
                 self.drawnAnnotationSharing.startSharing(false);
+                self._setupVPTsettingsSharing(false);
             }
 
-            callbackRef({status: status});
+            callbackRef({ status: status });
         };
 
         let onTerminated = function () {
-            self.leaveSession(function () {});
-            $rootScope.$apply(function() {
+            self.leaveSession(function () { });
+            $rootScope.$apply(function () {
                 //self.leaveSession(null);
             });
         };
@@ -162,23 +165,23 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
         self.socketManager.emit("terminate", "Client termination.");
 
         // Delete shared annotations
-        $rootScope.$apply(function() {
+        $rootScope.$apply(function () {
             Annotations.sharedList = {};
         });
 
         // Delete shared cameras
-        $rootScope.$apply(function() {
+        $rootScope.$apply(function () {
             PublicRenderData.cameraManager.clearSharedCameras();
         });
 
         self.sceneSubscriber = null;
 
-        $rootScope.$apply(function() {
+        $rootScope.$apply(function () {
             self.state.listeningInProgress = false;
         });
 
         if (callback != null) {
-            callback({status: 0});
+            callback({ status: 0 });
         }
     };
     // endregion
@@ -193,7 +196,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
 
         // On cameras change notify angular
         sharingManager.setOnCamerasChange(function (cameras) {
-            $rootScope.$apply(function() {
+            $rootScope.$apply(function () {
                 PublicRenderData.cameraManager.setSharedCameras(cameras);
 
                 let cameraManager = PublicRenderData.cameraManager;
@@ -281,7 +284,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
         if (self.state.hostingInProgress || self.state.listeningInProgress) {
             self.socketManager.emit("sessionAnnotations", {
                 type: "clear"
-            }, function () {});
+            }, function () { });
         }
     };
     // endregion
@@ -299,7 +302,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
             };
 
             // Push the annotations to the server
-            self.socketManager.emit("sessionAnnotations", request, function() {
+            self.socketManager.emit("sessionAnnotations", request, function () {
                 Annotations.addListener("SharingService", _onAddAnnotation, _onRmAnnotation, _onClearAnnotations);
             });
         }
@@ -314,7 +317,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
      */
     this._setupClientAnnotationSharing = function () {
         // Form fetch request
-        let request = {type: "fetch"};
+        let request = { type: "fetch" };
 
         // Fetch annotations from the server
         this.socketManager.emit("sessionAnnotations", request, function (response) {
@@ -329,30 +332,75 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
                         annotationList.push(Annotations.reconstructAnnotation(response.data[userId].list[i]));
                     }
 
-                    sharedAnnotations[userId] = {ownerUsername: response.data[userId].ownerUsername, list: annotationList};
+                    sharedAnnotations[userId] = { ownerUsername: response.data[userId].ownerUsername, list: annotationList };
                 }
 
                 // Set build annotations to shared list
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     Annotations.sharedList = sharedAnnotations;
                 });
                 // endregion
 
                 // Add listener for own annotations
                 if (self.settings.shareAnnotations) {
-                    Annotations.addListener("SharingService", _onAddAnnotation, _onRmAnnotation(), function () {});
+                    Annotations.addListener("SharingService", _onAddAnnotation, _onRmAnnotation(), function () { });
                 }
             }
         });
     };
     // endregion
 
+
+
+    // region vptSettings SHARING
+    this.socketSubscriber.addEventCallback("sessionVPT", function (request) {
+        // Check if we are participating in a session
+        if (self.state.hostingInProgress || self.state.listeningInProgress) {
+            if (request.type === "update") {
+                VPT.inUpdate(request.cameraUUID, request.updates);
+                //console.log("got vptData update "+ request.updates);
+            }
+        }
+    });
+
+    this.sendVPTupdate = function (cameraUUID, update) {
+        json = { type: "update", cameraUUID: cameraUUID, updates: update };
+        this.socketManager.emit('sessionVPT', json, function () { });
+    }
+
+
+    this._setupVPTsettingsSharing = function (isHost) {
+        if (!isHost) {
+            //Fetch first
+            this.socketManager.emit("sessionVPT", { type: "fetch" }, function (response) {
+                for(key in response.data){
+                    if(response.data[key]){
+                        VPT.inUpdate(key, response.data[key]);
+                    }
+                }
+                //console.log("Fetched vptData "+ response.data);
+            });
+        }
+
+        //Upload my settings
+        let stateExport = VPT.outExportOwnState();
+        for (key in stateExport) {
+            this.sendVPTupdate(key, stateExport[key]);
+        }
+
+    }
+    // endregion
+
+
+
+
+
     // region CHAT
     /**
      * Removes all the messages from the chat
      */
     this.clearChat = function () {
-        $rootScope.$apply(function() {
+        $rootScope.$apply(function () {
             Messages.length = 0;
         });
     };
@@ -361,7 +409,7 @@ app.service("SharingService", function ($rootScope, PublicRenderData, Annotation
      * Sends a message to the recipient via server
      * @param msg Text message
      */
-    this.sendChatMessage = function(msg) {
+    this.sendChatMessage = function (msg) {
         if (self.state.hostingInProgress) {
             self.socketManager.emit("chat", { sender: self.sceneHost.getUsername(), message: msg });
         }

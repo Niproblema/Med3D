@@ -7,6 +7,8 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
         let self = this;
         let _cameraManager = null;
         let _vptInterface = null;
+        let _sharingService = null;
+
         let _lastActiveCameraUuid = null;
 
         /* Change listener. camera -> vptBundle */
@@ -42,82 +44,9 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
             return this._vptBundles.delete(camera);
         }
 
-        //Default settings, if needed to reset.
-        this._defaultSettings = {
-            uuid: THREE.Math.generateUUID(),
-            rendererChoiceID: 4, //VPT renderers - 0=Error, 1=EAM, 2=ISO, 3=MCS, 4=MIP, 5=Disabled=Use mesh with diffuse
-            eam: {    //eam
-                background: true,
-                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
-                meshLight: true,
-                blendMeshColor: {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.7
-                },
-                resolution: 512,        //Buffer dimensions
-                steps: 10,
-                alphaCorrection: 5,
-                tfBundle: { uuid: "1", bumps: [] }
-            },
-            iso: {    //iso
-                background: true,
-                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
-                meshLight: true,
-                blendMeshColor: {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.7
-                },
-                resolution: 512,        //Buffer dimensions
-                steps: 10,
-                isoVal: 0.25,
-                color: {
-                    r: 1,
-                    g: 1,
-                    b: 1
-                }
-            },
-            mcs: {    //mcs
-                background: true,
-                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
-                meshLight: true,
-                blendMeshColor: {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.7
-                },
-                resolution: 512,        //Buffer dimensions
-                sigma: 30,
-                alphaCorrection: 30,
-                tfBundle: { uuid: "2", bumps: [] }
-            },
-            mip: {    //mip
-                background: true,
-                blendMeshRatio: 0.0,    //0-1 share of Mesh render ratio
-                meshLight: true,
-                blendMeshColor: {
-                    r: 0.28,
-                    g: 0.7,
-                    b: 0.7
-                },
-                resolution: 512,        //Buffer dimensions
-                steps: 10
-            },
-            reinhard: {
-                exposure: 1
-            },
-            range: {
-                rangeLower: 0,
-                rangeHigher: 1
-            },
-
-            //Marching cubes
-            useMCC: false
-        };
 
         this.getNewBundle = function () {
-            var bundle = jQuery.extend(true, {}, self._defaultSettings);
+            var bundle = jQuery.extend(true, {}, vptDataStructure.defaultSettings);
             bundle.uuid = THREE.Math.generateUUID();
             return bundle
         }
@@ -537,6 +466,10 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
             this._vptInterface = vptInterface;
         }
 
+        this.initSharingService = function (sharingService) {
+            this._sharingService = sharingService;
+        }
+
 
         /* ================= Sidebar controls ================= */
 
@@ -570,62 +503,70 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
             }
             this._applyUpdateBundleToBundle(update, storedBundle);
 
-
-            //TODO: send update to persons. TODO : merge shitton of updates into bigger packages to not spamm everyone?
-
-
+            // TODO : merge shitton of updates into bigger packages to not spamm everyone?
+            if (this._sharingService && (this._sharingService.state.hostingInProgress || this._sharingService.state.listeningInProgress)) {
+                this._sharingService.sendVPTupdate(meta.cameraUUID, update);
+            }
         }
+
+
+        /**
+         * Prepares current own settings export
+         */
+        this.outExportOwnState = function () {
+            let out = {};
+            this._vptBundles.forEach(function (value, key) {
+                if (self.__bundleMeta.has(value.uuid)) {
+                    let meta = self.__bundleMeta.get(value.uuid);
+                    if (meta.amOwner) {
+                        out[key] = value;
+                    }
+                }
+            });
+            return out;
+        }
+
 
 
         /* Deep copy all union data from bundle or update budle to target bundle */
-        this._applyUpdateBundleToBundle = function (update, target) {
-            for (let prop in update) {
-                if (update.hasOwnProperty(prop) && target.hasOwnProperty(prop) && typeof update[prop] === typeof target[prop]) {
-                    if (prop === "tfBundle") {      //Exception for tfBundle, 
-                        target.tfBundle = jQuery.extend(true, [], update.tfBundle);
-                    } else if (typeof update[prop] === "object") {
-                        this._applyUpdateBundleToBundle(update[prop], target[prop]);
-                    } else {
-                        target[prop] = update[prop];
-                    }
-                }
-            }
-        }
+        this._applyUpdateBundleToBundle = vptDataStructure.applyUpdateBundleToBundle;
 
 
         /* Ingoing updates - do not trigger onChnage updates */
-        this.inUpdate = function (userId, owner, camera, update) {
+        this.inUpdate = function (cameraUUID, update) {
             //Entry should first be added with add.
-            if (!this.hasCameraBundle(camera._uuid)) {
+            if (!this.hasCameraBundle(cameraUUID)) {
                 return;
             }
-            let bundle = this.getCameraBundle(camera._uuid);
+            delete update.uuid;     //Don't want to overwrite local uuid bundles..
+            let bundle = this.getCameraBundle(cameraUUID);
             this._applyUpdateBundleToBundle(update, bundle);
             if (bundle.uuid === this._activeSettings.uuid) {
 
                 if (this._uiLock.rendererSelection) {
-                    let rendChoiceFilter = this.uiLock.filters.rendererSelection;
-                    this._applyUpdateBundleToBundle(update, rendChoiceFilter);
+                    let rendChoiceFilter = this._uiLock.filters.rendererSelection;
+                    this._applyUpdateBundleToBundle(bundle, rendChoiceFilter);
                     this._applyUpdateBundleToBundle(rendChoiceFilter, this._activeSettings);
                 }
                 if (this._uiLock.rendererSettings) {
-                    let rendSettingsFilter = this.uiLock.filters.rendererSettings;
-                    this._applyUpdateBundleToBundle(update, rendSettingsFilter);
+                    let rendSettingsFilter = this._uiLock.filters.rendererSettings;
+                    this._applyUpdateBundleToBundle(bundle, rendSettingsFilter);
                     this._applyUpdateBundleToBundle(rendSettingsFilter, this._activeSettings);
                 }
                 if (this._uiLock.tonemapperSettings) {
-                    let tmSettingsFilter = this.uiLock.filters.tonemapperSettings;
-                    this._applyUpdateBundleToBundle(update, tmSettingsFilter);
+                    let tmSettingsFilter = this._uiLock.filters.tonemapperSettings;
+                    this._applyUpdateBundleToBundle(bundle, tmSettingsFilter);
                     this._applyUpdateBundleToBundle(tmSettingsFilter, this._activeSettings);
                 }
                 if (this._uiLock.mccSettings) {
-                    let mccSettingsFilter = this.uiLock.filters.mccSettings;
-                    this._applyUpdateBundleToBundle(update, mccSettingsFilter);
+                    let mccSettingsFilter = this._uiLock.filters.mccSettings;
+                    this._applyUpdateBundleToBundle(bundle, mccSettingsFilter);
                     this._applyUpdateBundleToBundle(mccSettingsFilter, this._activeSettings);
                 }
 
                 this._updateUIsidebar();
             }
         };
+
     })(this);
 }]);

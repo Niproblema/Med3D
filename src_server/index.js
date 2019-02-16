@@ -27,6 +27,9 @@ let SessionManager = require('./session_management/SessionManager');
 let SocketManager = require('./sockets/SocketManager');
 SocketManager.initialize(server);
 
+// Init VPT's default data structure class
+
+
 app.post('/api/file-management', function(req, res) {
     // Response will be json
     res.contentType('json');
