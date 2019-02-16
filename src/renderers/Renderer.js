@@ -179,8 +179,7 @@ M3D.Renderer = class {
      * Prepares for new scene
      */
     reset() {
-        //todo: CHECK IF IT's RUNNING - don't
-        this._glManager.clearAttributeBuffers();
+        this.clearCachedAttributes();
     }
 
     /**

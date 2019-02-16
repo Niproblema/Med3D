@@ -152,7 +152,7 @@ app.directive("isoSettings", function () {
 
 
             inISO.change(function () {
-                value = Math.max(0.01, parseFloat(inISO.val())) || 0.5;
+                value = Math.max(0.001, parseFloat(inISO.val())) || 0.5;
                 scope.vptGData.vptBundle.iso.isoVal = value;
                 inISO.val(value);
                 scope.vptGData.vptBundle.resetMVP = true;

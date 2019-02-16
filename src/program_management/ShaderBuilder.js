@@ -105,6 +105,12 @@ M3D.ShaderBuilder = class {
         return true;
     }
 
+    clearShader (templateName){
+        let shader = this._templatesCache[templateName];
+        if(shader === undefined) return; 
+
+    }
+
     // Tries to fetch the shader. If the shader it's not build jet it tries to build it
     fetchShader (templateName, flags, values) {
         var shaderTemplate = this._templatesCache[templateName];

@@ -38,6 +38,8 @@ M3D.MainRenderer = class extends M3D.Renderer {
 
         // VPT interface 
         this._vptInterface = null;
+
+        this._wasReset = true;
     }
 
     _meshRender(scene, camera) {
@@ -67,7 +69,8 @@ M3D.MainRenderer = class extends M3D.Renderer {
 
         // Render volume objects with VPT
         if (this._vptObjects.length > 0 && this._vptInterface) {
-            this._vptInterface.renderObjects(this._vptObjects, camera, this._glManager); //todo: better way  
+            if (this._wasReset) return; // After scene reset some attributes remained set to deleted buffers, therefore set new attributes in first pass + skip render. Todo: better solution ? delete non required programs ?
+            this._vptInterface.renderObjects(this._vptObjects, camera);
         }
 
         // Render opaque objects
@@ -375,7 +378,6 @@ M3D.MainRenderer = class extends M3D.Renderer {
                 this._vptObjects.push(object);
             }
 
-
             // Frustum culling
             if (object.frustumCulled === false || this._isObjectVisible(object)) {
 
@@ -520,12 +522,13 @@ M3D.MainRenderer = class extends M3D.Renderer {
     }
 
 
-    //// VPT extensionm ////
+    //// VPT extension ////
 
     reset() {
         super.reset();
+        this._wasReset = true;
         if (this._vptInterface) {
-            this._vptInterface.reset(this._glManager);
+            this._vptInterface.reset();
         }
     }
 

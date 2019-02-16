@@ -17,11 +17,6 @@ app.directive("vptSidebar", function () {
             // Configure scroll bar
             element.find('.mCustomScrollbar').mCustomScrollbar({ alwaysShowScrollbar: 0, updateOnContentResize: true });
 
-            scope.vptGData.vptBundle.refreshUI = function () {
-                scope.$apply();
-            };
-
-
             //VPT renderer switcher
             scope.allRenderers = ["ERROR", "EAM", "ISO", "MCS", "MIP"];
             scope.renderer = scope.vptGData.vptBundle.rendererChoiceID; //current selected 
@@ -124,13 +119,13 @@ app.directive("vptSidebar", function () {
 
             let inMccISO = element.find('[name="inISO-MRC"]');
             inMccISO.change(function () {
-                value = Math.min(1.0, Math.max(0.01, inMccISO.val()));
+                value = Math.min(1.0, Math.max(0.001, inMccISO.val()));
                 scope.isoSetting = value;
                 inMccISO.val(value);
             }.bind(this));
 
             scope.cpuCount = Math.ceil(window.navigator.hardwareConcurrency / 2);
-            scope.isoSetting = Math.max(0.01, inMccISO.val()) || 1.0;
+            scope.isoSetting = Math.max(0.001, inMccISO.val()) || 1.0;
             scope.objectsToMCC = 0;
             scope.calculateMRC = function () {
                 if (scope.isComputingMCC)

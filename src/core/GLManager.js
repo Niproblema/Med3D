@@ -13,27 +13,27 @@ M3D.GLManager = class {
      * @param {canvas} canvas HTML5 canvas from which GL context is retrieved
      * @param gl_version Specifies which version of GL context should be retrieved
      */
-    constructor (canvas, glVersion) {
+    constructor(canvas, glVersion) {
         // region GL Context fetch
         this._gl = null;
         this._glVersion = glVersion;
 
         var glKeys = (glVersion == M3D.WEBGL1) ? ["webgl", "experimental-webgl"] : ["webgl2", "experimental-webgl2"];
 
-        
+
         var options = { //TODO: consult
             //alpha: false,
             //depth: false,
             //stencil: false,
             antialias: false,
             preserveDrawingBuffer: true
-        }; 
+        };
 
         // Try to fetch GL context
         for (var i = 0; i < glKeys.length; i++) {
             try {
                 this._gl = canvas.getContext(glKeys[i], options);
-            } catch (e){
+            } catch (e) {
                 console.error(e);
             }
 
@@ -86,36 +86,41 @@ M3D.GLManager = class {
      * @param object
      */
     updateObjectData(object) {
-        // BufferedGeometry
-        let geometry = object.geometry;
 
-        // region GEOMETRY ATTRIBUTES
-        if (geometry.indices !== null) {
-            this._attributeManager.updateAttribute(geometry.indices, this._gl.ELEMENT_ARRAY_BUFFER);
-        }
+        // BufferedGeometry - Array if multiple are needed
+        let geometry = object instanceof M3D.VPTVolume ? [object._cubeGeometry, object._mccGeometry] : [object.geometry];
 
-        if (geometry.vertices != null) {
-            this._attributeManager.updateAttribute(geometry.vertices, this._gl.ARRAY_BUFFER);
-        }
-        
-        if (geometry.drawWireframe) {
-            if (geometry.wireframeIndices === null) {
-                geometry.buildWireframeBuffer();
+        for (let i = 0; i < geometry.length; i++) {
+            if(!geometry[i]) continue;
+
+            // region GEOMETRY ATTRIBUTES
+            if (geometry[i].indices !== null) {
+                this._attributeManager.updateAttribute(geometry[i].indices, this._gl.ELEMENT_ARRAY_BUFFER);
             }
-            
-            this._attributeManager.updateAttribute(geometry.wireframeIndices, this._gl.ELEMENT_ARRAY_BUFFER);
-        }
 
-        if (geometry.normals != null) {
-            this._attributeManager.updateAttribute(geometry.normals, this._gl.ARRAY_BUFFER);
-        }
+            if (geometry[i].vertices != null) {
+                this._attributeManager.updateAttribute(geometry[i].vertices, this._gl.ARRAY_BUFFER);
+            }
 
-        if (geometry._vertColor != null) {
-            this._attributeManager.updateAttribute(geometry._vertColor, this._gl.ARRAY_BUFFER);
-        }
+            if (geometry[i].drawWireframe) {
+                if (geometry[i].wireframeIndices === null) {
+                    geometry[i].buildWireframeBuffer();
+                }
 
-        if (geometry._uv != null) {
-            this._attributeManager.updateAttribute(geometry._uv, this._gl.ARRAY_BUFFER);
+                this._attributeManager.updateAttribute(geometry[i].wireframeIndices, this._gl.ELEMENT_ARRAY_BUFFER);
+            }
+
+            if (geometry[i].normals != null) {
+                this._attributeManager.updateAttribute(geometry[i].normals, this._gl.ARRAY_BUFFER);
+            }
+
+            if (geometry[i]._vertColor != null) {
+                this._attributeManager.updateAttribute(geometry[i]._vertColor, this._gl.ARRAY_BUFFER);
+            }
+
+            if (geometry[i]._uv != null) {
+                this._attributeManager.updateAttribute(geometry[i]._uv, this._gl.ARRAY_BUFFER);
+            }
         }
         // endregion
 
@@ -231,7 +236,7 @@ M3D.GLManager = class {
         return this._textureManager.getTexture(reference);
     }
 
-    getAttributeBuffer (attribute) {
+    getAttributeBuffer(attribute) {
         return this._attributeManager.getCachedBuffer(attribute);
     }
 
@@ -239,11 +244,15 @@ M3D.GLManager = class {
         this._attributeManager.clearBuffers();
     }
 
-    clearFrameBuffers(){
+    cleanAttributeBuffer(attribute){
+        this._attributeManager.deleteCachedBuffer(attribute);
+    }
+
+    clearFrameBuffers() {
         this._fboManager.clearFrameBuffers();
     }
 
-    clearTextures(){
+    clearTextures() {
         this._textureManager.clearTextures();
     }
 
@@ -254,12 +263,12 @@ M3D.GLManager = class {
      * @param {boolean} depth true if clear, false if not
      * @param {boolean} stencil true if clear, false if not
      */
-    clear (color, depth, stencil) {
+    clear(color, depth, stencil) {
         var bits = 0;
 
-        if ( color === undefined || color ) bits |= this._gl.COLOR_BUFFER_BIT;
-        if ( depth === undefined || depth ) bits |= this._gl.DEPTH_BUFFER_BIT;
-        if ( stencil === undefined || stencil ) bits |= this._gl.STENCIL_BUFFER_BIT;
+        if (color === undefined || color) bits |= this._gl.COLOR_BUFFER_BIT;
+        if (depth === undefined || depth) bits |= this._gl.DEPTH_BUFFER_BIT;
+        if (stencil === undefined || stencil) bits |= this._gl.STENCIL_BUFFER_BIT;
 
         this._gl.clear(bits);
     };
@@ -271,7 +280,7 @@ M3D.GLManager = class {
      * @param b Blue
      * @param a Alpha
      */
-    setClearColor (r, g, b, a) {
+    setClearColor(r, g, b, a) {
         var color = new THREE.Vector4(r, g, b, a);
 
         if (this._clearColor.equals(color) === false) {
@@ -284,7 +293,7 @@ M3D.GLManager = class {
      * Sets depth buffer clear value
      * @param depth Depth buffer clear value (0 - 1)
      */
-    setClearDepth (depth) {
+    setClearDepth(depth) {
         if (this._clearDepth !== depth) {
             this._gl.clearDepth(depth);
             this._clearDepth = depth;
@@ -295,7 +304,7 @@ M3D.GLManager = class {
      * Sets stencil buffer clear value
      * @param stencil Stencil buffer clear value
      */
-    setClearStencil (stencil) {
+    setClearStencil(stencil) {
         if (this._clearStencil !== stencil) {
             this._gl.clearStencil(stencil);
             this._clearStencil = stencil;
@@ -308,11 +317,11 @@ M3D.GLManager = class {
     /**
      * GETTERS & SETTERS
      */
-    get context () { return this._gl; }
+    get context() { return this._gl; }
 
-    get glVersion () { return this._glVersion; }
+    get glVersion() { return this._glVersion; }
 
-    get cache_programs () { return M3D._ProgramCaching; }
+    get cache_programs() { return M3D._ProgramCaching; }
 
-    set cache_programs (enable) { M3D._ProgramCaching = enable; }
+    set cache_programs(enable) { M3D._ProgramCaching = enable; }
 };

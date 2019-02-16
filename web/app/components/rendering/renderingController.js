@@ -105,7 +105,10 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
         VPT.initCameraManager(self.cameraManager);
 
         // Reference to VPT interface. Used for UI controls
-        self.vptInterface = new M3D.VPTrendInterface(VPT, self.renderer._gl);
+        self.vptInterface = new M3D.VPTrendInterface(VPT, self.renderer._gl, self.renderer._glManager);
+
+        // Init vgd link to interface
+        VPT.initVPTrendInterface(self.vptInterface);
 
         //Renderer uses vpt interface for vptRenderers
         if (self.renderer instanceof M3D.MainRenderer)

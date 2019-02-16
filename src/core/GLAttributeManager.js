@@ -1,11 +1,11 @@
 // TODO - Primoz: referenca naj bo v GLManagerju
 
 M3D.GLAttributeManager = class {
-    
+
     /**
      * @param {WebGLRenderingContext} gl WebGL rendering context used for buffer allocation.
      */
-    constructor (gl) {
+    constructor(gl) {
         this._gl = gl;
         this._cached_buffers = new Map();
     }
@@ -17,7 +17,7 @@ M3D.GLAttributeManager = class {
      * @param {BufferAttribute} attribute Object attribute
      * @param bufferType WebGL buffer type
      */
-    updateAttribute (attribute, bufferType) {
+    updateAttribute(attribute, bufferType) {
         // Check if this attribute is already defined in the global properties
         let cachedBuffer = this.getCachedBuffer(attribute);
 
@@ -33,7 +33,7 @@ M3D.GLAttributeManager = class {
      * @param buffer Object WebGLBuffer
      * @param bufferType Type of WebGL buffer that is to be created
      */
-    createBuffer (attribute, buffer, bufferType) {
+    createBuffer(attribute, buffer, bufferType) {
         this._gl.bindBuffer(bufferType, buffer);
 
         // Write the data to buffer
@@ -48,7 +48,7 @@ M3D.GLAttributeManager = class {
      * @param {BufferAttribute} attribute An attribute whose WebGL buffer should be retrieved
      * @returns {map} Attributes WebGL buffer container
      */
-    getCachedBuffer (attribute) {
+    getCachedBuffer(attribute) {
         // Check if the buffer is already cached for this object
         let buffer = this._cached_buffers.get(attribute);
 
@@ -66,14 +66,23 @@ M3D.GLAttributeManager = class {
      * Deletes cached WebGL buffer for the given attribute object
      * @param {BufferAttribute} attribute An attribute whose local version will be deleted
      */
-    deleteCachedBuffer (attribute) {
-        this._cached_buffers.delete(attribute);
+    deleteCachedBuffer(attribute) {
+        let cachedBuffer = this._cached_buffers.get(attribute);
+        if (cachedBuffer !== undefined || !cachedBuffer) {
+            this._gl.deleteBuffer(cachedBuffer);
+            this._cached_buffers.delete(attribute);
+        }
     }
 
     /**
      * Clears buffer cache
      */
-    clearBuffers () {
+    clearBuffers() {
+        let self = this;
+        this._cached_buffers.forEach(function (buffer) {
+            self._gl.deleteBuffer(buffer);
+        });
+
         this._cached_buffers.clear();
     }
 };

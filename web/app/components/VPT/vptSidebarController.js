@@ -13,7 +13,7 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
             var privateOnLoad = function (data) {
                 let vertArr = null;
 
-                if (data[0].length) {
+                if (data.length > 1) {
                     var concatArrLength = 0;
                     for (var i = 0; i < data.length; i++) {
                         concatArrLength += data[i].length;
@@ -26,7 +26,7 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
                         concatArrLength += data[i].length;
                     }
                 } else {
-                    vertArr = data;
+                    vertArr = data[0];
                 }
 
                 var geometry = new M3D.Geometry();
@@ -85,9 +85,9 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
                 let vertArr = new Float32Array(data.vertices);
                 geometry.vertices = new M3D.BufferAttribute(vertArr, 3);
 
-/*                 if (data.indices.length >= 3) {
-                    geometry.indices = new M3D.Uint32Attribute(data.indices, 1);
-                } */
+                /*                 if (data.indices.length >= 3) {
+                                    geometry.indices = new M3D.Uint32Attribute(data.indices, 1);
+                                } */
 
                 if (data.normals.length >= 3) {
                     let normArr = new Float32Array(data.normals);
@@ -168,7 +168,9 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
 
     TaskManagerService.addResultCallback("MCC-VPT",
         function (object, geometry) {
-            object._mccGeometry = geometry;
+            if (geometry && object) {
+                VPT.getVptInterface().setMCCGeometryToObject(object, geometry);
+            }
             $scope.objectsToMCC--;
             if ($scope.objectsToMCC <= 0) {
                 $scope.isComputingMCC = false;
@@ -181,32 +183,13 @@ var vptSidebarController = function ($scope, VPT, TaskManagerService) {
     TaskManagerService.addResultCallback("MCC-IMPORT",
         function (object, geometry) {
             if (geometry && object) {
-                object._mccGeometry = geometry;
+                VPT.getVptInterface().setMCCGeometryToObject(object, geometry);
+                $scope.vptGData.vptBundle.mccStatus = true;
+                $scope.$apply();
             }
-            $scope.vptGData.vptBundle.mccStatus = true;
-            $scope.$apply();
         });
 
     TaskManagerService.addResultCallback("MCC-EXPORT",
-        /*         function (data) {
-        
-                    var blob = new Blob([data], { type: 'text/obj;charset=utf-8;' });
-                    if (navigator.msSaveBlob) { // IE 10+
-                        navigator.msSaveBlob(blob, filename);
-                    } else {
-                        var link = document.createElement("a");
-                        if (link.download !== undefined) { // feature detection
-                            // Browsers that support HTML5 download attribute
-                            var url = URL.createObjectURL(blob);
-                            link.setAttribute("href", url);
-                            link.setAttribute("download", 'M3D_MCC.obj');
-                            link.style.visibility = 'hidden';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        }
-                    }
-                } */
         function () {
             console.log("Geometry exported successfully!")
         }

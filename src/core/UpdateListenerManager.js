@@ -45,7 +45,7 @@ M3D.UpdateListenerManager = class {
     }
 
     isEmpty() {
-        return this._listeners.lenght == 0;
+        return this._listeners.length == 0;
     }
 
     // ============================ Listener methods ============================ //

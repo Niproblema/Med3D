@@ -200,6 +200,8 @@ M3D.RenderQueue = class {
 
         // Restore viewport to original value
         this._renderer.updateViewport(cleanupViewport.width, cleanupViewport.height);
+        this._renderer._wasReset = false;
+        
 
         return {textures: this._textureMap,
                 additionalData: this._forwardedAdditionalData};

@@ -4,11 +4,12 @@
 
 M3D.VPTrendInterface = class {
     // ============================ LIFECYCLE ============================ //
-    constructor(vptGlobalData, gl) {
+    constructor(vptGlobalData, gl, glManager) {
         CommonUtils.extend(this);
         this._setupVars();
         this._vptGData = vptGlobalData;
         this._gl = gl;
+        this._glManager = glManager;
     }
 
     setup() {
@@ -38,15 +39,17 @@ M3D.VPTrendInterface = class {
     /**
      * Cleans up assets for new scene.
      */
-    reset(glManager) {
+    reset() {
         var objects = this._vptGData.vptBundle.objects;
         while (objects.length !== 0) {
             var object = objects.pop();
             object.switchRenderModes(false);
             var tex = object.material.maps[0];
-            glManager._textureManager.clearTexture(tex);
+            this._glManager._textureManager.clearTexture(tex);
         }
         this._vptGData.vptBundle.mccStatus = false;
+        this._vptGData.vptBundle.resetBuffers = true;
+        this._vptGData._updateUIsidebar();
     }
 
     _setupVars() {
@@ -66,7 +69,7 @@ M3D.VPTrendInterface = class {
     }
 
     // ============================ M3D controls ============================ //
-    renderObjects(objects, camera, glManager) {
+    renderObjects(objects, camera) {
         //Init
         if (camera instanceof M3D.OrthographicCamera)
             return;
@@ -100,7 +103,7 @@ M3D.VPTrendInterface = class {
             if (!renderer) continue;
 
             //Set flags for mesh renderer. Skip object if no work in vpt renderer is needed.. ex. blendMeshRatio = 100%
-            if(!this._setMeshRenderFlags(renderer, object)){
+            if (!this._setMeshRenderFlags(renderer, object)) {
                 continue;
             }
 
@@ -170,7 +173,7 @@ M3D.VPTrendInterface = class {
             gl.bindTexture(gl.TEXTURE_2D, null);
 
             //Update object's texture.
-            this._setObjectMaterialTexture(object, glManager);
+            this._setObjectMaterialTexture(object);
         }
         this._vptGData.vptBundle.resetBuffers = false;
         this._softReset = false;
@@ -297,18 +300,18 @@ M3D.VPTrendInterface = class {
         return {
             viewport: gl.getParameter(gl.VIEWPORT),
             framebuffer: gl.getParameter(gl.FRAMEBUFFER_BINDING),
-            cullFace : gl.getParameter(gl.CULL_FACE),
-            cullFaceMode : gl.getParameter(gl.CULL_FACE_MODE)
+            cullFace: gl.getParameter(gl.CULL_FACE),
+            cullFaceMode: gl.getParameter(gl.CULL_FACE_MODE)
         };
     }
 
     _restoreGLstate(gl, state) {
         gl.viewport(state.viewport[0], state.viewport[1], state.viewport[2], state.viewport[3]);
         gl.bindFramebuffer(gl.FRAMEBUFFER, state.framebuffer);
-        if(state.cullFace){
+        if (state.cullFace) {
             gl.enable(gl.CULL_FACE);
             gl.cullFace(state.cullFaceMode);
-        }else{
+        } else {
             gl.disable(gl.CULL_FACE);
         }
     }
@@ -321,7 +324,7 @@ M3D.VPTrendInterface = class {
         if (objects.length !== this._vptGData.vptBundle.objects.length) {   //Maybe not a good method
 
             this._vptGData.vptBundle.objects = objects; //This causes angularjs to not update UI values for ng-disabled
-            this._vptGData.vptBundle.refreshUI();
+            this._vptGData.vptBundle._updateUIsidebar();
         }
 
     }
@@ -344,7 +347,7 @@ M3D.VPTrendInterface = class {
         this._renderer_EAM._bufferSize = settings.eam.resolution;
         this._renderer_EAM._stepSize = 1 / settings.eam.steps;
         this._renderer_EAM._alphaCorrection = settings.eam.alphaCorrection;
-        if (settings.eam.tfBundle.uuid != this._renderer_EAM._lastTFuuid){
+        if (settings.eam.tfBundle.uuid != this._renderer_EAM._lastTFuuid) {
             this._renderer_EAM.setTransferFunction(settings.eam.tfBundle.bumps.length > 0 ? settings.eam.tf : null);
             this._renderer_EAM._lastTFuuid = settings.eam.tfBundle.uuid;
         }
@@ -373,7 +376,7 @@ M3D.VPTrendInterface = class {
         this._renderer_MCS._bufferSize = settings.mcs.resolution;
         this._renderer_MCS._sigmaMax = settings.mcs.sigma
         this._renderer_MCS._alphaCorrection = settings.mcs.alphaCorrection;
-        if (settings.mcs.tfBundle.uuid != this._renderer_MCS._lastTFuuid){
+        if (settings.mcs.tfBundle.uuid != this._renderer_MCS._lastTFuuid) {
             this._renderer_MCS.setTransferFunction(settings.mcs.tfBundle.bumps.length > 0 ? settings.mcs.tf : null);
             this._renderer_MCS._lastTFuuid = settings.mcs.tfBundle.uuid;
         }
@@ -397,7 +400,7 @@ M3D.VPTrendInterface = class {
      * @param renderer 
      * @param  object 
      */
-    _setMeshRenderFlags(renderer, object){
+    _setMeshRenderFlags(renderer, object) {
         object.material.color = renderer._blendMeshColor;   //TODO: only if changed?
         object.material.setUniform("material.diffuse", object.material.color)
         object.material.setUniform("meshBlendRatio", renderer._blendMeshRatio);
@@ -410,11 +413,37 @@ M3D.VPTrendInterface = class {
      * Updates object's texture to match it's vpt output buffer.
      * @param {M3D.VPTVolume} object 
      */
-    _setObjectMaterialTexture(object, glManager) {
+    _setObjectMaterialTexture(object) {
         var tex = object.material.maps[0];
 
         tex._glTex = object._outputBuffer.getTexture();
         tex._dirty = false;
-        glManager._textureManager._cached_textures.set(tex, tex._glTex); //todo: better way....
+        this._glManager._textureManager._cached_textures.set(tex, tex._glTex); //todo: better way....
+    }
+
+    /**
+     * Sets mcc geometry to object. Importantly it releases old one and gc it.
+     * @param {} VPTVolume 
+     * @param {*} geometry 
+     */
+    setMCCGeometryToObject(object, geometry) {
+        if (!object instanceof M3D.VPTVolume) return;
+
+        if (object._mccGeometry) {
+            let geometry = object._mccGeometry;
+            if (geometry.indices !== null)
+                this._glManager.cleanAttributeBuffer(geometry.indices);
+            if (geometry.vertices !== null)
+                this._glManager.cleanAttributeBuffer(geometry.vertices);
+            if (geometry.drawWireframe)
+                this._glManager.cleanAttributeBuffer(geometry.wireframeIndices);
+            if (geometry.normals !== null)
+                this._glManager.cleanAttributeBuffer(geometry.normals);
+            if (geometry._vertColor !== null)
+                this._glManager.cleanAttributeBuffer(geometry._vertColor);
+            if (geometry._uv !== null)
+                this._glManager.cleanAttributeBuffer(geometry._uv);
+        }
+        object._mccGeometry = geometry;
     }
 }

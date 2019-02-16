@@ -6,9 +6,8 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
     return new (function _vptFactory() {
         let self = this;
         let _cameraManager = null;
+        let _vptInterface = null;
         let _lastActiveCameraUuid = null;
-
-
 
         /* Change listener. camera -> vptBundle */
         this._onChangeListener = new Map();
@@ -234,15 +233,15 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
             },
 
             onChange: {
-                rendererSelection: function (locked) { if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.rendererSelection) },
-                rendererSettings: function (locked) {if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.rendererSettings) },
-                tonemapperSettings: function (locked) {if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.tonemapperSettings) },
-                mccSettings :function (locked) {if(locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner)self.lockAndRestoreSection(self._uiLock.filters.mccSettings) }
+                rendererSelection: function (locked) { if (locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner) self.lockAndRestoreSection(self._uiLock.filters.rendererSelection) },
+                rendererSettings: function (locked) { if (locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner) self.lockAndRestoreSection(self._uiLock.filters.rendererSettings) },
+                tonemapperSettings: function (locked) { if (locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner) self.lockAndRestoreSection(self._uiLock.filters.tonemapperSettings) },
+                mccSettings: function (locked) { if (locked && !self.__bundleMeta.get(self._activeSettings.uuid).amOwner) self.lockAndRestoreSection(self._uiLock.filters.mccSettings) }
             }
         };
 
         /* Locks section of UI. Restore saved settings and refreshes UI */
-        this.lockAndRestoreSection = function(filter){
+        this.lockAndRestoreSection = function (filter) {
             let saved = self.getCameraBundle(self.__bundleMeta.get(self._activeSettings.uuid).cameraUUID);
             self._applyUpdateBundleToBundle(saved, filter);
             self._applyUpdateBundleToBundle(filter, self._activeSettings);
@@ -430,8 +429,6 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
             get mccStatus() { return self._state.mccStatus; },
             set mccStatus(val) { self._state.mccStatus = val },
 
-            refreshUI: function () { },     //TODO: remove this, do different way.
-
             uiLock: {
                 get rendererSelection() { return self._uiLock.rendererSelection; },
                 set rendererSelection(val) { self._uiLock.rendererSelection = val; self._uiLock.onChange.rendererSelection(val) },
@@ -536,12 +533,22 @@ app.factory('VPT', ['$rootScope', function ($rootScope) {
             this._cameraManager.addOnSwitchActiveCameraListner(this._onActivateCamera);
         };
 
+        this.initVPTrendInterface = function (vptInterface) {
+            this._vptInterface = vptInterface;
+        }
+
 
         /* ================= Sidebar controls ================= */
 
         this._updateUIsidebar = function () {
             //This doesn't work for startup with first camera as sidebarDirective isn't init yet. Would be nice if it was
             $rootScope.$broadcast('refreshVPTsidebar');
+        }
+
+        /* ================= vptInterface controls ================= */
+
+        this.getVptInterface = function () {
+            return this._vptInterface;
         }
 
 

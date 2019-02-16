@@ -4,12 +4,8 @@ How to synchronize MCC geometry?
 
 
 Maybe:
- -VPT geometry switch causes GL drawArrays error in first draw. Move vptInterface further up in MainPass
- -Move vptInterface into it's own render pass?
- -blend VPT renderers
  -Second subscriber rejoin - duplicate shared cameras on host.
- -MCS EnvironmentMap when MCC is projected 
- -UI update in vptBundle
+ -Context Lost?
 
 
 Rethink: 

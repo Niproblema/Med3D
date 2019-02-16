@@ -21,11 +21,12 @@ M3D.OrbitCameraControls = class {
 
         // Is zooming in/out enabled
         this._zoomEnabled = true;
-        this._zoomSpeed = 1.8;
+        this._zoomStep = 0.025; //2.5% per step, before modified by distance modifier
 
         // How far you can dolly in and out (PerspectiveCamera only)
         this._minDistance = 1;
         this._maxDistance = Infinity;
+        this._radiusDistance = 0;
 
         // How far you can orbit vertically, upper and lower limits.
         // Range is 0 to Math.PI radians.
@@ -107,6 +108,7 @@ M3D.OrbitCameraControls = class {
 
         this._minDistance = sphere.radius * 0.01;
         this._maxDistance = distance * 1.5;
+        this._radiusDistance = this._maxDistance - this._minDistance;
 
         // Save reset position
         this._resetOrbitCenter = this._orbitCenter.clone();
@@ -185,7 +187,7 @@ let _animateHandle = (function () {
 
             let targetOrbitCenter = entry.position.clone().add(camDirVec.multiplyScalar(radius));
 
-            let centerTranslationStep = targetOrbitCenter.clone().sub(this._orbitCenter).divideScalar(entry.time/1000);
+            let centerTranslationStep = targetOrbitCenter.clone().sub(this._orbitCenter).divideScalar(entry.time / 1000);
 
 
             // Calculate the targeted spherical coordinates
@@ -207,9 +209,9 @@ let _animateHandle = (function () {
             this._spherical.setFromVector3(centerOffset);
 
             // Calculate spherical step
-            let thetaStep = (targetTheta - this._spherical.theta) / (entry.time/1000);
-            let phiStep = (targetPhi - this._spherical.phi) / (entry.time/1000);
-            let radiusStep = (radius - this._spherical.radius) / (entry.time/1000);
+            let thetaStep = (targetTheta - this._spherical.theta) / (entry.time / 1000);
+            let phiStep = (targetPhi - this._spherical.phi) / (entry.time / 1000);
+            let radiusStep = (radius - this._spherical.radius) / (entry.time / 1000);
 
 
             // Wrap the entry with step vectors
@@ -274,8 +276,8 @@ let _animateHandle = (function () {
         }
 
         // Update the orbit center position
-        this._orbitCenter.add(this._currentAnimation.centerTranslationStep.clone().multiplyScalar(deltaT/1000));
-        this._camera.position.add(this._currentAnimation.centerTranslationStep.clone().multiplyScalar(deltaT/1000));
+        this._orbitCenter.add(this._currentAnimation.centerTranslationStep.clone().multiplyScalar(deltaT / 1000));
+        this._camera.position.add(this._currentAnimation.centerTranslationStep.clone().multiplyScalar(deltaT / 1000));
 
         // Calculate current position spherical coordinates
         centerOffset.copy(this._camera.position).sub(this._orbitCenter);
@@ -285,9 +287,9 @@ let _animateHandle = (function () {
 
         this._spherical.setFromVector3(centerOffset);
 
-        this._spherical.theta += this._currentAnimation.thetaStep * deltaT/1000;
-        this._spherical.phi += this._currentAnimation.phiStep * deltaT/1000;
-        this._spherical.radius += this._currentAnimation.radiusStep * deltaT/1000;
+        this._spherical.theta += this._currentAnimation.thetaStep * deltaT / 1000;
+        this._spherical.phi += this._currentAnimation.phiStep * deltaT / 1000;
+        this._spherical.radius += this._currentAnimation.radiusStep * deltaT / 1000;
 
         this._spherical.makeSafe();
 
@@ -318,7 +320,7 @@ let _updateHandle = function () {
             return;
         }
 
-        if (inputData == null ||this._locked) {
+        if (inputData == null || this._locked) {
             return;
         }
 
@@ -359,13 +361,9 @@ let _updateHandle = function () {
 
         // If zooming is enabled apply the wheel zoom
         if (this._zoomEnabled) {
-            let zoomScale = this._getZoomScale(deltaT);
-
-            if (inputData.mouse.wheel.deltaY > 0) {
-                this._spherical.radius /= zoomScale;
-            }
-            else if (inputData.mouse.wheel.deltaY < 0) {
-                this._spherical.radius *= zoomScale;
+            if (inputData.mouse.wheel.deltaY) {
+                let distanceMod = Math.min(1, (this._spherical.radius - this._minDistance + (this._radiusDistance * 0.05)) / this._radiusDistance); //mod from 1.0 to 0.02
+                this._spherical.radius += this._radiusDistance * (inputData.mouse.wheel.deltaY / 150) * this._zoomStep * distanceMod;
             }
 
         }
