@@ -12,17 +12,36 @@ app.directive("mcsSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            let _startupFunction = function () {
-                blendHandle.text(scope.vptGData.vptBundle.mcs.blendMeshRatio);
-                $(blendSlider).slider("value", scope.vptGData.vptBundle.mcs.blendMeshRatio);
-                var newColor = scope.vptGData.vptBundle.mcs.blendMeshColor;
-                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
-                meshColorMCS.colorpicker('setValue', changeTo);
-                changeResolution(scope.vptGData.vptBundle.mcs.resolution);
-                inSigma.val(scope.vptGData.vptBundle.mcs.sigma);
-                inACorr.val(scope.vptGData.vptBundle.mcs.alphaCorrection);
-                parseTFBundle();
-                //scope.$apply();
+            let _startupFunction = function (event, updates) {
+                if (updates == null || (updates.mcs != null && updates.mcs.blendMeshRatio != null)) {
+                    blendHandle.text(scope.vptGData.vptBundle.mcs.blendMeshRatio);
+                    $(blendSlider).slider("value", scope.vptGData.vptBundle.mcs.blendMeshRatio);
+                }
+                if (updates == null || (updates.mcs != null && updates.mcs.blendMeshColor != null)) {
+                    var newColor = scope.vptGData.vptBundle.mcs.blendMeshColor;
+                    var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                    meshColorMCS.colorpicker('setValue', changeTo);
+                }
+                if (updates == null || (updates.mcs != null && updates.mcs.resolution != null)) {
+                    changeResolution(scope.vptGData.vptBundle.mcs.resolution);
+                    scope.vptGData.vptBundle.resetBuffers = true;
+                }
+                if (updates == null || (updates.mcs != null && updates.mcs.sigma != null)) {
+                    inSigma.val(scope.vptGData.vptBundle.mcs.sigma);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+                if (updates == null || (updates.mcs != null && updates.mcs.alphaCorrection != null)) {
+                    inACorr.val(scope.vptGData.vptBundle.mcs.alphaCorrection);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+                if (updates == null || (updates.mcs != null && updates.mcs.tfBundle != null)) {
+                    parseTFBundle();
+                }
+
+                // Update ng-model
+                if (updates != null && updates.mcs != null && (updates.mcs.background != null || updates.mcs.meshLight != null)) {
+                    scope.$digest()
+                }
             }
 
             //Start notification for restoring UI values
@@ -40,7 +59,7 @@ app.directive("mcsSettings", function () {
             var tfClipQuad = null;
             var tfProgram = null;
             var tfBumps = null;
-            var tfBundle = {uuid: "0", bumps: []};
+            var tfBundle = { uuid: "0", bumps: [] };
             var color = null;
             var alpha = 1;
 

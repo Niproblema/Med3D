@@ -12,17 +12,38 @@ app.directive("eamSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            let _startupFunction = function () {
-                blendHandle.text(scope.vptGData.vptBundle.eam.blendMeshRatio);
-                $(blendSlider).slider("value", scope.vptGData.vptBundle.eam.blendMeshRatio);
-                var newColor = scope.vptGData.vptBundle.eam.blendMeshColor;
-                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
-                meshColorEAM.colorpicker('setValue', changeTo);
-                changeResolution(scope.vptGData.vptBundle.eam.resolution);
-                inSteps.val(scope.vptGData.vptBundle.eam.steps);   //Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
-                inACorr.val(scope.vptGData.vptBundle.eam.alphaCorrection);//scope.vptGData.getVPTController().getRenderer()._alphaCorrection);
-                parseTFBundle();
-                //scope.$apply();
+            let _startupFunction = function (event, updates) {
+
+                if (updates == null || (updates.eam != null && updates.eam.blendMeshRatio != null)) {
+                    blendHandle.text(scope.vptGData.vptBundle.eam.blendMeshRatio);
+                    $(blendSlider).slider("value", scope.vptGData.vptBundle.eam.blendMeshRatio);
+                }
+
+                if (updates == null || (updates.eam != null && updates.eam.blendMeshColor != null)) {
+                    var newColor = scope.vptGData.vptBundle.eam.blendMeshColor;
+                    var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                    meshColorEAM.colorpicker('setValue', changeTo);
+                }
+                if (updates == null || (updates.eam != null && updates.eam.resolution != null)) {
+                    changeResolution(scope.vptGData.vptBundle.eam.resolution);
+                    scope.vptGData.vptBundle.resetBuffers = true;
+                }
+                if (updates == null || (updates.eam != null && updates.eam.steps != null)) {
+                    inSteps.val(scope.vptGData.vptBundle.eam.steps);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+                if (updates == null || (updates.eam != null && updates.eam.alphaCorrection != null)) {
+                    inACorr.val(scope.vptGData.vptBundle.eam.alphaCorrection);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+                if (updates == null || (updates.eam != null && updates.eam.tfBundle != null)) {
+                    parseTFBundle();
+                }
+
+                // Update ng-model
+                if(updates != null  && updates.eam != null && (updates.eam.background != null || updates.eam.meshLight != null)){
+                    scope.$digest()
+                }
             };
 
             //Start notification for restoring UI values

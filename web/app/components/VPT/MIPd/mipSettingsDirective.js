@@ -12,15 +12,29 @@ app.directive("mipSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            let _startupFunction = function () {
-                blendHandle.text(scope.vptGData.vptBundle.mip.blendMeshRatio);
-                $(blendSlider).slider("value", scope.vptGData.vptBundle.mip.blendMeshRatio);
-                var newColor = scope.vptGData.vptBundle.mip.blendMeshColor;
-                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
-                meshColorMIP.colorpicker('setValue', changeTo);
-                changeResolution(scope.vptGData.vptBundle.mip.resolution);
-                inSteps.val(scope.vptGData.vptBundle.mip.steps);//Math.round(1 / scope.vptGData.getVPTController().getRenderer()._stepSize));
-                //scope.$apply();
+            let _startupFunction = function (event, updates) {
+                if (updates == null || (updates.mip != null && updates.mip.blendMeshRatio != null)) {
+                    blendHandle.text(scope.vptGData.vptBundle.mip.blendMeshRatio);
+                    $(blendSlider).slider("value", scope.vptGData.vptBundle.mip.blendMeshRatio);
+                }
+                if (updates == null || (updates.mip != null && updates.mip.blendMeshColor != null)) {
+                    var newColor = scope.vptGData.vptBundle.mip.blendMeshColor;
+                    var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                    meshColorMIP.colorpicker('setValue', changeTo);
+                }
+                if (updates == null || (updates.mip != null && updates.mip.resolution != null)) {
+                    changeResolution(scope.vptGData.vptBundle.mip.resolution);
+                    scope.vptGData.vptBundle.resetBuffers = true;
+                }
+                if (updates == null || (updates.mip != null && updates.mip.steps != null)) {
+                    inSteps.val(scope.vptGData.vptBundle.mip.steps);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+
+                // Update ng-model
+                if (updates != null && updates.mip != null && (updates.mip.background != null || updates.mip.meshLight != null)) {
+                    scope.$digest()
+                }
             };
 
             //Start notification for restoring UI values
@@ -148,7 +162,7 @@ app.directive("mipSettings", function () {
                 }
                 return hex;
             };
-            
+
             _startupFunction();
         },
         templateUrl: function (element, attributes) {

@@ -12,19 +12,39 @@ app.directive("isoSettings", function () {
             // Add Object.keys functionality to scope
             scope.getKeys = Object.keys;
 
-            let _startupFunction = function () {
-                blendHandle.text(scope.vptGData.vptBundle.iso.blendMeshRatio);
-                $(blendSlider).slider("value", scope.vptGData.vptBundle.iso.blendMeshRatio);
-                var newColor = scope.vptGData.vptBundle.iso.blendMeshColor;
-                var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
-                meshColorISO.colorpicker('setValue', changeTo);
-                changeResolution(scope.vptGData.vptBundle.iso.resolution);
-                inSteps.val(scope.vptGData.vptBundle.iso.steps);
-                inISO.val(scope.vptGData.vptBundle.iso.isoVal);
-                newColor = scope.vptGData.vptBundle.iso.color;
-                changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
-                inColor.colorpicker('setValue', changeTo);
-                //scope.$apply();
+            let _startupFunction = function (event, updates) {
+                if (updates == null || (updates.iso != null && updates.iso.blendMeshRatio != null)) {
+                    blendHandle.text(scope.vptGData.vptBundle.iso.blendMeshRatio);
+                    $(blendSlider).slider("value", scope.vptGData.vptBundle.iso.blendMeshRatio);
+                }
+                if (updates == null || (updates.iso != null && updates.iso.blendMeshColor != null)) {
+                    var newColor = scope.vptGData.vptBundle.iso.blendMeshColor;
+                    var changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                    meshColorISO.colorpicker('setValue', changeTo);
+                }
+                if (updates == null || (updates.iso != null && updates.iso.resolution != null)) {
+                    changeResolution(scope.vptGData.vptBundle.iso.resolution);
+                    scope.vptGData.vptBundle.resetBuffers = true;
+                }
+                if (updates == null || (updates.iso != null && updates.iso.steps != null)) {
+                    inSteps.val(scope.vptGData.vptBundle.iso.steps);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+                if (updates == null || (updates.iso != null && updates.iso.isoVal != null)) {
+                    inISO.val(scope.vptGData.vptBundle.iso.isoVal);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+                if (updates == null || (updates.iso != null && updates.iso.color != null)) {
+                    newColor = scope.vptGData.vptBundle.iso.color;
+                    changeTo = "#" + toHex(Math.round(newColor.r * 255)) + toHex(Math.round(newColor.g * 255)) + toHex(Math.round(newColor.b * 255));
+                    inColor.colorpicker('setValue', changeTo);
+                    scope.vptGData.vptBundle.resetMVP = true;
+                }
+
+                // Update ng-model
+                if (updates != null && updates.iso != null && (updates.iso.background != null || updates.iso.meshLight != null)) {
+                    scope.$digest()
+                }
             };
 
             //Start notification for restoring UI values

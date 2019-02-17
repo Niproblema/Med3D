@@ -31,9 +31,7 @@ app.directive("vptSidebar", function () {
 
                     //Call for Directive-Needed for tranform function application
                     scope.$broadcast('uiRefresh' + scope.allRenderers[scope.renderer]);
-                } //else {
-                    //scope.$broadcast('uiRefresh' + scope.allRenderers[i]);  //Still refresh for external updates
-                //}
+                }
             };
 
             // Sliders for Tone mapper settings
@@ -222,7 +220,7 @@ app.directive("vptSidebar", function () {
 
             /* ========== Refresh UI ========== */
             /* Parse new settings from vptGData */
-            scope.$on('refreshVPTsidebar', function () {
+            scope.$on('refreshVPTsidebar', function (event, updates) {
                 var settings = scope.vptGData.vptBundle;
 
                 //Locks first
@@ -234,25 +232,38 @@ app.directive("vptSidebar", function () {
 
                 //Renderer selection    // ["ERROR", "EAM", "ISO", "MCS", "MIP"]
 
+
+
                 //Select + refresh Renderer settings.
                 if (scope.renderer != settings.rendererChoiceID) {
-                    setTimeout(function () { $("#rendererSelect" + scope.allRenderers[settings.rendererChoiceID]).click(); });
-                }else{
-                    scope.$broadcast('uiRefresh' + scope.allRenderers[settings.rendererChoiceID]);
+                    console.log("VPT previous renderer: " + scope.allRenderers[scope.renderer]);
+                    console.log("VPT new renderer: " + scope.allRenderers[settings.rendererChoiceID]);
+                    scope.renderer = settings.rendererChoiceID;
+                    scope.$broadcast('uiRefresh' + scope.allRenderers[scope.renderer], updates);
+
+                    setTimeout(function () { $("#rendererSelect" + scope.allRenderers[settings.rendererChoiceID]).click(); });  //This wont call broadcast twice
+                } else {
+                    scope.$broadcast('uiRefresh' + scope.allRenderers[settings.rendererChoiceID], updates);
                 }
 
 
                 //Tonemapper settings
-                exposureHandle.text(settings.reinhard.exposure);
-                $('#exposureSlider').slider("value", settings.reinhard.exposure)
+                if (updates == null || updates.reinhard != null) {
+                    exposureHandle.text(settings.reinhard.exposure);
+                    $('#exposureSlider').slider("value", settings.reinhard.exposure)
+                }
 
-                rangeHandle1.text(settings.range.rangeLower);
-                rangeHandle2.text(settings.range.rangeHigher);
-                $('#rangeSlider').slider('option', { values: [settings.range.rangeLower, settings.range.rangeHigher] });
+                if (updates == null || updates.range != null) {
+                    rangeHandle1.text(settings.range.rangeLower);
+                    rangeHandle2.text(settings.range.rangeHigher);
+                    $('#rangeSlider').slider('option', { values: [settings.range.rangeLower, settings.range.rangeHigher] });
+                }
 
 
                 //MCC settings
-                setTimeout(function () { $("#marchSelect" + (settings.useMCC ? "ON" : "OFF")).click() });
+                if (updates == null || updates.useMCC != null) {
+                    setTimeout(function () { $("#marchSelect" + (settings.useMCC ? "ON" : "OFF")).click() });
+                }
 
                 //TODO: how to synchronize MCC geometry?
 
