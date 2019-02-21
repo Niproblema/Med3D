@@ -112,6 +112,11 @@ M3D.VPTrendInterface = class {
                 this._hardResetBuffers(renderer, object);
             }
 
+            //Remake output buffer if canvas viewport size changes
+            if (!object._outputBuffer || savedState.viewport[2]  != object._outputBuffer._bufferOptions.width || savedState.viewport[3]  != object._outputBuffer._bufferOptions.height) {
+                this._hardResetOutputBuffer(object, savedState.viewport[2], savedState.viewport[3]);
+            }
+
             //Link object's render FB texture to tonemapper(s)
             this._RHToneMapper.setTexture(object.renderBuffer.getTexture());
             this._RaToneMapper.setTexture(this._RHToneMapper.getTexture());
@@ -254,24 +259,12 @@ M3D.VPTrendInterface = class {
             object._accumulationBuffer.destroy();
             object._renderBuffer.destroy();
             this._gl.deleteBuffer(this._clipQuad);
-            object._outputBuffer.destroy();
         }
 
         //set new ones
         object._frameBuffer = new SingleBuffer(this._gl, renderer._getFrameBufferOptions());
         object._accumulationBuffer = new DoubleBuffer(this._gl, renderer._getAccumulationBufferOptions());
         object._renderBuffer = new SingleBuffer(this._gl, renderer._getRenderBufferOptions());
-        object._outputBuffer = new SingleBuffer(this._gl, {
-            width: this._gl.drawingBufferWidth,
-            height: this._gl.drawingBufferHeight,
-            min: this._gl.LINEAR,
-            mag: this._gl.LINEAR,
-            wrapS: this._gl.CLAMP_TO_EDGE,
-            wrapT: this._gl.CLAMP_TO_EDGE,
-            format: this._gl.RGBA,
-            internalFormat: this._gl.RGBA16F,
-            type: this._gl.FLOAT
-        });
         this._clipQuad = new WebGLUtils.createClipQuad(this._gl);
     }
 
@@ -292,6 +285,24 @@ M3D.VPTrendInterface = class {
 
         object._lastRendererTypeID = renderer._type_id;
         this._vptGData.vptBundle.resetMVP = true;
+    }
+
+    _hardResetOutputBuffer(object, viewportWidth, viewportHeight) {
+        if (object._outputBuffer) {
+            object._outputBuffer.destroy();
+        }
+
+        object._outputBuffer = new SingleBuffer(this._gl, {
+            width: viewportWidth,
+            height: viewportHeight,
+            min: this._gl.LINEAR,
+            mag: this._gl.LINEAR,
+            wrapS: this._gl.CLAMP_TO_EDGE,
+            wrapT: this._gl.CLAMP_TO_EDGE,
+            format: this._gl.RGBA,
+            internalFormat: this._gl.RGBA16F,
+            type: this._gl.FLOAT
+        });
     }
 
     // ==== Saved and restore GL state ==== //
