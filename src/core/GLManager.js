@@ -203,7 +203,7 @@ M3D.GLManager = class {
         // endregion
 
         // Validation
-        if (this._gl.checkFramebufferStatus(this._gl.FRAMEBUFFER) !== this._gl.FRAMEBUFFER_COMPLETE) {
+/*         if (this._gl.checkFramebufferStatus(this._gl.FRAMEBUFFER) !== this._gl.FRAMEBUFFER_COMPLETE) {
             console.error("Render target: framebuffer not complete!")
 
             switch (this._gl.checkFramebufferStatus(this._gl.FRAMEBUFFER)) {
@@ -225,7 +225,7 @@ M3D.GLManager = class {
                 default:
                     console.error("Unknown error! Abandon hope all ye who enter here.")
             }
-        }
+        } */
     }
 
     cleanupRenderTarget() {

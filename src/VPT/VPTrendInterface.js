@@ -69,7 +69,7 @@ M3D.VPTrendInterface = class {
     }
 
     // ============================ M3D controls ============================ //
-    renderObjects(objects, camera) {
+    renderObjects(objects, camera, viewport, restoreFB) {
         //Init
         if (camera instanceof M3D.OrthographicCamera)
             return;
@@ -94,7 +94,7 @@ M3D.VPTrendInterface = class {
 
         var renderer = this._renderers[this._vptGData.vptBundle.rendererChoiceID];
 
-        var savedState = this._saveGLstate(gl);
+        //var savedState = this._saveGLstate(gl);
 
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
@@ -113,14 +113,15 @@ M3D.VPTrendInterface = class {
             }
 
             //Remake output buffer if canvas viewport size changes
-            if (!object._outputBuffer || savedState.viewport[2]  != object._outputBuffer._bufferOptions.width || savedState.viewport[3]  != object._outputBuffer._bufferOptions.height) {
-                this._hardResetOutputBuffer(object, savedState.viewport[2], savedState.viewport[3]);
+            if (!object._outputBuffer || viewport.width  != object._outputBuffer._bufferOptions.width || viewport.height  != object._outputBuffer._bufferOptions.height) {
+                this._hardResetOutputBuffer(object, viewport.width, viewport.height);
             }
 
             //Link object's render FB texture to tonemapper(s)
             this._RHToneMapper.setTexture(object.renderBuffer.getTexture());
             this._RaToneMapper.setTexture(this._RHToneMapper.getTexture());
 
+            console.time("rendVPT");
 
             //set  matrix
             if (camera._isDirty || object._isDirty || this._softReset) {
@@ -180,9 +181,14 @@ M3D.VPTrendInterface = class {
             //Update object's texture.
             this._setObjectMaterialTexture(object);
         }
+        console.timeEnd("rendVPT");
         this._vptGData.vptBundle.resetBuffers = false;
         this._softReset = false;
-        this._restoreGLstate(gl, savedState);
+
+        if(restoreFB){
+            gl.bindFramebuffer(gl.FRAMEBUFFER, restoreFB)
+        }
+        //this._restoreGLstate(gl, savedState);
     }
 
     // ============================ INSTANCE METHODS ============================ //
