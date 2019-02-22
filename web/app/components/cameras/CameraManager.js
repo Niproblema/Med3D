@@ -115,17 +115,73 @@ CameraManager = class {
     }
 
     setSharedCameras(sharedCameras) {
-        this.clearSharedCameras();
+        let self = this;
 
-        for (let userId in sharedCameras) {
-            for (var i = 0; i < sharedCameras[userId].list.length; i++) {
-                var cam = sharedCameras[userId].list[i];
-                this._onChangeListeners.onAddCamera.forEach(function (item, index) {
-                    item({ camera: cam, local: false, userId: userId, owner: sharedCameras[userId].ownerUsername, active: false });
-                });
+        for (let userID in this._sharedCameras) {   //Iterate over existing, delete those that no longer exist
+            if (sharedCameras.hasOwnProperty(userID)) { //User has not yet deleted his cameras, check deeper
+                if (this._sharedCameras[userID].list.length != sharedCameras[userID].list.length) { //Something has changed
+                    for (var i = 0; i < this._sharedCameras[userID].list.length; i++) {
+                        let oldCam = this._sharedCameras[userID][i];
+                        let found = false;
+
+                        for (var ii = 0; i < sharedCameras[userID].list.length; ii++) {
+                            let newCam = sharedCameras[userID][ii];
+                            if (oldCam._uuid === newCam._uuid){
+                                found = true;
+                                break;
+                            } 
+                        }
+                        if(!found){
+                            this._onChangeListeners.onRemoveCamera.forEach(function (item, index) {
+                                item({ camera: oldCam, local: false, userId: userID, owner: self._sharedCameras[userID].ownerUsername, active: oldCam._uuid === self._activeCamera._uuid });
+                            });
+                            this._sharedCameras[userID].list.splice(i,1);
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0; i < this._sharedCameras[userID].list.length; i++) {
+                    let oldCam = this._sharedCameras[userID].list[i];
+                    this._onChangeListeners.onRemoveCamera.forEach(function (item, index) {
+                        item({ camera: oldCam, local: false, userId: userID, owner: self._sharedCameras[userID].ownerUsername, active: oldCam._uuid === self._activeCamera._uuid });
+                    });
+                }
+                delete this._sharedCameras[userID];
             }
         }
-        this._sharedCameras = jQuery.extend(true, {}, sharedCameras); //sharedCameras;
+
+        for (let userID in sharedCameras) {   //Iterate over new ones, add those that don't exist yet
+            if (this._sharedCameras.hasOwnProperty(userID)) { //User has not yet deleted his cameras, check deeper
+                if (this._sharedCameras[userID].list.length != sharedCameras[userID].list.length) { //Something has changed
+                    for (var i = 0; i < sharedCameras[userID].list.length; i++) {
+                        let newCam = sharedCameras[userID].list[i];
+                        let found = false;
+
+                        for (var ii = 0; i < this._sharedCameras[userID].list.length; ii++) {
+                            let oldCam = this._sharedCameras[userID].list[ii];
+                            if (oldCam._uuid === newCam._uuid){
+                                found = true;
+                                break;
+                            } 
+                        }
+                        if(!found){
+                            this._sharedCameras[userID].list.push(newCam);
+                            this._onChangeListeners.onAddCamera.forEach(function (item, index) {
+                                item({ camera: newCam, local: false, userId: userID, owner: sharedCameras[userID].ownerUsername, active: false });
+                            });
+                        }
+                    }
+                }
+            } else {
+                this._sharedCameras[userID] = jQuery.extend(true, {}, sharedCameras[userID]);
+                for (var i = 0; i < sharedCameras[userID].list.length; i++) {
+                    var cam = sharedCameras[userID].list[i];
+                    this._onChangeListeners.onAddCamera.forEach(function (item, index) {
+                        item({ camera: cam, local: false, userId: userID, owner: sharedCameras[userID].ownerUsername, active: false });
+                    });
+                }
+            }
+        }
     }
 
     /**
