@@ -95,6 +95,7 @@ M3D.VPTrendInterface = class {
         var renderer = this._renderers[this._vptGData.vptBundle.rendererChoiceID];
 
         //var savedState = this._saveGLstate(gl);
+        //console.time("rendVPT");
 
         for (var i = 0; i < objects.length; i++) {
             var object = objects[i];
@@ -120,8 +121,6 @@ M3D.VPTrendInterface = class {
             //Link object's render FB texture to tonemapper(s)
             this._RHToneMapper.setTexture(object.renderBuffer.getTexture());
             this._RaToneMapper.setTexture(this._RHToneMapper.getTexture());
-
-            console.time("rendVPT");
 
             //set  matrix
             if (camera._isDirty || object._isDirty || this._softReset) {
@@ -181,7 +180,7 @@ M3D.VPTrendInterface = class {
             //Update object's texture.
             this._setObjectMaterialTexture(object);
         }
-        console.timeEnd("rendVPT");
+        //console.timeEnd("rendVPT");
         this._vptGData.vptBundle.resetBuffers = false;
         this._softReset = false;
 

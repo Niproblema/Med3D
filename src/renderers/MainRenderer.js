@@ -69,17 +69,17 @@ M3D.MainRenderer = class extends M3D.Renderer {
 
         // Render volume objects with VPT
         if (this._vptObjects.length > 0 && this._vptInterface) {
-            console.time("rendVPTWhole");
+            //console.time("rendVPTWhole");
             if (this._wasReset) return; // After scene reset some attributes remained set to deleted buffers, therefore set new attributes in first pass + skip render. Todo: better solution ? delete non required programs ?
             this._vptInterface.renderObjects(this._vptObjects, camera, this.getViewport(), this._glManager._fboManager.boundFrameBuffer);
-            console.timeEnd("rendVPTWhole");
+            //console.timeEnd("rendVPTWhole");
         }
 
         // Render opaque objects
         if (this._opaqueObjects.length > 0) {
-            console.time("rendMeshWhole");
+            //console.time("rendMeshWhole");
             this._renderObjects(this._opaqueObjects, camera);
-            console.timeEnd("rendMeshWhole");
+            //console.timeEnd("rendMeshWhole");
         }
 
         if (this._transparentObjects.length > 0) {

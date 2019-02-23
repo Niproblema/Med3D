@@ -191,13 +191,13 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
                 // Calculate intersected triangle normal
                 intersectionNormal = intersectionNormal.crossVectors((new THREE.Vector3()).subVectors(intersects[0].triangle[1], intersects[0].triangle[0]), (new THREE.Vector3()).subVectors(intersects[0].triangle[2], intersects[0].triangle[0])).normalize();
 
-                marker.point._position = new THREE.Vector3(0,0,0);
+                marker.point._position = new THREE.Vector3(0, 0, 0);
                 // Look at intersected triangle normal
                 marker.point.lookAt(intersectionNormal, new THREE.Vector3(0, 0, 1));
                 marker.point.position = intersects[0].point.add(intersectionNormal.multiplyScalar(0.001));
 
                 // Store marker position and normal
-                Annotations.newAnnotation.markerMeta = { position: marker.point.position, normal: intersectionNormal.clone(), radius: radius * 0.01};
+                Annotations.newAnnotation.markerMeta = { position: marker.point.position, normal: intersectionNormal.clone(), radius: radius * 0.01 };
             }
         }
     }();
@@ -227,7 +227,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
             if (annItem.marker === undefined) {
                 annItem.marker = self.createMarker(annItem.markerMeta.radius);
 
-                annItem.marker.point._position = new THREE.Vector3(0,0,0);
+                annItem.marker.point._position = new THREE.Vector3(0, 0, 0);
                 // Setup marker parameters
                 annItem.marker.point.lookAt(annItem.markerMeta.normal, new THREE.Vector3(0, 0, 1));
                 annItem.marker.point.position = annItem.markerMeta.position.clone();
@@ -730,6 +730,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      */
     $scope.startRenderLoop = function () {
         if (!self.animationRequestId) {
+            self.monitor = document.getElementById('perfMonitor');
             self.renderLoop();
         }
 
@@ -758,6 +759,15 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
      * Main animation loop.
      */
     let prevTime = -1, currTime;
+    let deltaT = 0;
+
+    let averageSampleSize = 360;
+    let averageQueue = new Array(averageSampleSize);
+    let aQPointer = 0;
+    let averageSum = 0;
+    let aOld;
+    let monitor = null; document.getElementById('perfMonitor');
+
     this.renderLoop = function () {
         self.animationRequestId = requestAnimationFrame(self.renderLoop);
 
@@ -766,8 +776,21 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
 
         // Calculate delta time and update timestamps
         currTime = new Date();
-        let deltaT = (prevTime !== -1) ? currTime - prevTime : 0;
+        deltaT = (prevTime !== -1) ? currTime - prevTime : 0;
         prevTime = currTime;
+
+        aOld = averageQueue[aQPointer]
+        aOld = aOld == null ? 0 : aOld;
+        averageSum -= aOld;
+        averageSum += deltaT;
+        averageQueue[aQPointer] = deltaT;
+        aQPointer++;
+
+        if (aQPointer >= averageSampleSize) {
+            aQPointer = 0;
+            self.monitor.innerHTML = "aFT = " + (averageSum / averageSampleSize).toFixed(3) + "\nFPS = " + ((averageSampleSize / averageSum)*1000).toFixed(2);
+        }
+
 
         // Update the camera
         self.cameraManager.update(inputData, deltaT);
