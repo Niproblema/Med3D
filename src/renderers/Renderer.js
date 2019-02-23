@@ -53,7 +53,7 @@ M3D.Renderer = class {
         if (camera.parent === null)
             camera.updateMatrixWorld();
 
-        camera.matrixWorldInverse.getInverse(camera.matrixWorld);
+        //camera.matrixWorldInverse.getInverse(camera.matrixWorld);
 
         // Clear intermediate data from the previous render call
         this._requiredPrograms = [];

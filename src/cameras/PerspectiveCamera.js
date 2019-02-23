@@ -37,6 +37,7 @@ M3D.PerspectiveCamera = class extends M3D.Camera {
 			left = - 0.5 * width;
 
 		this.projectionMatrix.makeFrustum(left, left + width, top - height, top, this._near, this._far);
+		
 	}
 
 	get fov() { return this._fov; }

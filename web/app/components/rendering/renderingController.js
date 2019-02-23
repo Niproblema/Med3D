@@ -766,7 +766,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     let aQPointer = 0;
     let averageSum = 0;
     let aOld;
-    let monitor = null; document.getElementById('perfMonitor');
+    let monitor = null;
 
     this.renderLoop = function () {
         self.animationRequestId = requestAnimationFrame(self.renderLoop);
