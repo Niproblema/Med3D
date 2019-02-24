@@ -18,6 +18,8 @@ M3D.VPTVolume = class extends M3D.Mesh {
         material.setUniform("material.diffuse", material.color);
         material.setUniform("material.specular", material.specular.toArray());
         material.setUniform("material.shininess", material.shininess);
+        material.setUniform("meshLight", true);
+        material.setUniform("background", true);
 
 
         var textur = new M3D.Texture();

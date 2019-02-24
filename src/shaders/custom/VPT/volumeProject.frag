@@ -34,6 +34,7 @@ in vec3 fragVPos;
 in vec4 texPos;
 uniform float meshBlendRatio;
 uniform bool meshLight;
+uniform bool background;
 
 out vec4 color[3];
 
@@ -109,7 +110,11 @@ void main() {
         // Apply all of the textures
         #for I_TEX in 0 to NUM_TEX
             if(meshBlendRatio < 0.995){
-             color[0] = (meshBlendRatio) * color[0] + (1.0-meshBlendRatio) * texture(material.texture##I_TEX, vec2(texPos.xy / abs(texPos.w))*0.5+0.5);   //texture(material.texture##I_TEX, fragUV);
+                vec4 tC = texture(material.texture##I_TEX, vec2(texPos.xy / abs(texPos.w))*0.5+0.5);
+                if(background){
+                    tC.w = 1.0;
+                }
+                color[0] = (meshBlendRatio) * color[0] + (1.0-meshBlendRatio) * tC;
             }
         #end
 

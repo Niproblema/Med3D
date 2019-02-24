@@ -157,7 +157,7 @@ M3D.VPTrendInterface = class {
             renderer.render();
             this._unlinkObjectFromRenderer(renderer);
             this._RHToneMapper.render();
-            //this._RaToneMapper.render();
+            this._RaToneMapper.render();
 
 
             var program = this._program;
@@ -168,7 +168,7 @@ M3D.VPTrendInterface = class {
             gl.enableVertexAttribArray(aPosition);
             gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
             gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this._RHToneMapper.getTexture());
+            gl.bindTexture(gl.TEXTURE_2D, this._RaToneMapper.getTexture());
             gl.uniform1i(program.uniforms.uTexture, 0);
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
@@ -420,6 +420,7 @@ M3D.VPTrendInterface = class {
         object.material.setUniform("material.diffuse", object.material.color)
         object.material.setUniform("meshBlendRatio", renderer._blendMeshRatio);
         object.material.setUniform("meshLight", renderer._meshLightning);
+        object.material.setUniform("background", renderer._background);
         return renderer._blendMeshRatio < 0.995 ? true : false;
     }
 
