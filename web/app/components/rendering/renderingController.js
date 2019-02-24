@@ -731,6 +731,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     $scope.startRenderLoop = function () {
         if (!self.animationRequestId) {
             self.monitor = document.getElementById('perfMonitor');
+            
             self.renderLoop();
         }
 
@@ -761,7 +762,7 @@ let renderingController = function ($scope, SettingsService, InputService, TaskM
     let prevTime = -1, currTime;
     let deltaT = 0;
 
-    let averageSampleSize = 360;
+    let averageSampleSize = 50;
     let averageQueue = new Array(averageSampleSize);
     let aQPointer = 0;
     let averageSum = 0;
