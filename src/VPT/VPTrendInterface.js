@@ -46,6 +46,10 @@ M3D.VPTrendInterface = class {
             object.switchRenderModes(false);
             var tex = object.material.maps[0];
             this._glManager._textureManager.clearTexture(tex);
+            if (object._volumeTexture)
+                this._gl.deleteTexture(object._volumeTexture);
+            if (object._environmentTexture)
+                this._gl.deleteTexture(object._environmentTexture);
         }
         this._vptGData.vptBundle.mccStatus = false;
         this._vptGData.vptBundle.resetBuffers = true;
@@ -113,7 +117,7 @@ M3D.VPTrendInterface = class {
             }
 
             //Remake output buffer if canvas viewport size changes
-            if (!object._outputBuffer || savedState.viewport[2]  != object._outputBuffer._bufferOptions.width || savedState.viewport[3]  != object._outputBuffer._bufferOptions.height) {
+            if (!object._outputBuffer || savedState.viewport[2] != object._outputBuffer._bufferOptions.width || savedState.viewport[3] != object._outputBuffer._bufferOptions.height) {
                 this._hardResetOutputBuffer(object, savedState.viewport[2], savedState.viewport[3]);
             }
 
@@ -215,6 +219,7 @@ M3D.VPTrendInterface = class {
     __setupVolumeTexture(object) {
         var gl = this._gl;
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        if (object._volumeTexture != null) return;   //
         object._volumeTexture = WebGLUtils.createTexture(gl, {
             target: gl.TEXTURE_3D,
             width: 1,
