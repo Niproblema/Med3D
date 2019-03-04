@@ -1,3 +1,6 @@
+Add alpha fix for background from pTest, move VPTobject to transparent objects in pipeline, but keep transparent flag off in material setup?
+VPT should have same camera near clipping as mesh renderer.
+
 
 Maybe:
  -Second subscriber rejoin - duplicate shared cameras on host.

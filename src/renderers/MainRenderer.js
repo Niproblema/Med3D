@@ -373,11 +373,6 @@ M3D.MainRenderer = class extends M3D.Renderer {
         // If the object is mesh and it's visible. Update it's attributes.
         else if (object instanceof M3D.Mesh) {
 
-            // VPT object are rendered twice, as volume and as mesh. Add to volume queue.
-            if (object instanceof M3D.VPTVolume) {
-                this._vptObjects.push(object);
-            }
-
             // Frustum culling
             if (object.frustumCulled === false || this._isObjectVisible(object)) {
 
@@ -408,6 +403,11 @@ M3D.MainRenderer = class extends M3D.Renderer {
                     // Derive mv and normal matrices
                     object.modelViewMatrix.multiplyMatrices(camera.matrixWorldInverse, object.matrixWorld);
                     object.normalMatrix.getNormalMatrix(object.modelViewMatrix);
+
+                    // VPT object are rendered twice, as volume and as mesh. Add to VPT queue
+                    if (object instanceof M3D.VPTVolume) {
+                        this._vptObjects.push(object);
+                    }
 
                     // Add object to correct render array
                     if (object.material.transparent) {
